@@ -17,6 +17,8 @@ cuda_add_library(resophonic_barracuda SHARED
 
   transforms.cpp
 
+  logging.cpp
+
   vector_splay.cu
   vector_vector_mul.cu
   vector_vector_div.cu

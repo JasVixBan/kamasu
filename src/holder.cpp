@@ -1,4 +1,4 @@
-#define I3_PRINTF_LOGGING_LEVEL LOG_INFO
+#define I3_PRINTF_LOGGING_LEVEL LOG_DEBUG
 #include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/logging.hpp>
@@ -87,6 +87,7 @@ namespace resophonic {
       CUDA_SAFE_CALL( cudaMemcpy( data_, rhs.data_, 
 				  sizeof(T) * size_,
 				  cudaMemcpyDeviceToDevice) );
+      log_debug("*** CLONED RHS %u bytes @%p***") % size_ % data_;
     }
 
     template <typename T>

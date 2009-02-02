@@ -42,7 +42,7 @@ namespace resophonic {
     array<T, RVal>::array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg))	\
     {									\
       log_trace("%s") % __PRETTY_FUNCTION__;				\
-      std::vector<unsigned> shape = KAMASU_MAKE_VECTOR(N, Arg);		\
+      std::vector<std::size_t> shape = KAMASU_MAKE_VECTOR(N, Arg);	\
       self().reshape(shape);						\
     }						
 
@@ -98,16 +98,6 @@ namespace resophonic {
     array<T, RVal>::operator=(const array<T, RVal>& rhs) 
     {
       log_trace("%s") % __PRETTY_FUNCTION__;
-      /*
-      self().dims = rhs.self().dims;
-      self().strides = rhs.self().strides;
-      self().factors = rhs.self().factors;
-      self().offset = rhs.self().offset;
-      self().linear_size = rhs.self().linear_size;
-      self().impl = rhs.self().impl;
-      self().show();
-      log_trace("Copied impl at %p") % self().impl.get();
-      */
       this->take(rhs.self());
       return *this;
     };

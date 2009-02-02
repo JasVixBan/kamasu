@@ -2,6 +2,7 @@
 #include "cutil.h"
 #include <stdio.h>
 #include <cublas.h>
+#include <map>
 
 #define SDATA( index)      CUT_BANK_CHECKER(sdata, index)
 

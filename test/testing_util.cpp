@@ -35,7 +35,7 @@ array<float> make_4x5()
   //   3   7  11  15  19
   //   4   8  12  16  20
 
-  std::vector<unsigned> shp;
+  std::vector<std::size_t> shp;
   shp.push_back(4);
   shp.push_back(5);
 
@@ -75,7 +75,7 @@ array<float> make_1d(unsigned n)
 {
   //   0   1   2   3   4   5   ....
 
-  std::vector<unsigned> shp;
+  std::vector<std::size_t> shp;
   shp.push_back(n);
 
   array<float> a(shp);
@@ -97,7 +97,7 @@ array<float> make_1d(unsigned n)
 
 array<float> make_3d(unsigned n)
 {
-  std::vector<unsigned> shp;
+  std::vector<std::size_t> shp;
   shp.push_back(n);
   shp.push_back(n);
   shp.push_back(n);

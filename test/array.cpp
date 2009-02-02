@@ -317,7 +317,7 @@ TEST(slice_2d)
 
 TEST(slice_1d)
 {
-  std::vector<unsigned> shp;
+  std::vector<std::size_t> shp;
   shp.push_back(10);
 
   array<float> a(shp);

@@ -2,7 +2,7 @@
 #define RESOPHONIC_KAMASU_LOGGING_HPP_INCLUDED
 
 #include <stdexcept>
-#include <iosfwd>
+#include <fstream>
 #include <boost/format.hpp>
 
 #define LOG_TRACE 0
@@ -29,9 +29,17 @@ namespace {
   log_op_eater loe;
 }
 
+namespace resophonic {
+  namespace kamasu {
+
+    std::ofstream& ofs();
+
+  }
+}
+
 // implmentation macro of macros visible to user.
 #define LOG_IMPL(LEVEL, ufmt, ...)					\
-  std::cout << boost::format("%s:%d " ufmt "\n") % __FILE__ % __LINE__ ##__VA_ARGS__
+  resophonic::kamasu::ofs() << boost::format("%s:%d " ufmt "\n") % __FILE__ % __LINE__ ##__VA_ARGS__
   
 #if I3_PRINTF_LOGGING_LEVEL <= LOG_TRACE
 #define log_trace(format, ...) LOG_IMPL(LOG_TRACE, format) ##__VA_ARGS__

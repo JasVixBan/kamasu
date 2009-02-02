@@ -44,7 +44,7 @@ namespace resophonic
       T* data() const;
 
       void reshape(const std::vector<std::size_t>& shape);
-      unsigned calculate_strides();
+      std::size_t calculate_strides();
       void calculate_factors();
 
     };

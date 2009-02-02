@@ -10,7 +10,7 @@ void hi() { log_info("hi"); }
 using namespace boost::python;
 namespace ks = resophonic::kamasu;
 
-typedef ks::array<float> array_t;
+// typedef ks::array<float> array_t;
 
 namespace {
 
@@ -19,46 +19,46 @@ namespace {
     return obj.ptr() == Py_None;
   }
 
-    bool contains_slice(const tuple& t)
-    {
-      for (unsigned i=0; i<len(t); i++)
-	{
-	  object obj = t[i];
-	  if (PySlice_Check(obj.ptr()))
-	    return true;
-	}
-      return false;
-    }
+  bool contains_slice(const tuple& t)
+  {
+    for (unsigned i=0; i<len(t); i++)
+      {
+	object obj = t[i];
+	if (PySlice_Check(obj.ptr()))
+	  return true;
+      }
+    return false;
+  }
 
 #define KS_REPEAT(MACRO, DATA) BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, MACRO, DATA)
 
   // #define KS_REPEAT(MACRO, DATA) MACRO(~, 3, DATA)
 
-#define VA_GETITEM(Z,N,DATA)						\
-  template <typename T>							\
-  object								\
-  getitem_impl_##N(array_t& arr,					\
-		   BOOST_PP_ENUM_PARAMS(N, std::size_t Arg))		\
-  {									\
-    return object((T) arr(BOOST_PP_ENUM_PARAMS(N,Arg)));		\
+#define VA_GETITEM(Z,N,DATA)					\
+  template <typename Array, typename T>				\
+  object							\
+  getitem_impl_##N(Array& arr,					\
+		   BOOST_PP_ENUM_PARAMS(N, std::size_t Arg))	\
+  {								\
+    return object((T) arr(BOOST_PP_ENUM_PARAMS(N,Arg)));	\
   }
 
-#define VA_SETITEM(Z, N, DATA)						\
-  template <typename T>							\
-  void									\
-  setitem_impl_##N(array_t& arr,					\
-	  BOOST_PP_ENUM_PARAMS(N, std::size_t Arg),			\
-	  T value)							\
-  {									\
-    arr(BOOST_PP_ENUM_PARAMS(N, Arg)) = value;				\
-  }									\
+#define VA_SETITEM(Z, N, DATA)					\
+  template <typename Array, typename T>				\
+  void								\
+  setitem_impl_##N(Array& arr,					\
+		   BOOST_PP_ENUM_PARAMS(N, std::size_t Arg),	\
+		   T value)					\
+  {								\
+    arr(BOOST_PP_ENUM_PARAMS(N, Arg)) = value;			\
+  }
 
   KS_REPEAT(VA_GETITEM, ~);
   KS_REPEAT(VA_SETITEM, ~);
 
 #define EXTRACT(Z, N, DATA) extract<int>(DATA[N])
-#define GETITEM_CLAUSE(Z, N, DATA) case N: return getitem_impl_##N<T>(arr, BOOST_PP_ENUM(N, EXTRACT, DATA)); break;
-#define SETITEM_CLAUSE(Z, N, DATA) case N: setitem_impl_##N<T>(arr, BOOST_PP_ENUM(N, EXTRACT, DATA), value); break;
+#define GETITEM_CLAUSE(Z, N, DATA) case N: return getitem_impl_##N<Array,T>(arr, BOOST_PP_ENUM(N, EXTRACT, DATA)); break;
+#define SETITEM_CLAUSE(Z, N, DATA) case N: setitem_impl_##N<Array,T>(arr, BOOST_PP_ENUM(N, EXTRACT, DATA), value); break;
 
   template <typename T>
   boost::optional<T> maybe_get(object o)
@@ -104,8 +104,9 @@ namespace {
     return ir;
   }
 
+  template <typename Array>
   object
-  slice_impl(array_t& arr, tuple& t)
+  slice_impl(Array& arr, tuple& t)
   {
     log_trace("%s") % __PRETTY_FUNCTION__;
     std::vector<resophonic::kamasu::index_range> irv;
@@ -127,9 +128,9 @@ namespace {
     return object(arr.slice(irv));
   }
 
-  template <typename T>
+  template <typename Array, typename T>
   object 
-  get_item(array_t& arr, tuple& t)
+  get_item(Array& arr, tuple& t)
   {
     log_trace("%s") % __PRETTY_FUNCTION__;
     if (contains_slice(t))
@@ -139,9 +140,9 @@ namespace {
     }
   };
 
-  template <typename T>
+  template <typename Array, typename T>
   object 
-  get_slice(array_t& arr, slice& s)
+  get_slice(Array& arr, slice& s)
   {
     log_trace("%s") % __PRETTY_FUNCTION__;
     std::vector<resophonic::kamasu::index_range> irv;
@@ -149,11 +150,9 @@ namespace {
     return object(arr.slice(irv));
   };
 
-
-
-  template <typename T>
+  template <typename Array, typename T>
   void 
-  set_item(array_t& arr, const tuple& t, T value)
+  set_item(Array& arr, const tuple& t, T value)
   {
     //log_trace("%s") % __PRETTY_FUNCTION__;
     switch(len(t)) {
@@ -161,15 +160,50 @@ namespace {
     }
   };
 
+
+  template <typename Array, typename T>
+  ks::array<T>
+  op_mul(Array& arr, float value)
+  {
+    log_trace("op mul!");
+    ks::array<T> res;
+    res = arr * value;
+    return res;
+  }
 }
 
 #define SIZE_T(Z, N, DATA) std::size_t
 #define INIT_DEF(Z, N, DATA) .def(init<BOOST_PP_ENUM(N, SIZE_T, ~)>())
   
+template <typename RVal>
+void
+register_array(const char* name)
+{
+  typedef ks::array<float, RVal> array_t;
+
+  class_<array_t>(name)
+    .def("n_dims", &array_t::n_dims)
+    .def("dim", &array_t::dim)
+    .def("stride", &array_t::stride)
+    .def("linear_size", &array_t::linear_size)
+    KS_REPEAT(INIT_DEF, ~)
+
+    .def("__getitem__", &get_slice<array_t, float>)
+    .def("__getitem__", &get_item<array_t,float>)
+    .def("__getitem__", &getitem_impl_1<array_t,float>)
+
+    .def("__setitem__", &set_item<array_t,float>)
+    .def("__setitem__", &setitem_impl_1<array_t,float>)
+    .def("__mul__", &op_mul<array_t,float>)
+    ;
+
+}
+
 BOOST_PYTHON_MODULE(kamasu)
 {
 
-  class_<array_t>("array")
+  /*
+    class_<array_t>("array")
     .def("n_dims", &array_t::n_dims)
     .def("dim", &array_t::dim)
     .def("stride", &array_t::stride)
@@ -183,8 +217,11 @@ BOOST_PYTHON_MODULE(kamasu)
     .def("__setitem__", &set_item<float>)
     .def("__setitem__", &setitem_impl_1<float>)
     ;
+  */
+  register_array<boost::mpl::false_>("array");
+  //  register_array<boost::mpl::true_>("array_rvalue");
 }
 
-    // .def(init<std::size_t>())
-    // .def("__getitem__", (float (*)(array_t&, unsigned))&getitem<float>)
-    //    .def("__setitem__", (void  (*)(array_t&, unsigned, float))&setitem<float>)
+// .def(init<std::size_t>())
+// .def("__getitem__", (float (*)(array_t&, unsigned))&getitem<float>)
+//    .def("__setitem__", (void  (*)(array_t&, unsigned, float))&setitem<float>)

@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
-import sys
-from scipy.io.numpyio import fread
+import sys, os
+from stat import *
+from scipy.io.numpyio import fread, fwrite
 import numpy as n
 from pylab import *
 
@@ -10,15 +11,15 @@ from pylab import *
 #
 sr = 48000.0
 
-datfile = sys.argv[1]
-nsamples = int(sys.argv[2])
+datfile = 'signal.dat'
+nsamples = os.stat(datfile)[ST_SIZE] / 4
 
 print "Reading %d samples from %s" % (nsamples, datfile)
 fd = open(datfile, 'rb')
 datatype = 'f'
 shape = (nsamples,)
-data = fread(fd, nsamples, datatype)
-signal = data.reshape(shape)
+blob = fread(fd, nsamples, datatype)
+signal = blob.reshape(shape)
 
 #
 # autocorr routine
@@ -30,7 +31,6 @@ def autocorrelate(a):
     freqs = n.zeros((len(a)-winlen,))
 
     for outer in range(0, len(a)-(winlen*2)):
-        print "%d%%\r" % ((100 * outer)/(len(a)-(winlen*2))),
 
         corr_coeff = n.zeros((winlen,))
         for inner in range(winlen):
@@ -39,11 +39,15 @@ def autocorrelate(a):
             corr_coeff[inner] = periodic_autocorr
 
         delta_corr = corr_coeff[1:] - corr_coeff[0:-1]
-        for i in range((sr/200)/4, len(delta_corr)-1):
+        for i in range(int((sr/200)/4), len(delta_corr)-1):
             if delta_corr[i] >= 0 and delta_corr[i+1] < 0:
                 # print "@", outer, sr/(i+2), " Hz"
                 freqs[outer] = sr/(i+2)
                 break
+
+        if outer % 2 == 0:
+            print "%d%% %f Hz                 \r" % ((100 * outer)/(len(a)-(winlen*2)),
+                                                     freqs[outer]),
             
     return freqs
 
@@ -51,7 +55,8 @@ def autocorrelate(a):
 # doit
 #
 
-f = autocorrelate(signal)
-plot(f)
+f = autocorrelate(signal).astype(n.float32)
 
-show()
+fd = open('freqs.python.dat', 'wb')
+fwrite(fd, f.size, f)
+

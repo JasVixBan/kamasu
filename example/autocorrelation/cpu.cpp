@@ -48,11 +48,14 @@ std::vector<float> autocorrelate(std::vector<float>& signal)
 
 int main(int argc, char** argv)
 {
-  std::string fname = argv[1];
-  unsigned nsamples = atoi(argv[2]);
-  cout << "Reading " << nsamples << " floats from " << fname << "\n";
+  struct stat sb;
+
+  stat("signal.dat", &sb);
+  unsigned nsamples = sb.st_size / 4;
+
+  cout << "Reading " << nsamples << " samples from signal.dat\n";
   
-  int fd = open(fname.c_str(), O_RDONLY);
+  int fd = open("signal.dat", O_RDONLY);
   assert(fd);
   
   std::vector<float> signal(nsamples);
@@ -61,19 +64,8 @@ int main(int argc, char** argv)
 
   std::vector<float> freqs = autocorrelate(signal);
   
-  for (unsigned i=0; i<freqs.size(); i++)
-    {
-      cout << freqs[i] << "\n";
-    }
-  /*
-  log_warn("%s") % __PRETTY_FUNCTION__;
-  rk::array<float> a(nsamples);
-
-  for (unsigned i=0; i<signal.size(); i++)
-    {
-      a(i) = signal[i];
-      cout << signal[i] << "\n";
-    }
-  */
-
+  cout << "writing frequencies to freqs.cpu.dat\n";
+  int outfd = open("freqs.cpu.dat", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  write(outfd, freqs.data(), sizeof(float) * freqs.size());
+  close(outfd);
 }

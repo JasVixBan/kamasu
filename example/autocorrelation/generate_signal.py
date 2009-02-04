@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 import numpy as n
 from scipy.io.numpyio import fwrite
 import sys
@@ -26,9 +25,9 @@ signal = n.hstack((signal, n.zeros((1500,))))
 
 writable_signal = signal.astype(n.float32)
 
-print "Writing %u samples of %u bytes to %s" % (writable_signal.size,
-                                                writable_signal.itemsize,
-                                                sys.argv[1])
-fd = open(sys.argv[1], 'wb')
+print "Writing %u samples of %u bytes to signal.dat" % (writable_signal.size,
+                                                        writable_signal.itemsize)
+
+fd = open('signal.dat', 'wb')
 fwrite(fd, writable_signal.size, writable_signal)
 

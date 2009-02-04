@@ -1,25 +1,28 @@
 #!/usr/bin/python
 
+import sys
+from scipy.io.numpyio import fread
 import numpy as n
 from pylab import *
 
-def logistic(x):
-    return 1.0 / (1.0 + n.exp(-x))
-
+#
+# generate signal
+#
 sr = 48000.0
 
-def sin_at(sr, freq):
-    n_samples = sr/freq
-    return n.sin(n.linspace(0, 2*n.pi, n_samples))[:-1]
+datfile = sys.argv[1]
+nsamples = int(sys.argv[2])
 
-signal = n.zeros((0,))
+print "Reading %d samples from %s" % (nsamples, datfile)
+fd = open(datfile, 'rb')
+datatype = 'f'
+shape = (nsamples,)
+data = fread(fd, nsamples, datatype)
+signal = data.reshape(shape)
 
-for i in [ord(x) for x in 'KaMaSu']:
-    print "10 cycles of %dHz" % i
-    for j in range(5):
-        signal = n.hstack((signal, sin_at(sr, i)))
-
-signal = n.hstack((signal, n.zeros((0,))))
+#
+# autocorr routine
+#
 
 def autocorrelate(a):
     winlen = int(sr/70)
@@ -27,7 +30,7 @@ def autocorrelate(a):
     freqs = n.zeros((len(a)-winlen,))
 
     for outer in range(0, len(a)-(winlen*2), 2):
-        print float(outer)/(len(a)-(winlen*2))
+        print "%d%%" % 100 * float(outer)/(len(a)-(winlen*2))
 
         corr_coeff = n.zeros((winlen,))
         for inner in range(winlen):
@@ -43,6 +46,10 @@ def autocorrelate(a):
                 break
             
     return freqs
+
+#
+# doit
+#
 
 f = autocorrelate(signal)
 plot(f)

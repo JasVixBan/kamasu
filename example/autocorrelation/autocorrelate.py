@@ -28,8 +28,7 @@ def autocorrelate(a):
 
     for outer in range(0, len(a)-(winlen*2), 2):
         print float(outer)/(len(a)-(winlen*2))
-        max_corr_value = 0
-        max_corr_offset = 0
+
         corr_coeff = n.zeros((winlen,))
         for inner in range(winlen):
             periodic_autocorr = sum(a[outer:outer+winlen]

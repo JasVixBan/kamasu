@@ -57,7 +57,11 @@ find_library(BOOST_FILESYSTEM
   NO_DEFAULT_PATH
   )
 
-message("boost system is ${BOOST_SYSTEM}")
+set(BOOST_LIBRARIES
+  ${BOOST_SYSTEM}
+  ${BOOST_PROGRAM_OPTIONS}
+  ${BOOST_FILESYSTEM}
+  )  
 
 if(NOT EXISTS ${NVIDIA_CUDA_SDK_DIR}/common/inc/cutil.h)
   message(FATAL_ERROR "cutil.h not found in <NVIDIA_CUDA_SDK_DIR>/common/inc")
@@ -78,3 +82,4 @@ cuda_include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc
 add_subdirectory(src)
 add_subdirectory(python)
 add_subdirectory(test)
+add_subdirectory(example)

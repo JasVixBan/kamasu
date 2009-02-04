@@ -29,8 +29,8 @@ def autocorrelate(a):
 
     freqs = n.zeros((len(a)-winlen,))
 
-    for outer in range(0, len(a)-(winlen*2), 2):
-        print "%d%%" % 100 * float(outer)/(len(a)-(winlen*2))
+    for outer in range(0, len(a)-(winlen*2)):
+        print "%d%%\r" % ((100 * outer)/(len(a)-(winlen*2))),
 
         corr_coeff = n.zeros((winlen,))
         for inner in range(winlen):

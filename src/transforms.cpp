@@ -69,6 +69,7 @@ namespace resophonic {
 	  return rv;
 	}
 
+	/*
 	template <typename LhsIsRVal, typename RhsIsRVal>
 	rk::array_impl<float, boost::mpl::true_>
 	operator()(tag::dot,
@@ -80,7 +81,7 @@ namespace resophonic {
 	  rv.reshape(shp);
 	  return rv;
 	}
-
+	*/
 	void operator()(bp::tag::divides, 
 			float* lhs, float * rhs, unsigned size)
 	{
@@ -195,23 +196,10 @@ namespace resophonic {
 
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus);
     INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::multiplies);
-    INSTANTIATE_ARRAYARRAY_OP(tag::dot);
+    //INSTANTIATE_ARRAYARRAY_OP(tag::dot);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::divides);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);
 
-
-
-    template <typename LhsIsRVal, typename RhsIsRVal>
-    float
-    DotOp::operator()(const rk::array_impl<float, LhsIsRVal>& lhs, 
-		      const rk::array_impl<float, RhsIsRVal>& rhs)
-    {
-      log_trace("%s") % __PRETTY_FUNCTION__;
-      
-      return detail::dispatch()(Op(), lhs, rhs);
-    }
-
-    //     float DotOp::operator()(
 
   }
 }

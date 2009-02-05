@@ -11,14 +11,17 @@ namespace resophonic
   namespace kamasu 
   {
     namespace bp = boost::proto;
-    // namespace bu = boost::numeric::ublas;
     namespace rk = resophonic::kamasu;
 
     namespace tag {
-      struct dot {};
+      struct dot { };
+      struct pow { };
     }
-    struct DotTag : bp::terminal<tag::dot> {};
+    struct DotTag : bp::terminal<tag::dot> { };
+    struct PowTag : bp::terminal<tag::pow> { };
+
     DotTag::type const dot = {{}};
+    PowTag::type const pow = {{}};
 
     template <typename T, typename RVal = boost::mpl::false_>
     class array;
@@ -80,7 +83,10 @@ namespace resophonic
 					Array(bp::_left), Scalar(bp::_right))>,
 		bp::when<bp::divides<Array, Scalar>,
 			 ArrayScalarOp(bp::tag::divides(), 
-					Array(bp::_left), Scalar(bp::_right))>
+				       Array(bp::_left), Scalar(bp::_right))>,
+		bp::when<bp::function<PowTag, Array, Scalar>,
+			 ArrayScalarOp(tag::pow(), 
+				       Array(bp::_child1), Scalar(bp::_child2))>
 		>
     { };
 

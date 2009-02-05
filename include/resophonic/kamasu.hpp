@@ -18,8 +18,6 @@ namespace std {
   class exception;
 }
 
-const unsigned threads_per_block = 512;
-
 #include <stdio.h>
 #include <cassert>
 namespace boost {

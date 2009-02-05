@@ -6,6 +6,7 @@ add_executable(test
   array.cpp
   3d.cpp
   ops.cpp
+  elementwise.cpp
   testing_util.cpp
   )
 

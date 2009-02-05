@@ -166,6 +166,8 @@ namespace resophonic {
     INST_ARRAYSCALAR(boost::proto::tag::divides, false_);
     INST_ARRAYSCALAR(boost::proto::tag::multiplies, true_);
     INST_ARRAYSCALAR(boost::proto::tag::multiplies, false_);
+    INST_ARRAYSCALAR(resophonic::kamasu::tag::pow, true_);
+    INST_ARRAYSCALAR(resophonic::kamasu::tag::pow, false_);
 
     template <typename Op, typename LhsIsRVal, typename RhsIsRVal>
     typename ArrayArrayOp::result_type

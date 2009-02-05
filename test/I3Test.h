@@ -124,7 +124,7 @@ namespace I3Test {
 	   << " " << distance_txt << " == " << distance;
 	throw test_failure(file, line, ss.str(), msg);
       }
-    if( expected-distance >= actual || expected+distance <= actual )
+    if( expected-distance > actual || expected+distance < actual )
       {
 	stringstream ss;
 	ss << "ensure_distance: expected [" << expected-distance << ";" 

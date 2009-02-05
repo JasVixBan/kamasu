@@ -39,5 +39,8 @@ namespace resophonic {
     KAMASU_OPMAP_SPECIALIZATION(multiplies, MULTIPLIES);
     KAMASU_OPMAP_SPECIALIZATION(divides, DIVIDES);
 
+    template <> struct op_map<tag::pow> {
+      const static Op value = POW;
+    };
   }
 }

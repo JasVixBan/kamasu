@@ -60,24 +60,6 @@ gpu_add_elem_knl(float* g_idata1, float* g_idata2, float* g_odata)
 }
 
 //
-// helpers
-// 
-
-const static unsigned threads_per_block = 64;
-
-
-typedef std::pair<unsigned, unsigned> bd_t;
-static bd_t gridsize(unsigned size)
-{
-  bd_t pr;
-  if (size <= threads_per_block)
-    return std::make_pair(1, size);
-  else
-    return std::make_pair(ceil(double(size) / threads_per_block), threads_per_block);
-}
-
-
-//
 //  vector-scalar knls
 //
 
@@ -224,6 +206,8 @@ kamasu_testy_knl_thunk(Op op,
     data[actual_index] += scalar;
   else if (op == MINUS)
     data[actual_index] -= scalar;
+  else if (op == POW)
+    data[actual_index] = pow(data[actual_index], scalar);
 }
 
 

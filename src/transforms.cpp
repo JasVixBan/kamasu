@@ -11,45 +11,7 @@ namespace resophonic {
 
       struct dispatch
       {
-	/*
-	void operator()(bp::tag::plus, float* data, unsigned size, float scalar, int stride)
-	{
-	  BOOST_ASSERT(size > 0);
-	  log_trace("%s") % __PRETTY_FUNCTION__;
-	  kamasu_vector_scalar_add(size, scalar, data, stride);
-	}
-	void operator()(bp::tag::minus, float* data, unsigned size, float scalar, int stride)
-	{
-	  BOOST_ASSERT(size > 0);
-	  log_trace("%s") % __PRETTY_FUNCTION__;
-	  kamasu_vector_scalar_sub(size, scalar, data, stride);
-	}
-	void operator()(bp::tag::multiplies, float* data, unsigned size, float scalar, int stride)
-	{
-	  BOOST_ASSERT(size > 0);
-	  log_trace("%s") % __PRETTY_FUNCTION__;
-	  kamasu_vector_scalar_mul(size, scalar, data, stride);
-	}
-	void operator()(bp::tag::divides, float* data, unsigned size, float scalar, int stride)
-	{
-	  BOOST_ASSERT(size > 0);
-	  log_trace("%s") % __PRETTY_FUNCTION__;
-	  kamasu_vector_scalar_div(size, scalar, data, stride);
-	}
 
-	void operator()(bp::tag::plus,
-			float* lhs, float * rhs, unsigned size)
-	{
-	  BOOST_ASSERT(size > 0);
-	  kamasu_vector_vector_add(size, lhs, 1, rhs, 1);
-	}
-	void operator()(bp::tag::multiplies, 
-			float* lhs, float * rhs, unsigned size)
-	{
-	  BOOST_ASSERT(size > 0);
-	  kamasu_vector_vector_mul(size, lhs, 1, rhs, 1);
-	}
-	*/
 	template <typename LhsIsRVal, typename RhsIsRVal>
 	rk::array_impl<float, boost::mpl::true_>
 	operator()(bp::tag::multiplies,
@@ -65,23 +27,11 @@ namespace resophonic {
 	  shape.push_back(lhs.dims->get(0));
 	  shape.push_back(rhs.dims->get(1));
 
+	  BOOST_ASSERT(0);
 	  rv.reshape(shape);
 	  return rv;
 	}
 
-	/*
-	template <typename LhsIsRVal, typename RhsIsRVal>
-	rk::array_impl<float, boost::mpl::true_>
-	operator()(tag::dot,
-		   const rk::array_impl<float, LhsIsRVal>& lhs, 
-		   const rk::array_impl<float, RhsIsRVal>& rhs)
-	{
-	  std::vector<std::size_t> shp(1,1);
-	  rk::array_impl<float, boost::mpl::true_> rv;
-	  rv.reshape(shp);
-	  return rv;
-	}
-	*/
 	void operator()(bp::tag::divides, 
 			float* lhs, float * rhs, unsigned size)
 	{

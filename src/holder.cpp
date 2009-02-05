@@ -1,4 +1,4 @@
-#define I3_PRINTF_LOGGING_LEVEL LOG_DEBUG
+// #define I3_PRINTF_LOGGING_LEVEL LOG_DEBUG
 #include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/logging.hpp>
@@ -58,6 +58,8 @@ namespace resophonic {
     void
     holder<T>::resize(std::size_t s)
     {
+      if (size_ == s)
+	return;
       reset();
       if (s == 0)
 	return;

@@ -25,17 +25,6 @@ namespace resophonic
     template <typename T, typename RVal = boost::mpl::false_>
     class array;
 
-    /*
-    struct DotOp : bp::callable
-    {
-      typedef float result_type;
-
-      template <typename LhsIsRVal, typename RhsIsRVal>
-      result_type 
-      operator()(const rk::array_impl<float, LhsIsRVal>&, 
-		 const rk::array_impl<float, RhsIsRVal>&);
-    };
-    */
     struct ArrayArrayOp : bp::callable
     {
       typedef rk::array_impl<float, boost::mpl::true_> result_type;
@@ -112,9 +101,7 @@ namespace resophonic
 				      Array(bp::_left), Array(bp::_right))>,
 		bp::when<bp::minus<Array, Array>,
 			 ArrayArrayOp(bp::tag::minus(), 
-				      Array(bp::_left), Array(bp::_right))>//,
-		//		bp::when<bp::function<DotTag, Array, Array>,
-		//			 DotOp(Array(bp::_child1), Array(bp::_child2))>
+				      Array(bp::_left), Array(bp::_right))>
 		>
     { };
 

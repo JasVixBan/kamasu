@@ -89,7 +89,9 @@ namespace resophonic {
     void 
     array<T, RVal>::show() const
     {
+#ifndef NDEBUG
       self().show();
+#endif
     }
 
 

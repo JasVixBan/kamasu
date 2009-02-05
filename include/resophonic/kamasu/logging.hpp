@@ -13,7 +13,7 @@
 #define LOG_FATAL 5
 
 #ifndef I3_PRINTF_LOGGING_LEVEL
-#define I3_PRINTF_LOGGING_LEVEL LOG_TRACE
+#define I3_PRINTF_LOGGING_LEVEL LOG_ERROR
 #endif
 
 struct log_op_eater 

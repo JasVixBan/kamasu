@@ -20,11 +20,21 @@ namespace resophonic
     struct DotTag : bp::terminal<tag::dot> { };
     struct PowTag : bp::terminal<tag::pow> { };
 
-    DotTag::type const dot = {{}};
+    // DotTag::type const dot = {{}};
     PowTag::type const pow = {{}};
 
     template <typename T, typename RVal = boost::mpl::false_>
     class array;
+
+    struct DotOp : bp::callable
+    {
+      typedef float result_type;
+
+      template <typename LhsIsRVal, typename RhsIsRVal>
+      result_type 
+      operator()(const rk::array_impl<float, LhsIsRVal>&, 
+		 const rk::array_impl<float, RhsIsRVal>&);
+    };
 
     struct ArrayArrayOp : bp::callable
     {
@@ -104,8 +114,7 @@ namespace resophonic
 			 ArrayArrayOp(bp::tag::minus(), 
 				      Array(bp::_left), Array(bp::_right))>,
 		bp::when<bp::function<DotTag, Array, Array>,
-			 ArrayArrayOp(tag::dot(),
-				      Array(bp::_child1), Array(bp::_child2))>
+			 DotOp(Array(bp::_child1), Array(bp::_child2))>
 		>
     { };
 
@@ -123,12 +132,6 @@ namespace resophonic
     struct Matrix
       : bp::or_<BuMatrixTerminal>
     { };
-
-    /*
-    struct DotCall
-      : 
-    { };
-    */
 
     struct Grammar : 
       bp::or_<Scalar, Vector, Matrix, Array> 

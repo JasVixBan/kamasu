@@ -11,6 +11,7 @@ namespace resophonic {
 
       struct dispatch
       {
+	/*
 	void operator()(bp::tag::plus, float* data, unsigned size, float scalar, int stride)
 	{
 	  BOOST_ASSERT(size > 0);
@@ -48,7 +49,7 @@ namespace resophonic {
 	  BOOST_ASSERT(size > 0);
 	  kamasu_vector_vector_mul(size, lhs, 1, rhs, 1);
 	}
-
+	*/
 	template <typename LhsIsRVal, typename RhsIsRVal>
 	rk::array_impl<float, boost::mpl::true_>
 	operator()(bp::tag::multiplies,
@@ -197,6 +198,20 @@ namespace resophonic {
     INSTANTIATE_ARRAYARRAY_OP(tag::dot);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::divides);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);
+
+
+
+    template <typename LhsIsRVal, typename RhsIsRVal>
+    float
+    DotOp::operator()(const rk::array_impl<float, LhsIsRVal>& lhs, 
+		      const rk::array_impl<float, RhsIsRVal>& rhs)
+    {
+      log_trace("%s") % __PRETTY_FUNCTION__;
+      
+      return detail::dispatch()(Op(), lhs, rhs);
+    }
+
+    //     float DotOp::operator()(
 
   }
 }

@@ -243,32 +243,3 @@ void kamasu_testy_knl(Op op,
     unsigned r = 0;							\
   }
 
-//SCALAR_KNL(~, 1, ~)
-//SCALAR_KNL(~, 2, ~)
-//SCALAR_KNL(~, 3, ~)
-
-/*
-void gpu_mul_scalar(float* data, unsigned size, float scalar)
-{
-  cublasSscal(size, scalar, data, 1);
-  //  gpu_mul_scalar_k<<<gridsize(size), threads_per_block>>>(data, scalar);
-}
-*/
-
-
-//
-//  3x4
-//
-//  0,0 0,1 0,2 0,3     1,0 1,1 1,2 1,3     2,0 2,1 2,2 2,3
-//
-//  1  2  3  4
-//  5  6  7  8
-//  9  10 11 12
-//
-
-// take index 11:  (should be (2,3))
-// 11 % 4 = 3,    11-3 = 8
-
-
-// index 4:  1,0  == 1*4 + 0*1
-// index 5:  1,1  == 1*4 + 1,1

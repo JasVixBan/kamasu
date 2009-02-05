@@ -14,6 +14,7 @@
 // includes, project
 
 #include <resophonic/kamasu.hpp>
+#include <resophonic/kamasu/dot.hpp>
 
 #include "cuda_runtime_api.h"
 #include "cutil.h"
@@ -291,21 +292,28 @@ TEST(aa_mult)
 
 TEST(dot)
 {
-  array<float> a(10), b(10);
-  for (int i=0; i<9; i++)
+  //    0   1   2   3   4   5   6   7   8   9
+  // *  9   8   7   6   5   4   3   2   1   0
+  // ----------------------------------------------
+  //    0   8  14  18  20  20  18  14   8   0 == 120
+  unsigned n = 10;
+  array<float> a(n), b(n);
+  for (int i=0; i<n; i++)
     {
-      a(i) = i+1.0;
-      b(i) = 10.0-i;
+      a(i) = i;
+      b(i) = n-1-i;
     }
-  for (int i=0; i<9; i++)
+  for (int i=0; i<n; i++)
     {
-      ENSURE_EQUAL(a(i), i+1);
-      ENSURE_EQUAL(b(i), 10-i);
+      ENSURE_EQUAL(a(i), i);
+      ENSURE_EQUAL(b(i), n-i-1);
     }
 
-  array<float> r;
-  r = dot(a, b);
+  float r = rk::dot(a*1.0f, b*1.0f);
+  log_trace("dot prod is %f") % r;
+  ENSURE_EQUAL(r, 120.0f);
 }
+
 
 TEST(smallslice)
 {

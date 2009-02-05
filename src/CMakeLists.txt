@@ -9,6 +9,7 @@ cuda_add_library(resophonic_barracuda SHARED
   ssub.cu
 
   holder.cpp
+  mirror.cpp
   rval.cpp
   make_vector.cpp
 

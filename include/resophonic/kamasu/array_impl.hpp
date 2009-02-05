@@ -5,6 +5,8 @@
 #include <boost/mpl/not.hpp>
 #include <boost/shared_ptr.hpp>
 #include <resophonic/kamasu/holder.hpp>
+#include <resophonic/kamasu/mirror.hpp>
+
 #include <vector>
 
 namespace resophonic 
@@ -17,10 +19,10 @@ namespace resophonic
     {
       typedef typename boost::mpl::not_<RVal>::type other_t;
 
-      boost::shared_ptr<holder<unsigned> > dims;
-      boost::shared_ptr<holder<unsigned> > factors;
+      boost::shared_ptr<mirror<unsigned> > dims;
+      boost::shared_ptr<mirror<unsigned> > factors;
 
-      boost::shared_ptr<holder<int> > strides;
+      boost::shared_ptr<mirror<int> > strides;
 
       typedef uint64_t offset_t;
       offset_t offset;

@@ -95,8 +95,8 @@ namespace resophonic {
 			 rv.data() + rv.offset,  
 			 rv.linear_size,
 			 rv.dims->size(), 
-			 rv.factors->data(),
-			 rv.strides->data(),
+			 rv.factors->gpu_data(),
+			 rv.strides->gpu_data(),
 			 f);
       
       BOOST_ASSERT(rv.dims->size());

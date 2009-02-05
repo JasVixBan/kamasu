@@ -13,9 +13,9 @@ namespace resophonic
     template<typename T, typename RVal>
     array_impl<T, RVal>::array_impl() 
       : impl(new holder<T>), 
-	dims(new holder<unsigned>), 
-	factors(new holder<unsigned>), 
-	strides(new holder<int>),
+	dims(new mirror<unsigned>), 
+	factors(new mirror<unsigned>), 
+	strides(new mirror<int>),
 	linear_size(0),
 	offset(0)
     { 

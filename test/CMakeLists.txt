@@ -2,6 +2,8 @@ include_directories(.)
 
 add_executable(test
   main.cpp
+  mirror.cpp
+  benchmarks.cpp
   one.cpp
   array.cpp
   3d.cpp

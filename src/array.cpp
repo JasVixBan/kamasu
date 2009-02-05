@@ -196,9 +196,11 @@ namespace resophonic {
 	  if (!ir.is_degenerate())
 	    {
 	      if (ir.stride() > 0)
-		starts.push_back(ir.start() == ir.from_start() ? 0 : ir.start());
+		starts.push_back(ir.start() == ir.from_start() 
+				 ? 0 : ir.start());
 	      else 
-		starts.push_back(ir.start() == ir.to_end() ? self().dims->get(i)-1 : ir.start());
+		starts.push_back(ir.start() == ir.to_end() 
+				 ? self().dims->get(i)-1 : ir.start());
 	    }
 	  else
 	    {
@@ -216,7 +218,7 @@ namespace resophonic {
 	    new_strides.push_back(self().strides->get(i) * ranges[i].stride());
 	}
 
-      new_array.self().strides->host_to_device(new_strides);
+      new_array.self().strides->set(new_strides);
       new_array.self().calculate_factors();
       return new_array;	
     }

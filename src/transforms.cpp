@@ -91,6 +91,8 @@ namespace resophonic {
       BOOST_ASSERT(v.dims->size() == rv.dims->size());
       BOOST_ASSERT(v.linear_size == rv.linear_size);
       
+      v.factors->sync();
+      v.strides->sync();
       detail::dispatch()(Op(), 
 			 rv.data() + rv.offset,  
 			 rv.linear_size,

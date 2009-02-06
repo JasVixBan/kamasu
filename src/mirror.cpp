@@ -13,7 +13,7 @@ namespace resophonic {
   namespace kamasu {
 
     template<typename T>
-    mirror<T>::mirror() : gpu_(0), cpu_(0)
+    mirror<T>::mirror() : gpu_(0), cpu_(0), dirty(false)
     { 
       log_trace("%s") % __PRETTY_FUNCTION__;
     }
@@ -28,6 +28,7 @@ namespace resophonic {
 	BOOST_ASSERT(gpu_);
       if (gpu_)
 	BOOST_ASSERT(size());
+      dirty = false;
 
       if (gpu_)
 	{
@@ -47,7 +48,7 @@ namespace resophonic {
     }
 
     template <typename T>
-    T* mirror<T>::gpu_mallocn(unsigned n)
+    T* mirror<T>::gpu_mallocn(unsigned n) const
     {
       T* devmem;
       CUDA_SAFE_CALL( cublasAlloc( n, sizeof(T), (void**) &devmem));
@@ -101,6 +102,15 @@ namespace resophonic {
       set(v.data(), v.size());
     }
 
+    template <typename T>
+    void
+    mirror<T>::sync() const
+    {
+      dirty = false;
+      gpu_ = gpu_mallocn(cpu_.size() * sizeof(T));
+      CUDA_SAFE_CALL( cudaMemcpy( gpu_,  cpu_.data(), cpu_.size() * sizeof(T),
+				  cudaMemcpyHostToDevice) );
+    }
 
     template <typename T>
     void
@@ -109,11 +119,9 @@ namespace resophonic {
       reset();
       if (s == 0)
 	return;
-      gpu_ = gpu_mallocn(s * sizeof(T));
-      CUDA_SAFE_CALL( cudaMemcpy( gpu_,  hdata, s * sizeof(T),
-				  cudaMemcpyHostToDevice) );
       cpu_.resize(s);
       memcpy(cpu_.data(), hdata, sizeof(T) * size());
+      dirty = true;
     }
 
     template <typename T>
@@ -122,11 +130,9 @@ namespace resophonic {
     {
       BOOST_ASSERT(i < size());
       cpu_[i] = value;
-      T* addy = gpu_ + i;
-      CUDA_SAFE_CALL( cudaMemcpy(addy, &value, sizeof(T), cudaMemcpyHostToDevice) );
       log_trace("Set %s at %u of %u") % value % i % size();
+      dirty = true;
     }
-
 
     template <typename T>
     std::size_t

@@ -31,16 +31,21 @@ namespace resophonic {
     template <typename T>
     class mirror
     {
-      T* gpu_;
       std::vector<T> cpu_;
+
+      mutable T*   gpu_;
+      mutable bool dirty;
+
       
-      T* gpu_mallocn(unsigned n);
+      T* gpu_mallocn(unsigned n) const;
 
       void clone(const mirror& rhs);
 
       void set(const T* hdata, std::size_t s);
 
     public:
+
+      void sync() const;
 
       ~mirror();
 

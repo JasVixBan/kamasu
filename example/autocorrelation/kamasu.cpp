@@ -20,7 +20,7 @@ rk::array<float> autocorrelate(rk::array<float>& signal)
 {
   rk::array<float> freqs(signal.dim(0) - winlen);
 
-  for (unsigned outer = 0; outer < signal.dim(0) - winlen*2; outer++)
+  for (unsigned outer = 0; outer < 10/*signal.dim(0) - winlen*2*/; outer++)
     {
       cout << "[" << outer << "] " << outer * 100 / signal.dim(0) << "%\r";
       cout.flush();

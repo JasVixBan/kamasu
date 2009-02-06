@@ -28,6 +28,7 @@ namespace resophonic
       construct(array_impl<T, boost::mpl::true_>& lhs, 
 		const array_impl<T, boost::mpl::true_ >& rhs)
       {
+	lhs.nd = rhs.nd;
 	lhs.impl = rhs.impl;
 	lhs.dims = rhs.dims;
 	lhs.strides = rhs.strides;
@@ -42,6 +43,7 @@ namespace resophonic
       construct(array_impl<T,  boost::mpl::false_>& lhs, 
 		const array_impl <T, boost::mpl::true_ >& rhs)
       {
+	lhs.nd = rhs.nd;
 	lhs.impl = rhs.impl;
 	lhs.dims = rhs.dims;
 	lhs.strides = rhs.strides;
@@ -56,6 +58,7 @@ namespace resophonic
       construct(array_impl<T, boost::mpl::false_>& lhs,
 		const array_impl<T, boost::mpl::false_>& rhs)
       {
+	lhs.nd = rhs.nd;
 	lhs.impl = rhs.impl->clone();
 	lhs.dims = rhs.dims->clone();
 	lhs.strides = rhs.strides->clone();
@@ -70,6 +73,7 @@ namespace resophonic
       construct(array_impl<T, boost::mpl::true_>& lhs,
 		const array_impl<T, boost::mpl::false_>& rhs)
       {
+	lhs.nd = rhs.nd;
 	lhs.impl = rhs.impl->clone();
 	lhs.dims = rhs.dims->clone();
 	lhs.strides = rhs.strides->clone();
@@ -85,12 +89,12 @@ namespace resophonic
     array_impl<T, RVal>::show() const
     {
       log_trace("____ Array ____");
-      log_trace("ndim %u  / stride %u / offset %u") % dims->size() % strides->size() % offset;
-      for (unsigned i=0; i < dims->size(); i++)
+      log_trace("offset %u,  nd %u") % offset % nd;
+      for (unsigned i=0; i < nd; i++)
 	log_trace("dims[%u]      %u") % i % dims->get(i);
-      for (unsigned i=0; i < factors->size(); i++)
+      for (unsigned i=0; i < nd; i++)
 	log_trace("factors[%u]   %u") % i % factors->get(i);
-      for (unsigned i=0; i < strides->size(); i++)
+      for (unsigned i=0; i < nd; i++)
 	log_trace("stride[%u]   %u") % i % strides->get(i);
       log_trace("off      %lu") % offset;
       log_trace("last     %lu") % linear_size;
@@ -115,11 +119,9 @@ namespace resophonic
     array_impl<T, RVal>::reshape(const std::vector<std::size_t>& shape)
     {
       log_trace("reshape");
-      dims->resize(shape.size());
-      strides->resize(shape.size());
-      factors->resize(shape.size());
       offset = 0;
-      for (int i=0; i<shape.size(); i++)
+      nd = shape.size();
+      for (int i=0; i<nd; i++)
 	dims->set(i, shape[i]);
       std::size_t newsize = calculate_strides();
       calculate_factors();
@@ -132,13 +134,12 @@ namespace resophonic
     {
       // this also calculates size but do we need this here...
       std::size_t size = 1;
-      strides->resize(dims->size());
-      for(unsigned i=0; i<dims->size(); i++)
+      for(unsigned i=0; i<nd; i++)
 	{
 	  BOOST_ASSERT(dims->get(i) != 0);
 	  size *= dims->get(i);
 	  strides->set(i, 1);
-	  for (unsigned j=i+1; j<dims->size(); j++)
+	  for (unsigned j=i+1; j<nd; j++)
 	    {
 	      int s = strides->get(i);
 	      s *= dims->get(j);
@@ -147,7 +148,7 @@ namespace resophonic
 	}
 
       log_trace("size=%u") % size;
-      for (unsigned i=0; i<dims->size(); i++)
+      for (unsigned i=0; i<nd; i++)
 	log_trace("dim %u is %u, stride %u") % i % dims->get(i) % strides->get(i);
       return size;
     }
@@ -156,16 +157,15 @@ namespace resophonic
     void 
     array_impl<T, RVal>::calculate_factors()
     {
-      factors->resize(dims->size());
-      BOOST_ASSERT(dims->size() > 0);
+      BOOST_ASSERT(nd > 0);
       linear_size = 1;
-      for(unsigned i=0; i<dims->size(); i++)
+      for(unsigned i=0; i<nd; i++)
 	{
 	  unsigned dim = dims->get(i);
 	  BOOST_ASSERT(dim != 0);
 	  factors->set(i, 1);
 	  linear_size *= dim;
-	  for (unsigned j=i+1; j<dims->size(); j++)
+	  for (unsigned j=i+1; j<nd; j++)
 	    {
 	      unsigned f = factors->get(i);
 	      f *= dims->get(j);
@@ -173,7 +173,7 @@ namespace resophonic
 	    }
 	}
 
-      for (unsigned i=0; i<dims->size(); i++)
+      for (unsigned i=0; i<nd; i++)
 	log_trace("dim %u is %u, factor %u") 
 	  % i % dims->get(i) % factors->get(i);
       log_trace("linear size is %u") % linear_size; 
@@ -192,20 +192,11 @@ namespace resophonic
       log_trace("%s") % __PRETTY_FUNCTION__;
       rhs.show();
 
+      nd = rhs.nd;
       impl = rhs.impl;
-
       dims = rhs.dims;
-      BOOST_ASSERT(rhs.dims->size());
-      BOOST_ASSERT(dims->size() == rhs.dims->size());
-
       strides = rhs.strides;
-      BOOST_ASSERT(rhs.dims->size());
-      BOOST_ASSERT(strides->size() == rhs.strides->size());
-
       factors = rhs.factors;
-      BOOST_ASSERT(rhs.factors->size());
-      BOOST_ASSERT(factors->size() == rhs.factors->size());
-
       offset = rhs.offset;
       linear_size = rhs.linear_size;
     }
@@ -216,19 +207,14 @@ namespace resophonic
     {
       log_trace("%s") % __PRETTY_FUNCTION__;
       rhs.show();
+      nd = rhs.nd;
       impl = rhs.impl->clone();
 
       dims = rhs.dims->clone();
-      BOOST_ASSERT(dims->size());
-      BOOST_ASSERT(dims->size() == rhs.dims->size());
 
       strides = rhs.strides->clone();
-      BOOST_ASSERT(strides->size());
-      BOOST_ASSERT(strides->size() == rhs.strides->size());
 
       factors = rhs.factors->clone();
-      BOOST_ASSERT(rhs.factors->size());
-      BOOST_ASSERT(factors->size() == rhs.factors->size());
 
       offset = rhs.offset;
       linear_size = rhs.linear_size;

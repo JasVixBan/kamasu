@@ -3,7 +3,6 @@ include_directories(.)
 add_executable(test
   main.cpp
   mirror.cpp
-  benchmarks.cpp
   one.cpp
   array.cpp
   3d.cpp
@@ -13,6 +12,18 @@ add_executable(test
   )
 
 target_link_libraries(test
+  resophonic_barracuda ${FOUND_CUDART}
+  ${BOOST_LIBRARIES}
+  ${CUDA_CUTIL_LIB}
+  )
+
+add_executable(benchmark
+  main.cpp
+  benchmarks.cpp
+  testing_util.cpp
+  )
+
+target_link_libraries(benchmark
   resophonic_barracuda ${FOUND_CUDART}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}

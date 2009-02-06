@@ -46,9 +46,9 @@ namespace resophonic {
 
 #undef VARARG_DECL
 
-      std::size_t n_dims() const { return self().dims->size(); }
-      std::size_t n_strides() const { return self().strides->size(); }
-      std::size_t n_factors() const { return self().factors->size(); }
+      std::size_t n_dims() const { return self().nd; }
+      std::size_t n_strides() const { return self().nd; }
+      std::size_t n_factors() const { return self().nd; }
       // const typename impl_t::dims_t& dims() const { return self().dims; }
       std::size_t dim(std::size_t index) const { return self().dims->get(index); }
       std::size_t stride(std::size_t index) const { return self().strides->get(index); }

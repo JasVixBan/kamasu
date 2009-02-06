@@ -9,10 +9,9 @@
 
 #include <vector>
 
-namespace resophonic 
-{
-  namespace kamasu
-  {
+namespace resophonic {
+  namespace kamasu {
+
     template <typename T, 
 	      typename RVal = boost::mpl::false_>
     struct array_impl 
@@ -21,12 +20,12 @@ namespace resophonic
 
       boost::shared_ptr<mirror<unsigned> > dims;
       boost::shared_ptr<mirror<unsigned> > factors;
-
       boost::shared_ptr<mirror<int> > strides;
 
       typedef uint64_t offset_t;
       offset_t offset;
       std::size_t linear_size;
+      unsigned nd;
       boost::shared_ptr<holder<T> > impl;
 
       array_impl();

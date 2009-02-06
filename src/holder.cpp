@@ -12,6 +12,12 @@
 namespace resophonic {
   namespace kamasu {
 
+    template<typename T>
+    holder<T>::holder() : data_(0), size_(0) 
+    { 
+      log_trace("%s") % __PRETTY_FUNCTION__;
+    }
+
     template <typename T>
     void
     holder<T>::reset()
@@ -36,12 +42,6 @@ namespace resophonic {
     {
       log_trace("%s") % __PRETTY_FUNCTION__;
       reset();
-    }
-
-    template<typename T>
-    holder<T>::holder() : data_(0), size_(0) 
-    { 
-      log_trace("%s") % __PRETTY_FUNCTION__;
     }
 
     template <typename T>

@@ -220,6 +220,8 @@ void kamasu_testy_knl(Op op,
 {
   bd_t bd = gridsize(linear_size);
   printf("%s with gridsize %u %u\n", __PRETTY_FUNCTION__, bd.first, bd.second);
+  printf("n_dims=%u linear_size=%zu", n_dims, linear_size);
+  
   kamasu_testy_knl_thunk<<<bd.first, bd.second>>>(op, 
 						  data,
 						  linear_size,

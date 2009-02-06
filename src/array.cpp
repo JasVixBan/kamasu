@@ -70,7 +70,7 @@ namespace resophonic {
     {
       log_trace("%s") % "TAKING";
       rhs.show();
-      BOOST_ASSERT(rhs.dims->size());
+      BOOST_ASSERT(rhs.nd);
       BOOST_ASSERT(rhs.linear_size);
       self().copy_from(rhs);
     }
@@ -81,7 +81,7 @@ namespace resophonic {
     {
       log_trace("%s") % __PRETTY_FUNCTION__;
       rhs.show();
-      BOOST_ASSERT(rhs.dims->size());
+      BOOST_ASSERT(rhs.nd);
       self().copy_from(rhs);
     }
 
@@ -141,7 +141,7 @@ namespace resophonic {
     array<T, RVal>::slice(const std::vector<index_range>& ranges) const
     {									
       log_trace("slicing!");						
-      BOOST_ASSERT(ranges.size() == self().dims->size());				
+      BOOST_ASSERT(ranges.size() == self().nd);				
 
       std::vector<std::size_t> newshape;				
       for (unsigned i=0; i< ranges.size(); i++)
@@ -249,7 +249,6 @@ namespace resophonic {
     T									\
     array<T, RVal>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const \
     {									\
-      BOOST_ASSERT(N == self().dims->size());				\
       int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		\
       log_trace("getting lvalue from offset %d") % (self().offset + index); \
       return self().impl->get(index);					\
@@ -263,7 +262,7 @@ namespace resophonic {
     rval<T>								\
     array<T, RVal>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) \
     {									\
-      BOOST_ASSERT(N == self().dims->size());				\
+      BOOST_ASSERT(N == self().nd);				\
       int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		\
       log_trace("getting rvalue offset=%u index=%d") % self().offset % index; \
       return rval<T>(self().impl, index + self().offset);		\

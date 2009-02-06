@@ -13,7 +13,7 @@ namespace resophonic {
   namespace kamasu {
 
     template<typename T>
-    mirror<T>::mirror() : gpu_(0), cpu_(0), dirty(false)
+    mirror<T>::mirror() : gpu_(0), dirty(false)
     { 
       log_trace("%s") % __PRETTY_FUNCTION__;
     }
@@ -22,53 +22,35 @@ namespace resophonic {
     void
     mirror<T>::reset()
     {
-      BOOST_ASSERT ((gpu_ == 0 && size() == 0) 
-		    || (gpu_ != 0 && size() != 0));
-      if (size() > 0)
-	BOOST_ASSERT(gpu_);
-      if (gpu_)
-	BOOST_ASSERT(size());
-      dirty = false;
-
       if (gpu_)
 	{
 	  CUDA_SAFE_CALL(cudaFree(gpu_));
 	  gpu_ = 0;
-	  cpu_.resize(0);
 	}
-      BOOST_ASSERT(size() == 0);
       BOOST_ASSERT(gpu_ == 0);
+      dirty = false;
     }
 
     template <typename T>
     mirror<T>::~mirror() 
     {
       log_trace("%s") % __PRETTY_FUNCTION__;
-      reset();
+      if (gpu_)
+	{
+	  CUDA_SAFE_CALL(cudaFree(gpu_));
+	  gpu_ = 0;
+	}
     }
 
     template <typename T>
-    T* mirror<T>::gpu_mallocn(unsigned n) const
+    T* 
+    mirror<T>::gpu_malloc() const
     {
       T* devmem;
-      CUDA_SAFE_CALL( cublasAlloc( n, sizeof(T), (void**) &devmem));
-      log_trace ("malloc %u = %x") % (n * sizeof(T)) % devmem;
-      cudaMemset(devmem, 0, n * sizeof(T));
+      CUDA_SAFE_CALL( cublasAlloc( KAMASU_MAX_ARRAY_DIM, sizeof(T), (void**) &devmem));
+      log_trace ("malloc %u = %x") % (KAMASU_MAX_ARRAY_DIM * sizeof(T)) % devmem;
+      cudaMemset(devmem, 0, KAMASU_MAX_ARRAY_DIM * sizeof(T));
       return devmem;
-    }
-
-    template <typename T>
-    void
-    mirror<T>::resize(std::size_t s)
-    {
-      if (size() == s)
-	return;
-      reset();
-      if (s == 0)
-	return;
-      gpu_ = gpu_mallocn(s);
-      cudaMemset(gpu_, 0, s);
-      std::vector<T>(s, 0).swap(cpu_);
     }
 
     template <typename T>
@@ -84,15 +66,12 @@ namespace resophonic {
     void
     mirror<T>::clone(const mirror& rhs)
     {
-      reset();
-      if (rhs.size() == 0)
+      if (this == &rhs)
 	return;
+
+      reset();
       cpu_ = rhs.cpu_;
-      gpu_ = gpu_mallocn(rhs.size());
-      CUDA_SAFE_CALL( cudaMemcpy( gpu_, rhs.gpu_, 
-				  sizeof(T) * size(),
-				  cudaMemcpyDeviceToDevice) );
-      log_debug("*** CLONED RHS %u bytes @%p***") % gpu_ % size();
+      dirty = true;
     }
 
     template <typename T>
@@ -104,23 +83,12 @@ namespace resophonic {
 
     template <typename T>
     void
-    mirror<T>::sync() const
-    {
-      dirty = false;
-      gpu_ = gpu_mallocn(cpu_.size() * sizeof(T));
-      CUDA_SAFE_CALL( cudaMemcpy( gpu_,  cpu_.data(), cpu_.size() * sizeof(T),
-				  cudaMemcpyHostToDevice) );
-    }
-
-    template <typename T>
-    void
     mirror<T>::set(const T* hdata, std::size_t s)
     {
       reset();
       if (s == 0)
 	return;
-      cpu_.resize(s);
-      memcpy(cpu_.data(), hdata, sizeof(T) * size());
+      memcpy(cpu_.data(), hdata, sizeof(T) * s);
       dirty = true;
     }
 
@@ -128,31 +96,35 @@ namespace resophonic {
     void
     mirror<T>::set(unsigned i, T value)
     {
-      BOOST_ASSERT(i < size());
       cpu_[i] = value;
-      log_trace("Set %s at %u of %u") % value % i % size();
+      log_trace("Set %s at %u") % value % i;
       dirty = true;
     }
 
     template <typename T>
-    std::size_t
-    mirror<T>::size() const
+    void
+    mirror<T>::sync() const
     {
-      return cpu_.size();
+      dirty = false;
+      if (! gpu_)
+	gpu_ = gpu_malloc();
+      CUDA_SAFE_CALL( cudaMemcpy( gpu_,  cpu_.data(), cpu_.size() * sizeof(T),
+				  cudaMemcpyHostToDevice) );
     }
 
     template <typename T>
     const T*
     mirror<T>::gpu_data() const
     {
+      if (dirty) sync();
       return gpu_;
     }
-
 
     template <typename T>
     T*
     mirror<T>::gpu_data()
     {
+      if (dirty) sync();
       return gpu_;
     }
 
@@ -160,9 +132,6 @@ namespace resophonic {
     T
     mirror<T>::get(unsigned i) const
     {
-      if (not (i < size()))
-	log_error("egh, trying to get %u from block of size %u") % i % size();
-
       return cpu_[i];
     }
       

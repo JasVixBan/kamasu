@@ -18,8 +18,8 @@ namespace resophonic {
 		   const rk::array_impl<float, LhsIsRVal>& lhs, 
 		   const rk::array_impl<float, RhsIsRVal>& rhs)
 	{
-	  BOOST_ASSERT(lhs.dims->size() == 2);
-	  BOOST_ASSERT(rhs.dims->size() == 2);
+	  BOOST_ASSERT(lhs.nd == 2);
+	  BOOST_ASSERT(rhs.nd == 2);
 	  BOOST_ASSERT(lhs.dims->get(1) == rhs.dims->get(0));
 	  
 	  rk::array_impl<float, boost::mpl::true_> rv;
@@ -80,30 +80,23 @@ namespace resophonic {
       v.show();
       rv.show();
 
-      BOOST_ASSERT(rv.dims->size());
-      BOOST_ASSERT(v.dims->size());
+      BOOST_ASSERT(rv.nd > 0);
       BOOST_ASSERT(rv.dims->get(0) > 0);
       BOOST_ASSERT(v.dims->get(0) > 0);
 
-      BOOST_ASSERT(v.factors->size());
-      BOOST_ASSERT(rv.factors->size());
-
-      BOOST_ASSERT(v.dims->size() == rv.dims->size());
       BOOST_ASSERT(v.linear_size == rv.linear_size);
       
-      v.factors->sync();
-      v.strides->sync();
+      int* eff = rv.strides->gpu_data();
+      BOOST_ASSERT(eff);
+
       detail::dispatch()(Op(), 
 			 rv.data() + rv.offset,  
 			 rv.linear_size,
-			 rv.dims->size(), 
+			 rv.nd, 
 			 rv.factors->gpu_data(),
 			 rv.strides->gpu_data(),
 			 f);
       
-      BOOST_ASSERT(rv.dims->size());
-      BOOST_ASSERT(rv.dims->get(0) > 0);
-
       return rv;
     }
 

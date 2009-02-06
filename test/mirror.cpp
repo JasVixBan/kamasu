@@ -34,7 +34,6 @@ TEST(create_destroy2){
 TEST(assign){
   mirror<unsigned> m;
 
-  m.resize(3);
   m.set((unsigned)0,10);
   m.set((unsigned)1,11);
   m.set((unsigned)2,12);
@@ -53,4 +52,10 @@ TEST(assign){
   ENSURE_EQUAL(m.get(1), 21);
   ENSURE_EQUAL(m.get(2), 22);
 
+  unsigned* gpd = m.gpu_data();
+  ENSURE(gpd);
+
+  boost::shared_ptr<mirror<unsigned> > mp = m.clone();
+  
+  ENSURE(mp->gpu_data());
 }

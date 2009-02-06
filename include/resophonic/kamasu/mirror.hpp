@@ -22,7 +22,11 @@
  *  
  */
 
+#include <resophonic/kamasu/config.hpp>
+
 #include <boost/shared_ptr.hpp>
+#include <boost/array.hpp>
+
 #include <vector>
 
 namespace resophonic {
@@ -31,30 +35,26 @@ namespace resophonic {
     template <typename T>
     class mirror
     {
-      std::vector<T> cpu_;
-
+      boost::array<T, KAMASU_MAX_ARRAY_DIM> cpu_;
       mutable T*   gpu_;
       mutable bool dirty;
 
-      
-      T* gpu_mallocn(unsigned n) const;
+      T* gpu_malloc() const;
 
       void clone(const mirror& rhs);
 
       void set(const T* hdata, std::size_t s);
 
-    public:
-
       void sync() const;
+
+    public:
 
       ~mirror();
 
       mirror();
-      std::size_t size() const;
+
       T* gpu_data();
       const T* gpu_data() const;
-
-      void resize(std::size_t s);
 
       boost::shared_ptr<mirror> clone() const;
 

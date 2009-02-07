@@ -34,9 +34,6 @@ namespace resophonic {
       
     }
 
-#define SHAPE_PUSHBACK(Z, N, DATA)					\
-    shape.push_back(Arg##N);						\
-	
 #define VARARG_CONSTRUCTOR_DEFN(Z, N, DATA)				\
     template <typename T, typename RVal>				\
     array<T, RVal>::array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg))	\
@@ -48,7 +45,6 @@ namespace resophonic {
 
     BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, VARARG_CONSTRUCTOR_DEFN, ~);
 
-#undef SHAPE_PUSHBACK
 #undef VARARG_CONSTRUCTOR_DEFN
 
     template <typename T, typename RVal>
@@ -103,17 +99,6 @@ namespace resophonic {
       this->take(rhs.self());
       return *this;
     };
-
-#define NEWSHAPE_PUSHBACK(Z, N, DATA)					\
-    if (! Arg##N.is_degenerate())					\
-      {									\
-	int diff = Arg##N.finish() - Arg##N.start();			\
-	diff += diff % Arg##N.stride();					\
-	log_trace("diff %d - %d is %d") % Arg##N.finish() % Arg##N.start() % diff; \
-	unsigned newdim = std::abs(diff/Arg##N.stride());		\
-	newshape.push_back(newdim);					\
-	log_trace("newdim is %u") % newdim;				\
-      }									\
 
 #define INDEX_OF_DEFN(Z, N, DATA)					\
     template <typename T, typename RVal>				\

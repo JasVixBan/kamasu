@@ -130,6 +130,21 @@ namespace resophonic
     }
 
     template <typename T, typename RVal>
+    void
+    array_impl<T, RVal>::reshape(std::size_t shape, bool realloc)
+    {
+      log_trace("reshape");
+      offset = 0;
+      nd = 1;
+      dims->set(0u, shape);
+      strides->set(0u, 1);
+      factors->set(0u, 1);
+      linear_size = shape;
+      if (realloc)
+	impl->resize(shape);
+    }
+
+    template <typename T, typename RVal>
     std::size_t
     array_impl<T, RVal>::calculate_strides()
     {

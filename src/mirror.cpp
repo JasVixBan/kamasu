@@ -78,12 +78,12 @@ namespace resophonic {
     void
     mirror<T>::set(const std::vector<T>& v)
     {
-      set(v.data(), v.size());
+      set_impl(v.data(), v.size());
     }
 
     template <typename T>
     void
-    mirror<T>::set(const T* hdata, std::size_t s)
+    mirror<T>::set_impl(const T* hdata, std::size_t s)
     {
       reset();
       if (s == 0)

@@ -229,46 +229,43 @@ namespace resophonic {
       BOOST_ASSERT(1  == self().nd);				
 
       std::vector<std::size_t> newshape;				
-      //      for (unsigned i=0; i< ranges.size(); i++)
-      //	{
-      //	  const index_range& ir = ranges[i];
-	  if (! ir.is_degenerate())
-	  {								
-	    int finish, start, diff;
+      if (! ir.is_degenerate())
+	{								
+	  int finish, start, diff;
 
-	    if (ir.stride() > 0)
-	      {
-		if (ir.start() != ir.from_start())
-		  start = ir.start();
-		else
-		  start = 0;
+	  if (ir.stride() > 0)
+	    {
+	      if (ir.start() != ir.from_start())
+		start = ir.start();
+	      else
+		start = 0;
 
-		if (ir.finish() != ir.to_end())
-		  finish = ir.finish();
-		else
-		  finish = self().dims->get(0);
-	      }
-	    else
-	      {
-		if (ir.start() != ir.to_end())
-		  start = ir.start();
-		else
-		  start = self().dims->get(0)-1;
+	      if (ir.finish() != ir.to_end())
+		finish = ir.finish();
+	      else
+		finish = self().dims->get(0);
+	    }
+	  else
+	    {
+	      if (ir.start() != ir.to_end())
+		start = ir.start();
+	      else
+		start = self().dims->get(0)-1;
 
-		if (ir.finish() != ir.from_start())
-		  finish = ir.finish();
-		else
-		  finish = -1;
-	      }
+	      if (ir.finish() != ir.from_start())
+		finish = ir.finish();
+	      else
+		finish = -1;
+	    }
 
-	    diff = finish - start;		
+	  diff = finish - start;		
 	    
-	    diff += diff % ir.stride();				
-	    log_trace("diff %d - %d is %d") % finish % start % diff; 
-	    unsigned newdim = std::abs(diff/ir.stride());		
-	    newshape.push_back(newdim);					
-	    log_trace("newdim is %u") % newdim;
-	  }
+	  diff += diff % ir.stride();				
+	  log_trace("diff %d - %d is %d") % finish % start % diff; 
+	  unsigned newdim = std::abs(diff/ir.stride());		
+	  newshape.push_back(newdim);					
+	  log_trace("newdim is %u") % newdim;
+	}
       log_trace("make new array");
       array new_array;
       new_array.self().reshape(newshape, false);

@@ -58,16 +58,6 @@ namespace resophonic {
       void show() const;
 
       template <typename Expr>
-      array& operator<<(Expr const& expr)
-      {
-	SHOW();
-	log_trace("expr is %s") % name_of(boost::proto::as_expr<Domain>(expr));
-	
-	this->leftshift(boost::proto::as_expr<Domain>(expr));
-	return *this;
-      }
-
-      template <typename Expr>
       array& operator=(Expr const& expr)
       {
 	log_trace("expr is %s") % name_of(boost::proto::as_expr<Domain>(expr));
@@ -84,15 +74,6 @@ namespace resophonic {
       void take(const std::vector<T>& rhs);
       void take(const array_impl<T, boost::mpl::true_>& rhs);
       void take(const array_impl<T, boost::mpl::false_>& rhs);
-
-      template <typename Expr>
-      void leftshift(Expr const& expr)
-      {
-	typename boost::result_of<Grammar(Expr const&)>::type thingy 
-	  = Grammar()(expr);
-	log_trace("leftshift: thingy is %s") % name_of(thingy);
-	this->take(thingy);
-      }
 
       template <typename Expr>
       void assign(Expr const& expr)

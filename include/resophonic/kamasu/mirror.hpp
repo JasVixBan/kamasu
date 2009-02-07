@@ -43,7 +43,7 @@ namespace resophonic {
 
       void clone(const mirror& rhs);
 
-      void set(const T* hdata, std::size_t s);
+      void set_impl(const T* hdata, std::size_t s);
 
       void sync() const;
 

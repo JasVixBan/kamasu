@@ -29,6 +29,5 @@ TEST(pow_2)
     {
       ENSURE_EQUAL(a(i), i);
       ENSURE_DISTANCE(b(i), i*i, i *i * 0.000001);
-      log_trace("b(%u) == %f") % i % b(i);
     }
 }

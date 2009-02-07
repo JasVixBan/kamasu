@@ -52,9 +52,9 @@ namespace resophonic {
       std::size_t n_strides() const { return self().nd; }
       std::size_t n_factors() const { return self().nd; }
       // const typename impl_t::dims_t& dims() const { return self().dims; }
-      std::size_t dim(std::size_t index) const { return self().dims->get(index); }
-      std::size_t stride(std::size_t index) const { return self().strides->get(index); }
-      std::size_t factor(std::size_t index) const { return self().factors->get(index); }
+      std::size_t dim(std::size_t index) const { return self().impl_->dims.get(index); }
+      std::size_t stride(std::size_t index) const { return self().impl_->strides.get(index); }
+      std::size_t factor(std::size_t index) const { return self().impl_->factors.get(index); }
       std::size_t linear_size() const;
 
       void show() const;
@@ -62,7 +62,7 @@ namespace resophonic {
       template <typename Expr>
       array& operator=(Expr const& expr)
       {
-	log_trace("expr is %s") % name_of(boost::proto::as_expr<Domain>(expr));
+	//log_trace("expr is %s") % name_of(boost::proto::as_expr<Domain>(expr));
 	
 	this->assign(expr);
 	return *this;
@@ -84,7 +84,7 @@ namespace resophonic {
 	typename boost::result_of<Grammar(Expr const&)>::type thingy 
 	  = Grammar()(expr);
 	log_trace("END EVAL/TRANSFORM");
-	log_trace("thingy is %s") % name_of(thingy);
+	//log_trace("thingy is %s") % name_of(thingy);
 	this->take(thingy);
       }
     };

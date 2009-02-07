@@ -81,7 +81,7 @@ namespace {
     boost::optional<int> optstep = maybe_get<int>(s.step());
     if (optstep)
       {
-	log_trace("set stride %d") % *optstep;
+	log_trace("set stride %d",  *optstep);
 	if (none_start && none_stop)
 	  return ir_t(ks::_, ks::_, *optstep);
 	else
@@ -92,13 +92,13 @@ namespace {
 
     if (start)
       {
-	log_trace("set start %d") % *start;
+	log_trace("set start %d",  *start);
 	ir.start(*start);
       }
     boost::optional<int> stop = maybe_get<int>(s.stop());
     if (stop)
       {
-	log_trace("set stop %d") % *stop;
+	log_trace("set stop %d",  *stop);
 	ir.finish(*stop);
       }
     return ir;
@@ -108,7 +108,7 @@ namespace {
   object
   slice_impl(Array& arr, tuple& t)
   {
-    log_trace("%s") % __PRETTY_FUNCTION__;
+    log_trace("%s",  __PRETTY_FUNCTION__);
     std::vector<resophonic::kamasu::index_range> irv;
     for (unsigned i=0; i<len(t); i++)
       {
@@ -121,7 +121,7 @@ namespace {
 	  irv.push_back(ks::index_range(*slint));
 
 	if (!slint && !sl)
-	  log_error("eh, neither slice nor int");
+	  log_error("%s", "eh, neither slice nor int");
 	BOOST_ASSERT(slint || sl);
 	BOOST_ASSERT(!(slint && sl));
       }
@@ -132,7 +132,7 @@ namespace {
   object 
   get_item(Array& arr, tuple& t)
   {
-    log_trace("%s") % __PRETTY_FUNCTION__;
+    log_trace("%s",  __PRETTY_FUNCTION__);
     if (contains_slice(t))
       return slice_impl(arr, t);
     switch(len(t)) {
@@ -144,7 +144,7 @@ namespace {
   object 
   get_slice(Array& arr, slice& s)
   {
-    log_trace("%s") % __PRETTY_FUNCTION__;
+    log_trace("%s",  __PRETTY_FUNCTION__);
     std::vector<resophonic::kamasu::index_range> irv;
     irv.push_back(make_indexrange(s));
     return object(arr.slice(irv));

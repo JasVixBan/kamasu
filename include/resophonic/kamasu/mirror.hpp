@@ -41,7 +41,6 @@ namespace resophonic {
 
       T* gpu_malloc() const;
 
-      void clone(const mirror& rhs);
 
       void set_impl(const T* hdata, std::size_t s);
 
@@ -55,6 +54,8 @@ namespace resophonic {
 
       T* gpu_data();
       const T* gpu_data() const;
+
+      void clone(const mirror& rhs);
 
       boost::shared_ptr<mirror> clone() const;
 

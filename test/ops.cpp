@@ -116,7 +116,6 @@ void test_stride(unsigned length, unsigned stride)
   //  ENSURE_EQUAL(b.dim(0), slicedim);
 
   unsigned slicedim = b.dim(0);
-  log_trace("sliced dim = %u") % slicedim;
 
   float factor = 0.5;
 
@@ -134,13 +133,7 @@ void test_stride(unsigned length, unsigned stride)
     ENSURE_EQUAL(b(i), i*stride);
 
   for (unsigned i=0; i<slicedim; i++)
-    log_trace("b(%u) == %f,   c(%u)==%f") % i % b(i) % i % c(i);
-
-  for (unsigned i=0; i<slicedim; i++)
-    {
-      log_trace("c(%u) == %f") % i % c(i);
-      ENSURE_EQUAL(c(i), b(i)+factor);
-    }
+    ENSURE_EQUAL(c(i), b(i)+factor);
 }
 
 #define TEST_STRIDE(LEN, STRIDE)					\
@@ -309,7 +302,7 @@ TEST(dot_with_mul)
     }
 
   float r = rk::dot(a*-1.0f, b*-1.0f);
-  log_trace("dot prod is %f") % r;
+  log_trace("dot prod is %f",  r);
   ENSURE_EQUAL(r, 120.0f);
 }
 
@@ -333,7 +326,7 @@ TEST(dot_half_mul)
     }
 
   float r = rk::dot(a, b*-1.0f);
-  log_trace("dot prod is %f") % r;
+  log_trace("dot prod is %f",  r);
   ENSURE_EQUAL(r, -120.0f);
 }
 
@@ -358,7 +351,7 @@ TEST(dot)
     }
 
   float dp = rk::dot(a, b);
-  log_trace("dot prod is %f") % dp;
+  log_trace("dot prod is %f",  dp);
   ENSURE_EQUAL(dp, 120.0f);
 }
 

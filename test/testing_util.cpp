@@ -46,7 +46,6 @@ array<float> make_4x5()
     for (int i=0; i<4; i++)
       {
 	a(i,j) = ++counter;
-	log_trace("a(%u, %u) == %f") % i % j % counter;
       }
 
   ENSURE_EQUAL(a.n_dims(), 2);
@@ -66,7 +65,6 @@ void check_unchanged_4x5(const array<float>& a)
     for (int i=0; i<4; i++)
       {
 	ENSURE_EQUAL(a(i,j), ++counter);
-	log_trace("a(%u, %u) == %f") % i % j % counter;
       }
 }
 
@@ -145,7 +143,6 @@ array<float> linspace(float start, float end, unsigned n_steps)
   for (unsigned n = 0; n < n_steps; n++)
     {
       float value = start + ((end-start)/(n_steps-1.0)) * (float)n;
-      log_trace("linspace %u == %f") % n %  value;
       a(n) = value;
     }
   return a;

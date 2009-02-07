@@ -106,7 +106,7 @@ namespace resophonic {
 
       explicit index_range(slice_nil, slice_nil, index stride=1)
       {
-	log_trace("(_,_,%ld)") % stride;
+	log_trace("(_,_,%ld)", stride);
 	degenerate_ = false;
 	stride_ = stride;
 

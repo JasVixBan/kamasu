@@ -23,6 +23,8 @@ struct log_op_eater
   {
     return *this;
   }
+  operator bool() { return true; }
+
 };
 
 namespace {
@@ -39,38 +41,38 @@ namespace resophonic {
 
 // implmentation macro of macros visible to user.
 #define LOG_IMPL(LEVEL, ufmt, ...)					\
-  resophonic::kamasu::ofs() << boost::format("%s:%d " ufmt "\n") % __FILE__ % __LINE__ ##__VA_ARGS__
+  resophonic::kamasu::ofs() << boost::format("%s:%d " ufmt "\n") % __FILE__ % __LINE__ % __VA_ARGS__
   
 #if I3_PRINTF_LOGGING_LEVEL <= LOG_TRACE
-#define log_trace(format, ...) LOG_IMPL(LOG_TRACE, format) ##__VA_ARGS__
+#define log_trace(format, ...) LOG_IMPL(LOG_TRACE, format, ##__VA_ARGS__)
 #else
-#define log_trace(format, ...) loe
+#define log_trace(format, ...) 
 #endif
 
 #if I3_PRINTF_LOGGING_LEVEL <= LOG_DEBUG
-#define log_debug(format, ...) LOG_IMPL(LOG_DEBUG, format) ##__VA_ARGS__
+#define log_debug(format, ...) LOG_IMPL(LOG_DEBUG, format, ##__VA_ARGS__)
 #else
-#define log_debug(format, ...) loe
+#define log_debug(format, ...) 
 #endif
 
 #if I3_PRINTF_LOGGING_LEVEL <= LOG_INFO
-#define log_info(format, ...) LOG_IMPL(LOG_INFO, format) ##__VA_ARGS__
+#define log_info(format, ...) LOG_IMPL(LOG_INFO, format, ##__VA_ARGS__)
 #else
-#define log_info(format, ...) loe
+#define log_info(format, ...) 
 #endif
 
 #if I3_PRINTF_LOGGING_LEVEL <= LOG_WARN
-#define log_warn(format, ...) LOG_IMPL(LOG_WARN, format) ##__VA_ARGS__
+#define log_warn(format, ...) LOG_IMPL(LOG_WARN, format, ##__VA_ARGS__)
 #else
-#define log_warn(format, ...) loe
+#define log_warn(format, ...) 
 #endif
 
 #if I3_PRINTF_LOGGING_LEVEL <= LOG_ERROR
-#define log_error(format, ...) LOG_IMPL(LOG_ERROR, format) ##__VA_ARGS__
+#define log_error(format, ...) LOG_IMPL(LOG_ERROR, format, ##__VA_ARGS__)
 #else
-#define log_error(format, ...) loe
+#define log_error(format, ...) 
 #endif
 
-#define log_fatal(format, ...) LOG_IMPL(LOG_FATAL, format) ##__VA_ARGS__, throw std::runtime_error("log_fatal")
+#define log_fatal(format, ...) LOG_IMPL(LOG_FATAL, format, ##__VA_ARGS__), throw std::runtime_error("log_fatal")
 
 #endif 

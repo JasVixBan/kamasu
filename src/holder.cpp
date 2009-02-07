@@ -15,7 +15,7 @@ namespace resophonic {
     template<typename T>
     holder<T>::holder() : data_(0), size_(0) 
     { 
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s",  __PRETTY_FUNCTION__);
     }
 
     template <typename T>
@@ -40,7 +40,7 @@ namespace resophonic {
     template <typename T>
     holder<T>::~holder() 
     {
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s",  __PRETTY_FUNCTION__);
       reset();
     }
 
@@ -49,7 +49,7 @@ namespace resophonic {
     {
       T* devmem;
       CUDA_SAFE_CALL( cudaMalloc( (void**) &devmem, n * sizeof(T)));
-      log_trace ("malloc %u = %x") % (n * sizeof(T)) % devmem;
+      log_trace ("malloc %u = %x",  (n * sizeof(T)) % devmem);
       cudaMemset(devmem, 0, n * sizeof(T));
       return devmem;
     }
@@ -89,7 +89,7 @@ namespace resophonic {
       CUDA_SAFE_CALL( cudaMemcpy( data_, rhs.data_, 
 				  sizeof(T) * size_,
 				  cudaMemcpyDeviceToDevice) );
-      log_debug("*** CLONED RHS %u bytes @%p***") % size_ % data_;
+      log_debug("*** CLONED RHS %u bytes @%p***",  size_ % data_);
     }
 
     template <typename T>
@@ -149,13 +149,13 @@ namespace resophonic {
     holder<T>::get(unsigned i) const
     {
       if (not (i < size_))
-	log_error("egh, trying to get %u from block of size %u") % i % size_;
+	log_error("egh, trying to get %u from block of size %u",  i % size_);
       BOOST_ASSERT(i < size_);
 
       T value;
       const T* addy = data_ + i;
       CUDA_SAFE_CALL( cudaMemcpy(&value, addy, sizeof(T), cudaMemcpyDeviceToHost) );
-      log_trace("Got %s from [%u] of %u ") % value % i % size_;
+      log_trace("Got %s from [%u] of %u ",  value % i % size_);
       return value;
     }
       
@@ -166,7 +166,7 @@ namespace resophonic {
       BOOST_ASSERT(i < size_);
       T* addy = data_ + i;
       CUDA_SAFE_CALL( cudaMemcpy(addy, &value, sizeof(T), cudaMemcpyHostToDevice) );
-      log_trace("Set %s at %u of %u") % value % i % size_;
+      log_trace("Set %s at %u of %u",  value % i % size_);
     }
 
     template class holder<float>;

@@ -24,8 +24,8 @@ namespace resophonic {
 	  
 	  rk::array_impl<float, boost::mpl::true_> rv;
 	  std::vector<std::size_t> shape;
-	  shape.push_back(lhs.dims->get(0));
-	  shape.push_back(rhs.dims->get(1));
+	  shape.push_back(lhs.impl_->dims.get(0));
+	  shape.push_back(rhs.impl_->dims.get(1));
 
 	  BOOST_ASSERT(0);
 	  rv.reshape(shape);
@@ -86,15 +86,15 @@ namespace resophonic {
 
       BOOST_ASSERT(v.linear_size == rv.linear_size);
       
-      int* eff = rv.strides->gpu_data();
+      int* eff = rv.impl_->strides.gpu_data();
       BOOST_ASSERT(eff);
 
       detail::dispatch()(Op(), 
 			 rv.data() + rv.offset,  
 			 rv.linear_size,
 			 rv.nd, 
-			 rv.factors->gpu_data(),
-			 rv.strides->gpu_data(),
+			 rv.impl_->factors.gpu_data(),
+			 rv.impl_->strides.gpu_data(),
 			 f);
       
       return rv;
@@ -122,7 +122,7 @@ namespace resophonic {
 			       const rk::array_impl<float, LhsIsRVal>& lhs, 
 			       const rk::array_impl<float, RhsIsRVal>& rhs)
     {
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s",  __PRETTY_FUNCTION__);
       
       return detail::dispatch()(Op(), lhs, rhs);
     }

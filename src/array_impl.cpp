@@ -12,10 +12,8 @@ namespace resophonic
   {
     template<typename T, typename RVal>
     array_impl<T, RVal>::array_impl() 
-      : impl(new holder<T>), 
-	dims(new mirror<unsigned>), 
-	factors(new mirror<unsigned>), 
-	strides(new mirror<int>),
+      : data_(new holder<T>), 
+	impl_(new detail::impl_t),
 	linear_size(0),
 	offset(0)
     { 
@@ -29,10 +27,8 @@ namespace resophonic
 		const array_impl<T, boost::mpl::true_ >& rhs)
       {
 	lhs.nd = rhs.nd;
-	lhs.impl = rhs.impl;
-	lhs.dims = rhs.dims;
-	lhs.strides = rhs.strides;
-	lhs.factors = rhs.factors;
+	lhs.data_ = rhs.data_;
+	lhs.impl_ = rhs.impl_;
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;
@@ -44,10 +40,8 @@ namespace resophonic
 		const array_impl <T, boost::mpl::true_ >& rhs)
       {
 	lhs.nd = rhs.nd;
-	lhs.impl = rhs.impl;
-	lhs.dims = rhs.dims;
-	lhs.strides = rhs.strides;
-	lhs.factors = rhs.factors;
+	lhs.data_ = rhs.data_;
+	lhs.impl_ = rhs.impl_;
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;
@@ -59,10 +53,8 @@ namespace resophonic
 		const array_impl<T, boost::mpl::false_>& rhs)
       {
 	lhs.nd = rhs.nd;
-	lhs.impl = rhs.impl->clone();
-	lhs.dims = rhs.dims->clone();
-	lhs.strides = rhs.strides->clone();
-	lhs.factors = rhs.factors->clone();
+	lhs.impl_ = rhs.impl_->clone();
+	lhs.data_ = rhs.data_->clone();
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;
@@ -74,10 +66,8 @@ namespace resophonic
 		const array_impl<T, boost::mpl::false_>& rhs)
       {
 	lhs.nd = rhs.nd;
-	lhs.impl = rhs.impl->clone();
-	lhs.dims = rhs.dims->clone();
-	lhs.strides = rhs.strides->clone();
-	lhs.factors = rhs.factors->clone();
+	lhs.impl_ = rhs.impl_->clone();
+	lhs.data_ = rhs.data_->clone();
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;
@@ -89,28 +79,28 @@ namespace resophonic
     array_impl<T, RVal>::show() const
     {
       log_trace("____ Array ____");
-      log_trace("offset %u,  nd %u") % offset % nd;
+      log_trace("offset %u,  nd %u",  offset % nd);
       for (unsigned i=0; i < nd; i++)
-	log_trace("dims[%u]      %u") % i % dims->get(i);
+	log_trace("dims[u]      %u",  i % dims->get(i));
       for (unsigned i=0; i < nd; i++)
-	log_trace("factors[%u]   %u") % i % factors->get(i);
+	log_trace("factors[%u]   %u",  i % factors->get(i));
       for (unsigned i=0; i < nd; i++)
-	log_trace("stride[%u]   %u") % i % strides->get(i);
-      log_trace("off      %lu") % offset;
-      log_trace("last     %lu") % linear_size;
+	log_trace("stride[%u]   %u",  i % impl_->strides.get(i));
+      log_trace("off      %lu",  offset);
+      log_trace("last     %lu",  linear_size);
     }
 
     template<typename T, typename RVal>
     array_impl<T, RVal>::array_impl(const array_impl<T, RVal>& rhs)
     {
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s",  __PRETTY_FUNCTION__);
       construct(*this, rhs);
     }
 
     template<typename T, typename RVal>
     array_impl<T, RVal>::array_impl(const array_impl<T, other_t>& rhs)
     {
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s",  __PRETTY_FUNCTION__);
       construct(*this, rhs);
     }
 
@@ -122,11 +112,11 @@ namespace resophonic
       offset = 0;
       nd = shape.size();
       for (int i=0; i<nd; i++)
-	dims->set(i, shape[i]);
+	impl_->dims.set(i, shape[i]);
       std::size_t newsize = calculate_strides();
       calculate_factors();
       if (realloc)
-	impl->resize(newsize);
+	data_->resize(newsize);
     }
 
     template <typename T, typename RVal>
@@ -136,12 +126,12 @@ namespace resophonic
       log_trace("reshape");
       offset = 0;
       nd = 1;
-      dims->set(0u, shape);
-      strides->set(0u, 1);
-      factors->set(0u, 1);
+      impl_->dims.set(0u, shape);
+      impl_->strides.set(0u, 1);
+      impl_->factors.set(0u, 1);
       linear_size = shape;
       if (realloc)
-	impl->resize(shape);
+	data_->resize(shape);
     }
 
     template <typename T, typename RVal>
@@ -152,20 +142,20 @@ namespace resophonic
       std::size_t size = 1;
       for(unsigned i=0; i<nd; i++)
 	{
-	  BOOST_ASSERT(dims->get(i) != 0);
-	  size *= dims->get(i);
-	  strides->set(i, 1);
+	  BOOST_ASSERT(impl_->dims.get(i) != 0);
+	  size *= impl_->dims.get(i);
+	  impl_->strides.set(i, 1);
 	  for (unsigned j=i+1; j<nd; j++)
 	    {
-	      int s = strides->get(i);
-	      s *= dims->get(j);
-	      strides->set(i, s);
+	      int s = impl_->strides.get(i);
+	      s *= impl_->dims.get(j);
+	      impl_->strides.set(i, s);
 	    }
 	}
 
-      log_trace("size=%u") % size;
+      log_trace("size=u", size);
       for (unsigned i=0; i<nd; i++)
-	log_trace("dim %u is %u, stride %u") % i % dims->get(i) % strides->get(i);
+	log_trace("dim %u is %u, stride %u",  i % impl_->dims.get(i) % impl_->strides.get(i));
       return size;
     }
 
@@ -177,42 +167,40 @@ namespace resophonic
       linear_size = 1;
       for(unsigned i=0; i<nd; i++)
 	{
-	  unsigned dim = dims->get(i);
+	  unsigned dim = impl_->dims.get(i);
 	  BOOST_ASSERT(dim != 0);
-	  factors->set(i, 1);
+	  impl_->factors.set(i, 1);
 	  linear_size *= dim;
 	  for (unsigned j=i+1; j<nd; j++)
 	    {
-	      unsigned f = factors->get(i);
-	      f *= dims->get(j);
-	      factors->set(i, f);
+	      unsigned f = impl_->factors.get(i);
+	      f *= impl_->dims.get(j);
+	      impl_->factors.set(i, f);
 	    }
 	}
 
       for (unsigned i=0; i<nd; i++)
-	log_trace("dim %u is %u, factor %u") 
-	  % i % dims->get(i) % factors->get(i);
-      log_trace("linear size is %u") % linear_size; 
+	log_trace("dim %u is %u, factor %u", 
+		  i % impl_->dims.get(i) % impl_->factors.get(i));
+      log_trace("linear size is %u", linear_size); 
     }
 
     template <typename T, typename RVal>
     void array_impl<T, RVal>::reset()
     {
-      impl.reset();
+      impl_.reset();
     }
 
     template<typename T, typename RVal>
     void 
     array_impl<T, RVal>::copy_from(const array_impl<T, boost::mpl::true_>& rhs)
     {
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s",  __PRETTY_FUNCTION__);
       rhs.show();
 
       nd = rhs.nd;
-      impl = rhs.impl;
-      dims = rhs.dims;
-      strides = rhs.strides;
-      factors = rhs.factors;
+      impl_ = rhs.impl_;
+      data_ = rhs.data_;
       offset = rhs.offset;
       linear_size = rhs.linear_size;
     }
@@ -221,16 +209,11 @@ namespace resophonic
     void
     array_impl<T, RVal>::copy_from(const array_impl<T, boost::mpl::false_>& rhs)
     {
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s",  __PRETTY_FUNCTION__);
       rhs.show();
       nd = rhs.nd;
-      impl = rhs.impl; //->clone();
-
-      dims = rhs.dims; //->clone();
-
-      strides = rhs.strides; //->clone();
-
-      factors = rhs.factors; //->clone();
+      impl_ = rhs.impl_;
+      data_ = rhs.data_;
 
       offset = rhs.offset;
       linear_size = rhs.linear_size;
@@ -240,15 +223,10 @@ namespace resophonic
     void
     array_impl<T, RVal>::copy_into(array_impl<T, RVal>& newarray) const
     {
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s",  __PRETTY_FUNCTION__);
       newarray.nd = nd;
-      newarray.impl = impl->clone();
-
-      newarray.dims = dims->clone();
-
-      newarray.strides = strides->clone();
-
-      newarray.factors = factors->clone();
+      newarray.data_ = data_->clone();
+      newarray.impl_ = impl_->clone();
 
       newarray.offset = offset;
       newarray.linear_size = linear_size;
@@ -258,14 +236,14 @@ namespace resophonic
     std::size_t
     array_impl<T, RVal>::size() const
     {
-      return impl->size();
+      return data_->size();
     }
 
     template<typename T, typename RVal>
     T*
     array_impl<T, RVal>::data() const
     {
-      return impl->data();
+      return data_->data();
     }
 
     template<typename T, typename RVal>

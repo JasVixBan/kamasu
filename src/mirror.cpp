@@ -9,13 +9,15 @@
 #include <cublas.h>
 #include <cuda_runtime.h>
 
+#include <boost/pool/singleton_pool.hpp>
+
 namespace resophonic {
   namespace kamasu {
 
     template<typename T>
     mirror<T>::mirror() : gpu_(0), dirty(false)
     { 
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s", __PRETTY_FUNCTION__);
     }
 
     template <typename T>
@@ -34,7 +36,7 @@ namespace resophonic {
     template <typename T>
     mirror<T>::~mirror() 
     {
-      log_trace("%s") % __PRETTY_FUNCTION__;
+      log_trace("%s", __PRETTY_FUNCTION__);
       if (gpu_)
 	{
 	  CUDA_SAFE_CALL(cudaFree(gpu_));
@@ -48,7 +50,7 @@ namespace resophonic {
     {
       T* devmem;
       CUDA_SAFE_CALL( cublasAlloc( KAMASU_MAX_ARRAY_DIM, sizeof(T), (void**) &devmem));
-      log_trace ("malloc %u = %x") % (KAMASU_MAX_ARRAY_DIM * sizeof(T)) % devmem;
+      log_trace ("malloc %u = %x", (KAMASU_MAX_ARRAY_DIM * sizeof(T)) % devmem);
       cudaMemset(devmem, 0, KAMASU_MAX_ARRAY_DIM * sizeof(T));
       return devmem;
     }
@@ -97,7 +99,7 @@ namespace resophonic {
     mirror<T>::set(unsigned i, T value)
     {
       cpu_[i] = value;
-      log_trace("Set %s at %u") % value % i;
+      log_trace("Set %s at %u", value % i);
       dirty = true;
     }
 

@@ -19,16 +19,16 @@ namespace resophonic {
       lrv = lhs; // force evaluation of lhs, rhs
       rrv = rhs;
 
-      log_trace("%s") % __PRETTY_FUNCTION__;
-      log_trace("the type is: %s") % name_of(lrv);
+      log_trace("%s",  __PRETTY_FUNCTION__);
+      //      log_trace("the type is: %s") % name_of(lrv);
       BOOST_ASSERT(lrv.self().nd == 1);
       BOOST_ASSERT(rrv.self().nd == 1);
 
-      return cublasSdot(lrv.self().dims->get(0),
+      return cublasSdot(lrv.self().impl_->dims.get(0),
 			lrv.self().data() + lrv.self().offset,
-			lrv.self().strides->get(0),
+			lrv.self().impl_->strides.get(0),
 			rrv.self().data() + rrv.self().offset,
-			rrv.self().strides->get(0));
+			rrv.self().impl_->strides.get(0));
     }
   }
 }

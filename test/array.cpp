@@ -140,7 +140,7 @@ TEST(slice_2d_reduce)
   ENSURE_EQUAL(sliced.dim(0), 5);
 
   for (unsigned i=0; i<5; i++)
-    log_trace("[%u] == %f") % i % sliced(i);
+    log_trace("[%u] == %f",  i % sliced(i));
   ENSURE_EQUAL(sliced(0), 2.0);
   ENSURE_EQUAL(sliced(1), 6.0);
   ENSURE_EQUAL(sliced(2), 10.0);
@@ -177,7 +177,7 @@ TEST(slice_2d)
     ENSURE_EQUAL(sliced.n_dims(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
-    log_trace("[0] == %f") % sliced(0);
+    log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 5.0);
     ENSURE_EQUAL(sliced(1), 6.0);
     ENSURE_EQUAL(sliced(2), 7.0);
@@ -192,7 +192,7 @@ TEST(slice_2d)
     ENSURE_EQUAL(sliced.n_dims(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
-    log_trace("[0] == %f") % sliced(0);
+    log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 5.0);
     ENSURE_EQUAL(sliced(1), 6.0);
     ENSURE_EQUAL(sliced(2), 7.0);
@@ -207,7 +207,7 @@ TEST(slice_2d)
     ENSURE_EQUAL(sliced.n_dims(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
-    log_trace("[0] == %f") % sliced(0);
+    log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 8.0);
     ENSURE_EQUAL(sliced(1), 7.0);
     ENSURE_EQUAL(sliced(2), 6.0);
@@ -221,7 +221,7 @@ TEST(slice_2d)
     ENSURE_EQUAL(sliced.n_dims(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
-    log_trace("[0] == %f") % sliced(0);
+    log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 8.0);
     ENSURE_EQUAL(sliced(1), 7.0);
     ENSURE_EQUAL(sliced(2), 6.0);
@@ -235,7 +235,7 @@ TEST(slice_2d)
     ENSURE_EQUAL(sliced.n_dims(), 1);
     ENSURE_EQUAL(sliced.dim(0), 5);
 
-    log_trace("[0] == %f") % sliced(0);
+    log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 4.0);
     ENSURE_EQUAL(sliced(1), 8.0);
     ENSURE_EQUAL(sliced(2), 12.0);
@@ -250,7 +250,7 @@ TEST(slice_2d)
     ENSURE_EQUAL(sliced.n_dims(), 1);
     ENSURE_EQUAL(sliced.dim(0), 5);
 
-    log_trace("[0] == %f") % sliced(0);
+    log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 20.0);
     ENSURE_EQUAL(sliced(1), 16.0);
     ENSURE_EQUAL(sliced(2), 12.0);
@@ -431,7 +431,6 @@ TEST(1d_slice_from_left)
   ENSURE_EQUAL(sliced.linear_size(), 5);
   for (unsigned i=0; i<5; i++)
     {
-      log_trace("%u == %f") % i % sliced(i);
       ENSURE_EQUAL(sliced(i), i+5); 
     }
 }
@@ -448,7 +447,6 @@ TEST(1d_slice_from_right)
   ENSURE_EQUAL(sliced.linear_size(), 5);
   for (unsigned i=0; i<5; i++)
     {
-      log_trace("%u == %f") % i % sliced(i);
       ENSURE_EQUAL(sliced(i), i); 
     }
 }
@@ -467,7 +465,6 @@ TEST(1d_underscore_reverse)
 
   for (unsigned i=0; i<10; i++)
     {
-      log_trace("%u == %f") % i % sliced(i);
       ENSURE_EQUAL(sliced(i), 9.0f - i); 
     }
 }
@@ -487,7 +484,6 @@ TEST(1d_underscore_reverse_2)
 
   for (unsigned i=0; i<5; i++)
     {
-      log_trace("%u == %f") % i % sliced(i);
       ENSURE_EQUAL(sliced(i), 9.0f - (i*2)); 
     }
 }

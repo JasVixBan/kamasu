@@ -25,7 +25,7 @@ TEST_GROUP();
 
 TEST(1d_slice)
 {
-  unsigned n = 2500;
+  unsigned n = 10000;
 
   array<float> a(n);
 
@@ -35,7 +35,7 @@ TEST(1d_slice)
       for (int i=0; i<n/2 -1 ; i++)
 	{
 	  std::cout.flush();
-	  a.slice(index_range(i, i+n/2));
+	  array<float> b = a.slice(index_range(i, i+n/2));
 	}
     }
 	

@@ -46,6 +46,8 @@ namespace resophonic {
 
 #undef VARARG_DECL
 
+      array copy() const;
+
       std::size_t n_dims() const { return self().nd; }
       std::size_t n_strides() const { return self().nd; }
       std::size_t n_factors() const { return self().nd; }

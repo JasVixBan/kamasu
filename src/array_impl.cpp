@@ -224,16 +224,34 @@ namespace resophonic
       log_trace("%s") % __PRETTY_FUNCTION__;
       rhs.show();
       nd = rhs.nd;
-      impl = rhs.impl->clone();
+      impl = rhs.impl; //->clone();
 
-      dims = rhs.dims->clone();
+      dims = rhs.dims; //->clone();
 
-      strides = rhs.strides->clone();
+      strides = rhs.strides; //->clone();
 
-      factors = rhs.factors->clone();
+      factors = rhs.factors; //->clone();
 
       offset = rhs.offset;
       linear_size = rhs.linear_size;
+    }
+
+    template<typename T, typename RVal>
+    void
+    array_impl<T, RVal>::copy_into(array_impl<T, RVal>& newarray) const
+    {
+      log_trace("%s") % __PRETTY_FUNCTION__;
+      newarray.nd = nd;
+      newarray.impl = impl->clone();
+
+      newarray.dims = dims->clone();
+
+      newarray.strides = strides->clone();
+
+      newarray.factors = factors->clone();
+
+      newarray.offset = offset;
+      newarray.linear_size = linear_size;
     }
 
     template<typename T, typename RVal>

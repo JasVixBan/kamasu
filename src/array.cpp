@@ -90,6 +90,14 @@ namespace resophonic {
 #endif
     }
 
+    template <typename T, typename RVal>
+    array<T, RVal>
+    array<T, RVal>:: copy() const
+    {
+      array newarray;
+      self().copy_into(newarray.self());
+      return newarray;
+    }
 
     template <typename T, typename RVal>
     array<T, RVal>& 

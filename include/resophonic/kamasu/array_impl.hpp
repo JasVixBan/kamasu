@@ -37,6 +37,7 @@ namespace resophonic {
       void reset();
       void copy_from(const array_impl<T, boost::mpl::false_>& rhs);
       void copy_from(const array_impl<T, boost::mpl::true_>& rhs);
+      void copy_into(array_impl<T, RVal>& thing) const;
 
       void swap(array_impl& rhs);
 

@@ -23,7 +23,7 @@ namespace resophonic {
   namespace kamasu {
 
     template <typename T, typename RVal>
-    array<T, RVal>::array()
+    array<T, RVal>::array() : self_(boost::proto::value(*this))
     {
 
     }
@@ -36,7 +36,8 @@ namespace resophonic {
 
 #define VARARG_CONSTRUCTOR_DEFN(Z, N, DATA)				\
     template <typename T, typename RVal>				\
-    array<T, RVal>::array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg))	\
+    array<T, RVal>::array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) :	\
+    self_(boost::proto::value(*this))					\
     {									\
       log_trace("%s",  __PRETTY_FUNCTION__);				\
       std::vector<std::size_t> shape = KAMASU_MAKE_VECTOR(N, Arg);	\
@@ -48,7 +49,7 @@ namespace resophonic {
 #undef VARARG_CONSTRUCTOR_DEFN
 
     template <typename T, typename RVal>
-    array<T, RVal>::array(const std::vector<std::size_t>& shape)
+    array<T, RVal>::array(const std::vector<std::size_t>& shape) : self_(boost::proto::value(*this))
     { 
       self().reshape(shape);
     }

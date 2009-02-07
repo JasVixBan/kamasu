@@ -509,6 +509,7 @@ TEST(assignment)
 
 TEST(copy_construct)
 {
+  // again shared semantics
   array<float> a(3,4,5);
   ENSURE_EQUAL(a.linear_size(), 60);
   ENSURE_EQUAL(a.n_dims(), 3);
@@ -522,11 +523,13 @@ TEST(copy_construct)
   ENSURE_EQUAL(b.dim(0), 3);
   ENSURE_EQUAL(b.dim(1), 4);
   ENSURE_EQUAL(b.dim(2), 5);
-  ENSURE_NOT_EQUAL(a.self().data(), b.self().data());
+  ENSURE_EQUAL(a.self().data(), b.self().data());
 
   a(0,0,0) = 17.5;
-  b(0,0,0) = 33.5;
   ENSURE_EQUAL(a(0,0,0), 17.5);
+  ENSURE_EQUAL(b(0,0,0), 17.5);
+  b(0,0,0) = 33.5;
+  ENSURE_EQUAL(a(0,0,0), 33.5);
   ENSURE_EQUAL(b(0,0,0), 33.5);
 }
 

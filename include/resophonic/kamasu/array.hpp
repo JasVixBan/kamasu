@@ -24,6 +24,8 @@ namespace resophonic {
       typedef array_impl<T, RVal> impl_t;
       typedef Expression<typename boost::proto::terminal<impl_t>::type> base_t;
 
+      impl_t& self_;
+
     public:
     
       array& operator=(const array& rhs);
@@ -68,8 +70,8 @@ namespace resophonic {
 	return *this;
       }
 
-      impl_t& self() { return boost::proto::value(*this); }
-      const impl_t& self() const { return boost::proto::value(*this); }
+      impl_t& self() { return self_; }
+      const impl_t& self() const { return self_; }
 
     private:
       

@@ -35,7 +35,7 @@ TEST(1d_slice)
       for (int i=0; i<n/2 -1 ; i++)
 	{
 	  std::cout.flush();
-	  array<float> b = a.slice(index_range(i, i+n/2));
+	  a.slice(index_range(i, i+n/2));
 	}
     }
 	

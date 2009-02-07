@@ -116,7 +116,7 @@ namespace resophonic
 
     template <typename T, typename RVal>
     void
-    array_impl<T, RVal>::reshape(const std::vector<std::size_t>& shape)
+    array_impl<T, RVal>::reshape(const std::vector<std::size_t>& shape, bool realloc)
     {
       log_trace("reshape");
       offset = 0;
@@ -125,7 +125,8 @@ namespace resophonic
 	dims->set(i, shape[i]);
       std::size_t newsize = calculate_strides();
       calculate_factors();
-      impl->resize(newsize);
+      if (realloc)
+	impl->resize(newsize);
     }
 
     template <typename T, typename RVal>

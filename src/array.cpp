@@ -186,7 +186,8 @@ namespace resophonic {
 	  }
 	}
       log_trace("make new array");
-      array new_array(newshape);
+      array new_array;
+      new_array.self().reshape(newshape, false);
       log_trace("done make new array");
       new_array.self().impl = self().impl;
       std::vector<std::size_t> starts;

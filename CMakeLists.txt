@@ -3,10 +3,11 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-
 set(BOOST_ROOT 
   "/home/troy/Projects/boost/trunk" 
   CACHE PATH "where is boost")
+
+add_definitions(-DBOOST_SP_USE_QUICK_ALLOCATOR)
 
 #
 #  This should contain common/inc/cutil.h, common/lib/libcutil.a, etc.

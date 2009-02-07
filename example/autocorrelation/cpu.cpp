@@ -8,14 +8,14 @@
 using std::cout;
 
 const float sr = 48000.0;
-const unsigned winlen = sr/70;
+const unsigned winlen = sr/20;
 
 std::vector<float> autocorrelate(std::vector<float>& signal)
 {
   std::vector<float> freqs(signal.size() - winlen),
     corr_coeff(winlen), delta_corr(winlen-1);
 
-  for(unsigned outer = 0; outer< signal.size() - winlen*2; outer++)
+  for(unsigned outer = 0; outer < signal.size() - winlen*2; outer++)
     {
       cout << outer * 100 / signal.size() << "%\r";
       cout.flush();

@@ -115,7 +115,7 @@ namespace resophonic {
     {									\
       return index_of(KAMASU_MAKE_VECTOR(N, Arg));			\
     }
-  BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, INDEX_OF_DEFN, Arg);
+    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, INDEX_OF_DEFN, Arg);
 
 #undef INDEX_OF_DEFN
 
@@ -141,42 +141,42 @@ namespace resophonic {
 	{
 	  const index_range& ir = ranges[i];
 	  if (! ir.is_degenerate())
-	  {								
-	    int finish, start, diff;
+	    {								
+	      int finish, start, diff;
 
-	    if (ir.stride() > 0)
-	      {
-		if (ir.start() != ir.from_start())
-		  start = ir.start();
-		else
-		  start = 0;
+	      if (ir.stride() > 0)
+		{
+		  if (ir.start() != ir.from_start())
+		    start = ir.start();
+		  else
+		    start = 0;
 
-		if (ir.finish() != ir.to_end())
-		  finish = ir.finish();
-		else
-		  finish = self().impl_->dims.get(i);
-	      }
-	    else
-	      {
-		if (ir.start() != ir.to_end())
-		  start = ir.start();
-		else
-		  start = self().impl_->dims.get(i)-1;
+		  if (ir.finish() != ir.to_end())
+		    finish = ir.finish();
+		  else
+		    finish = self().impl_->dims.get(i);
+		}
+	      else
+		{
+		  if (ir.start() != ir.to_end())
+		    start = ir.start();
+		  else
+		    start = self().impl_->dims.get(i)-1;
 
-		if (ir.finish() != ir.from_start())
-		  finish = ir.finish();
-		else
-		  finish = -1;
-	      }
+		  if (ir.finish() != ir.from_start())
+		    finish = ir.finish();
+		  else
+		    finish = -1;
+		}
 
-	    diff = finish - start;		
+	      diff = finish - start;		
 	    
-	    diff += diff % ir.stride();				
-	    log_trace("diff %d - %d is %d",  finish % start % diff); 
-	    unsigned newdim = std::abs(diff/ir.stride());		
-	    newshape.push_back(newdim);					
-	    log_trace("newdim is %u",  newdim);
-	  }
+	      diff += diff % ir.stride();				
+	      log_trace("diff %d - %d is %d",  finish % start % diff); 
+	      unsigned newdim = std::abs(diff/ir.stride());		
+	      newshape.push_back(newdim);					
+	      log_trace("newdim is %u",  newdim);
+	    }
 	}
       log_trace("make new array");
       array new_array;
@@ -236,83 +236,74 @@ namespace resophonic {
       log_trace("slicing!");						
       BOOST_ASSERT(1  == self().nd);				
 
-      std::vector<std::size_t> newshape;				
-      if (! ir.is_degenerate())
-	{								
-	  int finish, start, diff;
+      if (ir.is_degenerate())
+	throw std::runtime_error("degenerate slice of 1d array");
 
-	  if (ir.stride() > 0)
-	    {
-	      if (ir.start() != ir.from_start())
-		start = ir.start();
-	      else
-		start = 0;
+      std::vector<std::size_t> newshape(1);				
+      int finish, start, diff;
 
-	      if (ir.finish() != ir.to_end())
-		finish = ir.finish();
-	      else
-		finish = self().impl_->dims.get(0);
-	    }
+      if (ir.stride() > 0)
+	{
+	  if (ir.start() != ir.from_start())
+	    start = ir.start();
 	  else
-	    {
-	      if (ir.start() != ir.to_end())
-		start = ir.start();
-	      else
-		start = self().impl_->dims.get(0)-1;
+	    start = 0;
 
-	      if (ir.finish() != ir.from_start())
-		finish = ir.finish();
-	      else
-		finish = -1;
-	    }
-
-	  diff = finish - start;		
-	    
-	  diff += diff % ir.stride();				
-	  log_trace("diff %d - %d is %d",  finish % start % diff); 
-	  unsigned newdim = std::abs(diff/ir.stride());		
-	  newshape.push_back(newdim);					
-	  log_trace("newdim is %u",  newdim);
+	  if (ir.finish() != ir.to_end())
+	    finish = ir.finish();
+	  else
+	    finish = self().impl_->dims.get(0);
 	}
+      else
+	{
+	  if (ir.start() != ir.to_end())
+	    start = ir.start();
+	  else
+	    start = self().impl_->dims.get(0)-1;
+
+	  if (ir.finish() != ir.from_start())
+	    finish = ir.finish();
+	  else
+	    finish = -1;
+	}
+
+      diff = finish - start;		
+	    
+      diff += diff % ir.stride();				
+      log_trace("diff %d - %d is %d",  finish % start % diff); 
+      unsigned newdim = std::abs(diff/ir.stride());		
+      newshape[0] = newdim;					
+      log_trace("newdim is %u",  newdim);
+
       log_trace("make new array");
       array new_array;
       new_array.self().reshape(newshape, false);
       log_trace("done make new array");
       new_array.self().data_ = self().data_;
-      std::vector<std::size_t> starts;
-      if (!ir.is_degenerate())
-	{
-	  if (ir.stride() > 0)
-	    starts.push_back(ir.start() == ir.from_start() 
-			     ? 0 : ir.start());
-	  else 
-	    starts.push_back(ir.start() == ir.to_end() 
-			     ? self().impl_->dims.get(0)-1 : ir.start());
-	}
-      else
-	{
-	  starts.push_back(ir.start());
-	}
+      std::vector<std::size_t> starts(1);
+      if (ir.stride() > 0)
+	starts[0] = (ir.start() == ir.from_start()) ? 0 : ir.start();
+      else 
+	starts[0] = (ir.start() == ir.to_end()) ? self().impl_->dims.get(0)-1 : ir.start();
 
       new_array.self().offset = index_of(starts);
       log_trace("offset is %d",  new_array.self().offset);
 
-      std::vector<int> new_strides;
-
-      if (!ir.is_degenerate())
-	new_strides.push_back(self().impl_->strides.get(0) * ir.stride());
+      std::vector<int> new_strides(1);
+      
+      new_strides[0] = self().impl_->strides.get(0) * ir.stride();
 
       new_array.self().impl_->strides.set(new_strides);
       new_array.self().calculate_factors();
       return new_array;	
     }
-
+    
 
     //
     //  these could go via std::vector
     //
 
-#define STRIDE_TERM(Z, N, DATA) \
+#define STRIDE_TERM(Z, N, DATA)			\
     + Arg ## N * self().impl_->strides.get(N)
 
 #define FNCALL_LVALUE_OPERATOR_DEFN(Z, N, DATA)				\
@@ -323,7 +314,8 @@ namespace resophonic {
       int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		\
       log_trace("getting lvalue from offset %d",  (self().offset + index)); \
       return self().data_->get(index);					\
-    }									\
+    }
+
 
     BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, FNCALL_LVALUE_OPERATOR_DEFN, ~);
 
@@ -333,14 +325,13 @@ namespace resophonic {
     rval<T>								\
     array<T, RVal>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) \
     {									\
-      BOOST_ASSERT(N == self().nd);				\
+      BOOST_ASSERT(N == self().nd);					\
       int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		\
       log_trace("getting rvalue offset=%u index=%d",  self().offset % index); \
       return rval<T>(self().data_, index + self().offset);		\
-    }									\
+    }
 
     BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, FNCALL_RVALUE_OPERATOR_DEFN, ~);
-
 
     template class array<float, boost::mpl::true_>;
     template class array<float, boost::mpl::false_>;

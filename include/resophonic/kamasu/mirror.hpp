@@ -61,9 +61,9 @@ namespace resophonic {
 
       void set(const std::vector<T>& hdata);
 
-      void set(unsigned i, T value);
+      void set(unsigned i, T value) { cpu_[i] = value; dirty = true; }
 
-      T get(unsigned i) const;
+      T get(unsigned i) const { return cpu_[i]; }
       
       void reset();
 

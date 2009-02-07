@@ -14,25 +14,25 @@ using std::cout;
 namespace rk = resophonic::kamasu;
 
 const float sr = 48000.0;
-const unsigned winlen = sr/70;
+const unsigned winlen = sr/20;
 
 rk::array<float> autocorrelate(rk::array<float>& signal)
 {
   rk::array<float> freqs(signal.dim(0) - winlen);
 
-  for (unsigned outer = 0; outer < 10/*signal.dim(0) - winlen*2*/; outer++)
+  std::vector<float> corr_coeff(winlen);
+  for (unsigned outer = 8000; outer < signal.dim(0) - winlen*2; outer++)
     {
-      cout << "[" << outer << "] " << outer * 100 / signal.dim(0) << "%\r";
+      cout << outer * 100 / signal.dim(0) << "%   \r";
       cout.flush();
-      std::vector<float> corr_coeff(winlen);
-      rk::array<float> lhs = signal.slice(rk::index_range(outer, outer+winlen));
+      rk::array<float> lhs(signal.slice(rk::index_range(outer, outer+winlen)));
       for (unsigned inner = 0; inner < winlen; inner++)
 	{
-	  float periodic_autocorr = 
-	    rk::dot(lhs, signal.slice(rk::index_range(outer+inner, outer+inner+winlen)));
-	  corr_coeff[inner] = periodic_autocorr;
+	  rk::array<float> tmp(signal.slice(rk::index_range(outer+inner, outer+inner+winlen)));
+	  float periodic_autocorr = rk::dot(lhs, tmp);
+	  // cout << "[" << outer << "] " << periodic_autocorr << "           \r";
+	  // corr_coeff[inner] = periodic_autocorr;
 	}
-      
     }
   return freqs;
 }
@@ -59,6 +59,6 @@ int main(int argc, char** argv)
   for (unsigned i=0; i<signal.size(); i++)
     a(i) = signal[i];
 
-  rk::array<float> freqs = autocorrelate(a);
+  /*rk::array<float> freqs =*/ autocorrelate(a);
   
 }

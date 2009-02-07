@@ -96,15 +96,6 @@ namespace resophonic {
 
     template <typename T>
     void
-    mirror<T>::set(unsigned i, T value)
-    {
-      cpu_[i] = value;
-      log_trace("Set %s at %u", value % i);
-      dirty = true;
-    }
-
-    template <typename T>
-    void
     mirror<T>::sync() const
     {
       dirty = false;
@@ -130,13 +121,6 @@ namespace resophonic {
       return gpu_;
     }
 
-    template <typename T>
-    T
-    mirror<T>::get(unsigned i) const
-    {
-      return cpu_[i];
-    }
-      
     template class mirror<unsigned>;
     template class mirror<int>;
 

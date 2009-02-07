@@ -6,14 +6,26 @@
 #include "cutil.h"
 #include <cassert>
 
+#include <boost/pool/singleton_pool.hpp>
+#include <boost/bind.hpp>
+
 namespace resophonic 
 {
   namespace kamasu 
   {
+    namespace {
+      struct tag { };
+      typedef boost::singleton_pool<tag, sizeof(holder<float>)> holder_pool;
+      typedef boost::singleton_pool<tag, sizeof(detail::impl_t)> impl_pool;
+
+    }
+
     template<typename T, typename RVal>
     array_impl<T, RVal>::array_impl() 
-      : data_(new holder<T>), 
-	impl_(new detail::impl_t),
+      : data_(new (holder_pool::malloc()) holder<float>,
+	      (void (*)(void*))holder_pool::free),
+	impl_(new (impl_pool::malloc()) detail::impl_t,
+	      (void (*)(void*))impl_pool::free),
 	linear_size(0),
 	offset(0)
     { 

@@ -48,7 +48,7 @@ namespace resophonic {
     T* holder<T>::gpu_mallocn(unsigned n)
     {
       T* devmem;
-      CUDA_SAFE_CALL( cublasAlloc( n, sizeof(T), (void**) &devmem));
+      CUDA_SAFE_CALL( cudaMalloc( (void**) &devmem, n * sizeof(T)));
       log_trace ("malloc %u = %x") % (n * sizeof(T)) % devmem;
       cudaMemset(devmem, 0, n * sizeof(T));
       return devmem;

@@ -212,15 +212,95 @@ namespace resophonic {
 #define SLICE_DEFN(Z, N, DATA)						\
     template <typename T, typename RVal>				\
     array<T, RVal>							\
-    array<T, RVal>::slice(BOOST_PP_ENUM_PARAMS(N, index_range Arg)) const \
+    array<T, RVal>::slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const \
     {									\
       return slice(KAMASU_MAKE_VECTOR(N, Arg));				\
     }
 
-    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, SLICE_DEFN, ~);
+    BOOST_PP_REPEAT_FROM_TO(2, KAMASU_MAX_ARRAY_DIM, SLICE_DEFN, ~);
 
 #undef SLICE_DEFN
 
+    template <typename T, typename RVal>				
+    array<T, RVal>							
+    array<T, RVal>::slice(const index_range& ir) const
+    {									
+      log_trace("slicing!");						
+      BOOST_ASSERT(1  == self().nd);				
+
+      std::vector<std::size_t> newshape;				
+      //      for (unsigned i=0; i< ranges.size(); i++)
+      //	{
+      //	  const index_range& ir = ranges[i];
+	  if (! ir.is_degenerate())
+	  {								
+	    int finish, start, diff;
+
+	    if (ir.stride() > 0)
+	      {
+		if (ir.start() != ir.from_start())
+		  start = ir.start();
+		else
+		  start = 0;
+
+		if (ir.finish() != ir.to_end())
+		  finish = ir.finish();
+		else
+		  finish = self().dims->get(0);
+	      }
+	    else
+	      {
+		if (ir.start() != ir.to_end())
+		  start = ir.start();
+		else
+		  start = self().dims->get(0)-1;
+
+		if (ir.finish() != ir.from_start())
+		  finish = ir.finish();
+		else
+		  finish = -1;
+	      }
+
+	    diff = finish - start;		
+	    
+	    diff += diff % ir.stride();				
+	    log_trace("diff %d - %d is %d") % finish % start % diff; 
+	    unsigned newdim = std::abs(diff/ir.stride());		
+	    newshape.push_back(newdim);					
+	    log_trace("newdim is %u") % newdim;
+	  }
+      log_trace("make new array");
+      array new_array;
+      new_array.self().reshape(newshape, false);
+      log_trace("done make new array");
+      new_array.self().impl = self().impl;
+      std::vector<std::size_t> starts;
+      if (!ir.is_degenerate())
+	{
+	  if (ir.stride() > 0)
+	    starts.push_back(ir.start() == ir.from_start() 
+			     ? 0 : ir.start());
+	  else 
+	    starts.push_back(ir.start() == ir.to_end() 
+			     ? self().dims->get(0)-1 : ir.start());
+	}
+      else
+	{
+	  starts.push_back(ir.start());
+	}
+
+      new_array.self().offset = index_of(starts);
+      log_trace("offset is %d") % new_array.self().offset;
+
+      std::vector<int> new_strides;
+
+      if (!ir.is_degenerate())
+	new_strides.push_back(self().strides->get(0) * ir.stride());
+
+      new_array.self().strides->set(new_strides);
+      new_array.self().calculate_factors();
+      return new_array;	
+    }
 
 
     //

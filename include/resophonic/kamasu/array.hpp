@@ -36,7 +36,7 @@ namespace resophonic {
       array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg));			\
 	    T operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const; \
 	    rval<T> operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)); \
-	    array slice(BOOST_PP_ENUM_PARAMS(N, index_range Arg)) const; \
+	    array slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const; \
 	    std::size_t index_of(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const;
 
       BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, VARARG_DECL, ~);

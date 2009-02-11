@@ -105,7 +105,7 @@ winlen = 512
 nfreqs = winlen//2+1
 winstep = 256
 # print signal[:2048]
-starts = range(0, (len(signal)-winlen)/16, winstep)
+starts = range(0, (len(signal)-winlen), winstep)
 
 results = n.zeros((nfreqs, len(starts)))
 
@@ -153,7 +153,7 @@ Z = n.flipud(Z)
 print "Z.size is ", Z.size
 print "Z.shape is ", Z.shape
 
-outfd = open('fft.dat', 'wb')
+outfd = open(sys.argv[2], 'wb')
 fwrite(outfd, 2, n.array(Z.shape).astype(n.float32))
 fwrite(outfd, Z.size, Z)
 

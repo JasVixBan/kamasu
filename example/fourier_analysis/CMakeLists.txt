@@ -3,11 +3,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(fft-kamasu
   kamasu.cpp
   )
+
+
 target_link_libraries(fft-kamasu
   resophonic_barracuda 
   ${FOUND_CUDART}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}
+  ${CUFFT_LIBRARY}
   )
 
 find_library(FFTW3_LIBRARY
@@ -16,7 +19,6 @@ find_library(FFTW3_LIBRARY
 find_library(FFTW3F_LIBRARY
   fftw3f 
   )
-
 find_library(MATH_LIBRARY
   m 
   )

@@ -14,29 +14,29 @@ using std::cout;
 namespace rk = resophonic::kamasu;
 
 const float sr = 48000.0;
-const unsigned winlen = sr/20;
+const unsigned winlen = sr/70;
 
 rk::array<float> autocorrelate(rk::array<float>& signal)
 {
   rk::array<float> freqs(signal.dim(0) - winlen);
 
   std::vector<float> corr_coeff(winlen);
-  for (unsigned outer = 8000; outer < signal.dim(0) - winlen*2; outer++)
+  for (unsigned outer = 0; outer < 1900/*signal.dim(0) - winlen*2*/; outer++)
     {
       cout << outer * 100 / signal.dim(0) << "%   \r";
       cout.flush();
       rk::array<float> lhs(signal.slice(rk::index_range(outer, outer+winlen)));
+      unsigned inner = 0;
       for (unsigned inner = 0; inner < winlen; inner++)
 	{
 	  rk::array<float> tmp(signal.slice(rk::index_range(outer+inner, outer+inner+winlen)));
 	  float periodic_autocorr = rk::dot(lhs, tmp);
 	  // cout << "[" << outer << "] " << periodic_autocorr << "           \r";
-	  // corr_coeff[inner] = periodic_autocorr;
+	  corr_coeff[inner] = periodic_autocorr;
 	}
     }
   return freqs;
 }
-
 
 int main(int argc, char** argv)
 {

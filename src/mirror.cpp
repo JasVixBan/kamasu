@@ -49,9 +49,9 @@ namespace resophonic {
     mirror<T>::gpu_malloc() const
     {
       T* devmem;
-      CUDA_SAFE_CALL( cublasAlloc( KAMASU_MAX_ARRAY_DIM, sizeof(T), (void**) &devmem));
+      CUDA_SAFE_CALL(cudaMalloc((void**) &devmem,  KAMASU_MAX_ARRAY_DIM* sizeof(T)));
       log_trace ("malloc %u = %x", (KAMASU_MAX_ARRAY_DIM * sizeof(T)) % devmem);
-      cudaMemset(devmem, 0, KAMASU_MAX_ARRAY_DIM * sizeof(T));
+      CUDA_SAFE_CALL(cudaMemset(devmem, 0, KAMASU_MAX_ARRAY_DIM * sizeof(T)));
       return devmem;
     }
 

@@ -1,2 +1,3 @@
 add_subdirectory(autocorrelation)
+add_subdirectory(fourier_analysis)
 

@@ -4,8 +4,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <cstdlib>
-#include "hann_window.hpp"
+#include "fourier_analysis.hpp"
 
 using std::cout;
 
@@ -14,6 +15,7 @@ const unsigned winlen = sr/70;
 
 #include <fftw3.h>
 
+hann_window hann(fftsize);
 
 int main(int argc, char** argv)
 {
@@ -23,29 +25,26 @@ int main(int argc, char** argv)
   unsigned nsamples = sb.st_size / 4;
 
   if (argv[3])
-    nsamples = atoi(argv[2]);
+    nsamples = atoi(argv[3]);
 
   cout << "Reading " << nsamples << " samples from " << argv[1] << "\n";
   
   int fd = open(argv[1], O_RDONLY);
   assert(fd);
 
-  const unsigned fftsize = 512;
-  const unsigned stepsize = 256;
-  const unsigned nfreqs = div(512, 2).quot + 1;
-  
   float* indata = (float*) fftw_malloc(nsamples * sizeof(float));
   fftwf_complex* outdata = (fftwf_complex*) fftw_malloc(fftsize * sizeof(fftwf_complex));
 
   read(fd, indata, nsamples * sizeof(float));
 
   cout << "Writing to " << argv[2] << "\n";
-  int outfd = open(argv[2], O_WRONLY | O_CREAT);
+  unlink(argv[2]);
+
+  int outfd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR|S_IWUSR);
+  float nsteps = div(nsamples-fftsize, stepsize).quot + 1;
+  write(outfd, &nsteps, sizeof(float));
   float writefreqs = nfreqs;
   write(outfd, &writefreqs, sizeof(float));
-
-  float nsteps = div(nsamples, stepsize).quot;
-  write(outfd, &nsteps, sizeof(float));
 
   fftwf_plan plan;
 
@@ -61,9 +60,9 @@ int main(int argc, char** argv)
       plan = fftwf_plan_dft_r2c_1d(fftsize, indata+i, outdata, FFTW_ESTIMATE);
       fftwf_execute(plan);
 
-      for (int i=0; i<nfreqs; i++)
+      for (int i =nfreqs-1; i>=0; i--)
 	{
-	  float amp = std::sqrt(outdata[i][0] * outdata[i][0] + outdata[i][1] * outdata[i][1]);
+	  float amp = 10 * log10(std::sqrt(outdata[i][0] * outdata[i][0] + outdata[i][1] * outdata[i][1]));
 	  write(outfd, &amp, sizeof(float));
 	}
     }

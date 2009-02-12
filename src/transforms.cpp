@@ -20,7 +20,7 @@ namespace resophonic {
 	{
 	  BOOST_ASSERT(lhs.nd == 2);
 	  BOOST_ASSERT(rhs.nd == 2);
-	  BOOST_ASSERT(lhs.dims->get(1) == rhs.dims->get(0));
+	  //BOOST_ASSERT(lhs.dims->get(1) == rhs.dims->get(0));
 	  
 	  rk::array_impl<float, boost::mpl::true_> rv;
 	  std::vector<std::size_t> shape;
@@ -81,8 +81,8 @@ namespace resophonic {
       rv.show();
 
       BOOST_ASSERT(rv.nd > 0);
-      BOOST_ASSERT(rv.dims->get(0) > 0);
-      BOOST_ASSERT(v.dims->get(0) > 0);
+      //BOOST_ASSERT(rv.dims->get(0) > 0);
+      //BOOST_ASSERT(v.dims->get(0) > 0);
 
       BOOST_ASSERT(v.linear_size == rv.linear_size);
       

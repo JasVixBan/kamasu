@@ -3,7 +3,9 @@ include_directories(.)
 add_executable(test
   main.cpp
   mirror.cpp
+  conversion.cpp
   one.cpp
+  mmul.cpp
   array.cpp
   3d.cpp
   ops.cpp

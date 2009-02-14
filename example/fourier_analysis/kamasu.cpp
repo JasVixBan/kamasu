@@ -56,7 +56,6 @@ int main(int argc, char** argv)
   CUDA_SAFE_CALL( cudaMemcpy(gpu_indata, hostdata, sizeof(float) * nsamples, cudaMemcpyHostToDevice) );
 
   // create plan
-
   cufftHandle plan;
   CUFFT_SAFE_CALL(cufftPlan1d(&plan, fftsize, CUFFT_R2C, 1));
 
@@ -78,7 +77,7 @@ int main(int argc, char** argv)
 
   // create host output memory
   cufftComplex *host_outdata;
-  CUDA_SAFE_CALL(cudaMallocHost((void**)&host_outdata, sizeof(cufftComplex)*nfreqs));
+  CUDA_SAFE_CALL(cudaMallocHost((void**)&host_outdata, sizeof(cufftComplex)*nfreqs * nsteps));
 
   // loop through input data calling ffts
   int j=0;
@@ -90,9 +89,11 @@ int main(int argc, char** argv)
 	  std::cout.flush();
 	}
       CUFFT_SAFE_CALL( cufftExecR2C(plan, gpu_indata+i, gpu_outdata) );
-      CUDA_SAFE_CALL( cudaMemcpy(host_outdata, gpu_outdata, 
-      				 sizeof(cufftComplex) * nfreqs, cudaMemcpyDeviceToHost) );
 
+      CUDA_SAFE_CALL( cudaMemcpy(host_outdata+ nfreqs*j, gpu_outdata, 
+	sizeof(cufftComplex) * nfreqs, cudaMemcpyDeviceToHost) );
+
+      /*
       for (int k=nfreqs-1; k>=0; k--)
 	{
 	  cufftComplex& thingy = host_outdata[k];
@@ -101,6 +102,7 @@ int main(int argc, char** argv)
 
 	  write(outfd, &amp, sizeof(float));
 	}
+      */
     }
 
   cout << "Performed " << j << " steps.\n";

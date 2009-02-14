@@ -40,3 +40,26 @@ TEST(1d_slice)
     }
 	
 }
+
+
+void matrix_multiply(unsigned n)
+{
+
+  array<float> a(n,n), b(n,n), c;
+
+  c = a * b;
+
+}
+
+
+void ublas_multiply(unsigned n)
+{
+  
+
+}
+
+
+TEST(matrix_multiply)
+{
+  matrix_multiply(1024);
+}

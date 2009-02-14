@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <vector>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/rval.hpp>
@@ -69,6 +70,10 @@ namespace resophonic {
 	this->assign(expr);
 	return *this;
       }
+
+      array& operator<<(const boost::numeric::ublas::matrix<T>&); 
+      void operator>>(boost::numeric::ublas::matrix<T>&); 
+
 
       impl_t& self() { return self_; }
       const impl_t& self() const { return self_; }

@@ -49,9 +49,8 @@ int main(int argc, char** argv)
   fftwf_plan plan;
 
   int j=0;
-  for (int i=0; i<nsamples-fftsize; i+=stepsize)
+  for (int i=0; i<nsamples-fftsize; i+=stepsize, j++)
     {
-      j++;
       if (i%1000 == 0)
 	{
 	  std::cout << i << "      \r";
@@ -60,11 +59,13 @@ int main(int argc, char** argv)
       plan = fftwf_plan_dft_r2c_1d(fftsize, indata+i, outdata, FFTW_ESTIMATE);
       fftwf_execute(plan);
 
-      for (int i =nfreqs-1; i>=0; i--)
+      /*
+      for (int i=nfreqs-1; i>=0; i--)
 	{
 	  float amp = 10 * log10(std::sqrt(outdata[i][0] * outdata[i][0] + outdata[i][1] * outdata[i][1]));
 	  write(outfd, &amp, sizeof(float));
 	}
+      */
     }
 
   cout << "Performed " << j << " steps.\n";

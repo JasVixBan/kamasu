@@ -74,6 +74,12 @@ find_library(CUDA_CUTIL_LIB
   NO_DEFAULT_PATH
   )
 
+find_library(CUFFT_LIBRARY
+  cufft
+  PATHS /usr/local/cuda/lib
+  NO_DEFAULT_PATH
+  )
+
 # contains cutil.h
 include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc)
 cuda_include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc

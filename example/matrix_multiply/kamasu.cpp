@@ -18,6 +18,7 @@ using std::cout;
   #include <cutil.h>*/
 
 namespace rk = resophonic::kamasu;
+namespace bnu = boost::numeric::ublas;
 
 int main(int argc, char** argv)
 {
@@ -25,10 +26,19 @@ int main(int argc, char** argv)
 
   boost::timer total, math;
   total.restart();
+  
+  bnu::matrix<float> asrc(n,n), bsrc(n,n), cdst(n,n);
   rk::array<float> a(n,n), b(n,n), c;
+
+  a << asrc;
+  b << bsrc;
+
   std::cout << "multiplying NxN array by NxN array where N=" << n << "\n";
   math.restart();
   c = a * b;
+
+  c >> cdst;
+
   std::cout << "mathtime: " << math.elapsed() << "\n";
   std::cout << "w/ data transfer: " << total.elapsed() << "\n";
 

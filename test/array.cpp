@@ -629,3 +629,25 @@ SLICETEST(13, 2, 7);
 SLICETEST(5563, 5, 1113);
 SLICETEST(8111, 3, 2704);
 
+
+TEST(array_is_column_major)
+{
+  array<float> a(2,3);
+  
+  //
+  // array:
+  //  1 2 3
+  //  4 5 6
+  // should be stored as:
+  //
+  //  1 4 2 5 3 6
+  //
+
+  ENSURE_EQUAL(a.index_of(0,0), 0);
+  ENSURE_EQUAL(a.index_of(1,0), 1);
+  ENSURE_EQUAL(a.index_of(0,1), 2);
+  ENSURE_EQUAL(a.index_of(1,1), 3);
+  ENSURE_EQUAL(a.index_of(0,2), 4);
+  ENSURE_EQUAL(a.index_of(1,2), 5);
+
+}

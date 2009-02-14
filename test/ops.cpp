@@ -227,6 +227,56 @@ TEST(multiplies)
   ENSURE_EQUAL(b(3,4), 40.0f);
 }
 
+TEST(matrix_mul)
+{
+  array<float> a(2,2);
+
+  array<float> b(2,2);
+  array<float> c(2,2);
+
+  a(0,0) = 0;
+  a(0,1) = 1;
+  a(1,0) = 2;
+  a(1,1) = 3;
+
+  b(0,0) = 6;
+  b(0,1) = 7;
+  b(1,0) = 4;
+  b(1,1) = 5;
+
+
+  //         0  1
+  //         2  3
+  //
+  // 6  7   14 27
+  // 4  5   10 19
+
+
+  log_trace("*** START matrix multiply ***");
+  c = a * b;
+
+  ENSURE_EQUAL(a(0,0), 0.0f);
+  ENSURE_EQUAL(a(0,1), 1.0f);
+  ENSURE_EQUAL(a(1,0), 2.0f);
+  ENSURE_EQUAL(a(1,1), 3.0f);
+
+  ENSURE_EQUAL(b(0,0), 6.0f);
+  ENSURE_EQUAL(b(0,1), 7.0f);
+  ENSURE_EQUAL(b(1,0), 4.0f);
+  ENSURE_EQUAL(b(1,1), 5.0f);
+
+  for (int i=0; i<2; i++)
+    for (int j=0; j<2; j++)
+      std::cout << "c(" << i << "," << j << ") = " << c(i,j) << "\n";
+
+  /*
+  ENSURE_EQUAL(c(0,0), 14.0f);
+  ENSURE_EQUAL(c(0,1), 27.0f);
+  ENSURE_EQUAL(c(1,0), 10.0f);
+  ENSURE_EQUAL(c(1,1), 19.0f);
+  */
+}
+
 TEST(plus)
 {
   array<float> a = make_4x5();

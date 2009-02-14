@@ -1,8 +1,12 @@
 #include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/logging.hpp>
+#include <resophonic/kamasu/make_vector.hpp>
+
 #include "opmap.hpp"
 
 #include <boost/mpl/map.hpp>
+
+#include <cublas.h>
 
 namespace resophonic {
   namespace kamasu {
@@ -20,15 +24,35 @@ namespace resophonic {
 	{
 	  BOOST_ASSERT(lhs.nd == 2);
 	  BOOST_ASSERT(rhs.nd == 2);
-	  //BOOST_ASSERT(lhs.dims->get(1) == rhs.dims->get(0));
-	  
-	  rk::array_impl<float, boost::mpl::true_> rv;
-	  std::vector<std::size_t> shape;
-	  shape.push_back(lhs.impl_->dims.get(0));
-	  shape.push_back(rhs.impl_->dims.get(1));
+	  std::size_t lhs_rows = lhs.impl_->dims.get(0);
+	  std::size_t lhs_cols = lhs.impl_->dims.get(1);
+	  std::size_t rhs_rows = rhs.impl_->dims.get(0);
+	  std::size_t rhs_cols = rhs.impl_->dims.get(1);
 
-	  BOOST_ASSERT(0);
-	  rv.reshape(shape);
+	  BOOST_ASSERT(lhs_cols == rhs_rows);
+
+	  std::vector<std::size_t> shp = make_vector(lhs_rows, rhs_cols);
+	  rk::array_impl<float, boost::mpl::true_> rv;
+	  rv.reshape(shp);
+
+	  //   C = alpha * op(A) * op(B) + beta * C
+	  
+	  cublasSgemm('n', // transa, no trans 
+		      'n', // transb, no trans
+		      lhs_rows, // rows of lhs and rows of result
+		      rhs_cols, // cols of rhs and cols of result
+		      lhs_cols, // number columns of op(A) and rows of op(B)
+		      1.0, // alpha 
+		      lhs.data(), // data of lhs
+		      lhs_rows, // leading dimension of lhs
+		      rhs.data(), // data of rhs
+		      rhs_rows, // leading dimension of rhs
+		      0, // beta.  if zero, C just gets overwritten
+		      rv.data(), // pointer to C
+		      lhs_rows // leading dim of C
+		      );
+	  
+		       
 	  return rv;
 	}
 

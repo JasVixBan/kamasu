@@ -1,3 +1,4 @@
 add_subdirectory(autocorrelation)
 add_subdirectory(fourier_analysis)
+add_subdirectory(matrix_multiply)
 

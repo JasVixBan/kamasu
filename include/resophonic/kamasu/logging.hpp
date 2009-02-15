@@ -13,6 +13,8 @@
 #define LOG_ERROR 4
 #define LOG_FATAL 5
 
+#define I3_PRINTF_LOGGING_LEVEL LOG_WARN
+
 #ifndef I3_PRINTF_LOGGING_LEVEL
 #if RESOPHONIC_KAMASU_DEBUG
 #define I3_PRINTF_LOGGING_LEVEL LOG_TRACE
@@ -20,21 +22,6 @@
 #define I3_PRINTF_LOGGING_LEVEL LOG_INFO
 #endif
 #endif
-
-struct log_op_eater 
-{
-  template <typename T>
-  const log_op_eater& operator%(const T&) const
-  {
-    return *this;
-  }
-  operator bool() { return true; }
-
-};
-
-namespace {
-  log_op_eater loe;
-}
 
 namespace resophonic {
   namespace kamasu {

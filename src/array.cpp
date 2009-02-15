@@ -25,7 +25,9 @@ namespace resophonic {
   namespace kamasu {
 
     template <typename T, typename RVal>
-    array<T, RVal>::array() : self_(boost::proto::value(*this))
+    array<T, RVal>::array() 
+      : /*base_t(*this),*/
+	self_(boost::proto::value(*this))
     {
 
     }
@@ -266,7 +268,6 @@ namespace resophonic {
       if (ir.is_degenerate())
 	throw std::runtime_error("degenerate slice of 1d array");
 
-      std::vector<std::size_t> newshape(1);				
       int finish, start, diff;
 
       if (ir.stride() > 0)
@@ -299,7 +300,6 @@ namespace resophonic {
       diff += diff % ir.stride();				
       log_trace("diff %d - %d is %d",  finish % start % diff); 
       unsigned newdim = std::abs(diff/ir.stride());		
-      newshape[0] = newdim;					
       log_trace("newdim is %u",  newdim);
 
       log_trace("make new array");
@@ -316,11 +316,7 @@ namespace resophonic {
       new_array.self().offset = index_of(starts);
       log_trace("offset is %d",  new_array.self().offset);
 
-      std::vector<int> new_strides(1);
-      
-      new_strides[0] = self().impl_->strides.get(0) * ir.stride();
-
-      new_array.self().impl_->strides.set(new_strides);
+      new_array.self().impl_->strides.set(0, self().impl_->strides.get(0) * ir.stride());
       new_array.self().calculate_factors();
       return new_array;	
     }

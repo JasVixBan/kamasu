@@ -41,13 +41,14 @@ namespace resophonic {
 	    rval<T> operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)); \
 	    array slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const; \
 	    std::size_t index_of(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const;
-
+      
       BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, VARARG_DECL, ~);
+
+#undef VARARG_DECL
 
       std::size_t index_of(const std::vector<size_t>& indexes) const;
       array slice(const std::vector<index_range>& ranges) const;
 
-#undef VARARG_DECL
 
       array copy() const;
 

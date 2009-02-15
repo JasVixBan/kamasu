@@ -24,7 +24,7 @@ namespace resophonic
     array_impl<T, RVal>::array_impl() 
       : data_(new (holder_pool::malloc()) holder<float>,
 	      (void (*)(void*))holder_pool::free),
-	impl_(new (impl_pool::malloc()) detail::impl_t,
+	      impl_(new (impl_pool::malloc()) detail::impl_t,
 	      (void (*)(void*))impl_pool::free),
 	linear_size(0),
 	offset(0)
@@ -65,8 +65,8 @@ namespace resophonic
 		const array_impl<T, boost::mpl::false_>& rhs)
       {
 	lhs.nd = rhs.nd;
-	lhs.impl_ = rhs.impl_->clone();
-	lhs.data_ = rhs.data_->clone();
+	lhs.impl_ = rhs.impl_ ? rhs.impl_->clone() : rhs.impl_;
+	lhs.data_ = rhs.data_ ? rhs.data_->clone() : rhs.data_;
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;
@@ -78,8 +78,8 @@ namespace resophonic
 		const array_impl<T, boost::mpl::false_>& rhs)
       {
 	lhs.nd = rhs.nd;
-	lhs.impl_ = rhs.impl_->clone();
-	lhs.data_ = rhs.data_->clone();
+	lhs.impl_ = rhs.impl_ ? rhs.impl_->clone() : rhs.impl_;
+	lhs.data_ = rhs.data_ ? rhs.data_->clone() : rhs.data_;
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;

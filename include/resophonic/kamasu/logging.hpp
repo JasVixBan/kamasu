@@ -13,7 +13,7 @@
 #define LOG_FATAL 5
 
 #ifndef I3_PRINTF_LOGGING_LEVEL
-#define I3_PRINTF_LOGGING_LEVEL LOG_ERROR
+#define I3_PRINTF_LOGGING_LEVEL LOG_TRACE
 #endif
 
 struct log_op_eater 
@@ -41,7 +41,7 @@ namespace resophonic {
 
 // implmentation macro of macros visible to user.
 #define LOG_IMPL(LEVEL, ufmt, ...)					\
-  resophonic::kamasu::ofs() << boost::format("%s:%d " ufmt "\n") % __FILE__ % __LINE__ % __VA_ARGS__
+  resophonic::kamasu::ofs() << boost::format("%s:%d " ufmt "\n") % __FILE__ % __LINE__ % __VA_ARGS__, resophonic::kamasu::ofs().flush()
   
 #if I3_PRINTF_LOGGING_LEVEL <= LOG_TRACE
 #define log_trace(format, ...) LOG_IMPL(LOG_TRACE, format, ##__VA_ARGS__)

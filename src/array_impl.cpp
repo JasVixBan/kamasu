@@ -178,12 +178,18 @@ namespace resophonic
     {
       BOOST_ASSERT(nd > 0);
       linear_size = 1;
-      for(unsigned i=0; i<nd; i++)
+      impl_->factors.set(0, 1);
+      unsigned prev_factor = 1;
+      linear_size = impl_->dims.get(0);
+      for(unsigned i=1; i<nd; i++)
 	{
-	  unsigned dim = impl_->dims.get(i);
+	  unsigned dim_left = impl_->dims.get(i-1);
 	  //BOOST_ASSERT(dim != 0);
-	  //impl_->factors.set(i, 1);
-	  linear_size *= dim;
+	  unsigned newfactor = dim_left * prev_factor;
+	  impl_->factors.set(i, newfactor);
+	  prev_factor = newfactor;
+
+	  linear_size *= impl_->dims.get(i);
 	  /*
 	  for (unsigned j=i+1; j<nd; j++)
 	    {
@@ -194,11 +200,10 @@ namespace resophonic
 	  */
 	}
 
-      /*
+
       for (unsigned i=0; i<nd; i++)
 	log_trace("dim %u is %u, factor %u", 
 		  i % impl_->dims.get(i) % impl_->factors.get(i));
-      */
       log_trace("linear size is %u", linear_size); 
     }
 

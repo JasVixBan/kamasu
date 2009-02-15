@@ -16,7 +16,7 @@ TEST_GROUP();
 
 TEST(pow_2)
 {
-  unsigned n = 100000;
+  unsigned n = 100;
   array<float> a = make_1d(n), b;
 
   b = rk::pow(a, 2.0f);

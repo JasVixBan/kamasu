@@ -435,8 +435,11 @@ TEST(1d_slice_rev)
   index_range ir(9,-1,-1);
   array<float> sliced = a.slice(ir);
   ENSURE_EQUAL(sliced.linear_size(), 10);
-  for (unsigned i=0; i<9; i++)
-    ENSURE_EQUAL(sliced(i), 9.0f - i); 
+  for (unsigned i=0; i<10; i++)
+    {
+      std::cout << "index=" << i << " value=" << sliced(i) << "\n"; 
+      ENSURE_EQUAL(sliced(i), 9.0f - i); 
+    }
 }
 
 TEST(1d_slice_underscore)

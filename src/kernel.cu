@@ -162,7 +162,7 @@ kamasu_testy_knl_thunk(Op op,
   if (INDEX >= linear_size)
     return;
 
-  for (unsigned i = 0; i<n_dims; i++)
+  for (int i = n_dims-1; i>=0; i--)
     {
       unsigned this_component = index / factors[i];
       actual_index += this_component * strides[i];

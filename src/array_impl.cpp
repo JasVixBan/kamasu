@@ -4,6 +4,7 @@
 #include <resophonic/kamasu/array_impl.hpp>
 
 #include "cutil.h"
+#include <cuda_runtime.h>
 #include <cassert>
 
 #include <boost/pool/singleton_pool.hpp>
@@ -14,9 +15,30 @@ namespace resophonic
   namespace kamasu 
   {
     namespace {
+
       struct tag { };
-      typedef boost::singleton_pool<tag, sizeof(holder<float>)> holder_pool;
-      typedef boost::singleton_pool<tag, sizeof(detail::impl_t)> impl_pool;
+
+      struct cuda_alloc
+      {
+	typedef std::size_t size_type;
+	typedef std::ptrdiff_t difference_type;
+
+	static char* malloc(const size_type bytes)
+	{
+	  void *ptr;
+	  CUDA_SAFE_CALL(cudaMallocHost(&ptr, bytes));
+	  return (char*)ptr;
+	}
+
+	static void free(char* const block)
+	{
+	  CUDA_SAFE_CALL(cudaFree(block));
+	}
+
+      };
+
+      typedef boost::singleton_pool<tag, sizeof(holder<float>), cuda_alloc> holder_pool;
+      typedef boost::singleton_pool<tag, sizeof(detail::impl_t), cuda_alloc> impl_pool;
 
     }
 
@@ -28,8 +50,7 @@ namespace resophonic
 	      (void (*)(void*))impl_pool::free),
 	linear_size(0),
 	offset(0)
-    { 
-    }
+    { }
 
     namespace
     {
@@ -103,14 +124,14 @@ namespace resophonic
     }
 
     template<typename T, typename RVal>
-    array_impl<T, RVal>::array_impl(const array_impl<T, RVal>& rhs)
+    array_impl<T, RVal>::array_impl(const this_t& rhs)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
       construct(*this, rhs);
     }
 
     template<typename T, typename RVal>
-    array_impl<T, RVal>::array_impl(const array_impl<T, other_t>& rhs)
+    array_impl<T, RVal>::array_impl(const other_t& rhs)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
       construct(*this, rhs);
@@ -126,7 +147,6 @@ namespace resophonic
       nd = 0;
       for (int i=0; i<shape.size(); i++)
 	{
-	  //	  RESOPHONIC_KAMASU_THROW(shape[i] == 0, zero_dim(i));
 	  if (shape[i] != 0)
 	    {
 	      impl.dims.set(nd, shape[i]);
@@ -246,15 +266,28 @@ namespace resophonic
 
     template<typename T, typename RVal>
     void
-    array_impl<T, RVal>::copy_into(array_impl<T, RVal>& newarray) const
+    array_impl<T, RVal>::copy_into(this_t& rhs) const
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
-      newarray.nd = nd;
-      newarray.data_ = data_->clone();
-      newarray.impl_ = impl_->clone();
+      rhs.nd = nd;
+      rhs.data_ = data_->clone();
+      rhs.impl_ = impl_->clone();
 
-      newarray.offset = offset;
-      newarray.linear_size = linear_size;
+      rhs.offset = offset;
+      rhs.linear_size = linear_size;
+    }
+
+    template<typename T, typename RVal>
+    void
+    array_impl<T, RVal>::copy_into(other_t& rhs) const
+    {
+      log_trace("%s",  __PRETTY_FUNCTION__);
+      rhs.nd = nd;
+      rhs.data_ = data_->clone();
+      rhs.impl_ = impl_->clone();
+
+      rhs.offset = offset;
+      rhs.linear_size = linear_size;
     }
 
     template<typename T, typename RVal>

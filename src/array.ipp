@@ -30,7 +30,7 @@ self_(boost::proto::value(*this))
 
 #if N > 1
 template <typename T, typename RVal>
-array<T, RVal>
+array<T, boost::mpl::true_>
 array<T, RVal>::slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const
 {
   return slice(KAMASU_MAKE_VECTOR(N, Arg));

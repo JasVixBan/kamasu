@@ -35,23 +35,30 @@ namespace resophonic {
     }
 
     template <typename T, typename RVal>
+    array<T, RVal>::array(const std::vector<std::size_t>& shape) 
+      : self_(boost::proto::value(*this))
+    { 
+      self_.reshape(shape);
+    }
+
+    template <typename T, typename RVal>
+    array<T, RVal>::array(const array<T, boost::mpl::true_>& rhs) 
+      : self_(boost::proto::value(*this))
+    { 
+      self().copy_from(rhs.self());
+    }
+
+    template <typename T, typename RVal>
     array<T, RVal>::~array()
     {
       
     }
 
     template <typename T, typename RVal>
-    array<T, RVal>::array(const std::vector<std::size_t>& shape) 
-      : self_(boost::proto::value(*this))
-    { 
-      self().reshape(shape);
-    }
-
-    template <typename T, typename RVal>
     std::size_t
     array<T, RVal>::linear_size() const
     {
-      return self().linear_size;
+      return self_.linear_size;
     }
 
     template <typename T, typename RVal>
@@ -64,7 +71,7 @@ namespace resophonic {
 #endif
       BOOST_ASSERT(rhs.nd);
       BOOST_ASSERT(rhs.linear_size);
-      self().copy_from(rhs);
+      self_.copy_from(rhs);
     }
 
     template <typename T, typename RVal>
@@ -76,7 +83,7 @@ namespace resophonic {
       rhs.show();
 #endif
       BOOST_ASSERT(rhs.nd);
-      self().copy_from(rhs);
+      self_.copy_from(rhs);
     }
 
     template <typename T, typename RVal>
@@ -84,8 +91,8 @@ namespace resophonic {
     array<T, RVal>::operator<<(const boost::numeric::ublas::matrix<T,boost::numeric::ublas::column_major>& m)
     {
       std::vector<std::size_t> newshape = make_vector(m.size1(), m.size2());
-      self().reshape(newshape, true);
-      self().data_->host_to_device(&(m.data()[0]), m.size1() * m.size2());
+      self_.reshape(newshape, true);
+      self_.data_->host_to_device(&(m.data()[0]), m.size1() * m.size2());
     }
 
     template <typename T, typename RVal>
@@ -93,22 +100,22 @@ namespace resophonic {
     array<T, RVal>::operator>>(boost::numeric::ublas::matrix<T,boost::numeric::ublas::column_major>& m)
     {
       m.resize(this->dim(0), this->dim(1));
-      self().data_->device_to_host(&(m.data()[0]));
+      self_.data_->device_to_host(&(m.data()[0]));
     }
 
     template <typename T, typename RVal>
     void 
     array<T, RVal>::show() const
     {
-      self().show();
+      self_.show();
     }
 
     template <typename T, typename RVal>
-    array<T, RVal>
+    array<T, boost::mpl::true_>
     array<T, RVal>:: copy() const
     {
-      array newarray;
-      self().copy_into(newarray.self());
+      array<T, boost::mpl::true_> newarray;
+      self_.copy_into(newarray.self());
       return newarray;
     }
 
@@ -117,7 +124,7 @@ namespace resophonic {
     array<T, RVal>::operator=(const array<T, RVal>& rhs) 
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
-      this->take(rhs.self());
+      this->take(rhs.self_);
       return *this;
     };
 
@@ -127,19 +134,19 @@ namespace resophonic {
     {									
       std::size_t index = 0;
       for (unsigned i=0; i<indexes.size(); i++)
-	index += indexes[i] * self().impl_->strides.get(i);
+	index += indexes[i] * self_.impl_->strides.get(i);
 
       return index;
     }
 
     template <typename T, typename RVal>				
-    array<T, RVal>							
+    array<T, boost::mpl::true_>							
     array<T, RVal>::slice(const std::vector<index_range>& ranges) const
     {									
-      detail::impl_t& impl = *(self().impl_);
+      detail::impl_t& impl = *(self_.impl_);
 
       log_trace("slicing!");						
-      BOOST_ASSERT(ranges.size() == self().nd);				
+      BOOST_ASSERT(ranges.size() == self_.nd);				
 
       std::vector<std::size_t> newshape, starts;				
 
@@ -197,12 +204,12 @@ namespace resophonic {
 	    }
 	}
       log_trace("make new array");
-      array new_array;
+      array<T, boost::mpl::true_> new_array;
       new_array.self().reshape(newshape, false);
       log_trace("done make new array");
-      new_array.self().data_ = self().data_;
+      new_array.self().data_ = self_.data_;
       new_array.self().offset = index_of(starts);
-      log_trace("offset is %d",  new_array.self().offset);
+      log_trace("offset is %d",  new_array.self_.offset);
 
       std::vector<int> new_strides;
       for (unsigned i=0; i<ranges.size(); i++)
@@ -217,12 +224,12 @@ namespace resophonic {
     }
 
     template <typename T, typename RVal>				
-    array<T, RVal>							
+    array<T, boost::mpl::true_>							
     array<T, RVal>::slice(const index_range& ir) const
     {									
-      detail::impl_t& impl = *(self().impl_);
+      detail::impl_t& impl = *(self_.impl_);
       log_trace("slicing!");						
-      BOOST_ASSERT(1  == self().nd);				
+      BOOST_ASSERT(1  == self_.nd);				
 
       if (ir.is_degenerate())
 	throw std::runtime_error("degenerate slice of 1d array");
@@ -262,10 +269,10 @@ namespace resophonic {
       log_trace("newdim is %u",  newdim);
 
       log_trace("make new array");
-      array new_array;
+      array<T, boost::mpl::true_> new_array;
       new_array.self().reshape(newdim, false);
       log_trace("done make new array");
-      new_array.self().data_ = self().data_;
+      new_array.self().data_ = self_.data_;
 
       std::size_t newstart; 
       if (ir.stride() > 0)

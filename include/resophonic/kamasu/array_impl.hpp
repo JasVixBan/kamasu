@@ -34,8 +34,9 @@ namespace resophonic {
 	      typename RVal = boost::mpl::false_>
     struct array_impl 
     {
-      typedef typename boost::mpl::not_<RVal>::type other_t;
-
+      typedef array_impl<T, RVal> this_t;
+      typedef array_impl<T, typename boost::mpl::not_<RVal>::type> other_t;
+      
       mutable boost::shared_ptr<detail::impl_t> impl_;
 
       typedef uint64_t offset_t;
@@ -46,15 +47,16 @@ namespace resophonic {
       boost::shared_ptr<holder<T> > data_;
 
       array_impl();
-      array_impl(const array_impl<T, RVal>&);
+      array_impl(const this_t&);
 
-      explicit array_impl(const array_impl<T, other_t>&);
+      explicit array_impl(const other_t&);
       ~array_impl();
 
       void reset();
       void copy_from(const array_impl<T, boost::mpl::false_>& rhs);
       void copy_from(const array_impl<T, boost::mpl::true_>& rhs);
-      void copy_into(array_impl<T, RVal>& thing) const;
+      void copy_into(this_t& thing) const;
+      void copy_into(other_t& thing) const;
 
       void swap(array_impl& rhs);
 

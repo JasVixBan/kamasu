@@ -33,13 +33,14 @@ namespace resophonic {
 
       array();
       array(const std::vector<std::size_t>& shape);
+      array(const array<T, boost::mpl::true_>& rhs);
       ~array();
 
 #define VARARG_DECL(Z, N, DATA)						\
       array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg));			\
 	    T operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const; \
 	    rval<T> operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)); \
-	    array slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const; \
+	    array<T,boost::mpl::true_> slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const; \
 	    std::size_t index_of(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const;
       
       BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, VARARG_DECL, ~);
@@ -47,10 +48,10 @@ namespace resophonic {
 #undef VARARG_DECL
 
       std::size_t index_of(const std::vector<size_t>& indexes) const;
-      array slice(const std::vector<index_range>& ranges) const;
+      array<T, boost::mpl::true_> slice(const std::vector<index_range>& ranges) const;
 
 
-      array copy() const;
+      array<T, boost::mpl::true_> copy() const;
 
       std::size_t n_dims() const { return self().nd; }
       std::size_t n_strides() const { return self().nd; }

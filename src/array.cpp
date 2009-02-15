@@ -1,4 +1,4 @@
-#define I3_PRINTF_LOGGING_LEVEL LOG_INFO
+// #define I3_PRINTF_LOGGING_LEVEL LOG_INFO
 
 #include <cassert>
 #include <stdlib.h>
@@ -135,15 +135,19 @@ namespace resophonic {
       return *this;
     };
 
+#define INDEX_OF_TERM(Z, N, DATA) + (Arg##N * strides.get(N))
+
 #define INDEX_OF_DEFN(Z, N, DATA)					\
     template <typename T, typename RVal>				\
     std::size_t								\
     array<T, RVal>::index_of(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const \
     {									\
-      return index_of(KAMASU_MAKE_VECTOR(N, Arg));			\
+      const mirror<int>& strides(self().impl_->strides);		\
+      return 0 BOOST_PP_REPEAT(N, INDEX_OF_TERM, ~);			\
     }
     BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, INDEX_OF_DEFN, Arg);
 
+#undef INDEX_OF_TERM
 #undef INDEX_OF_DEFN
 
     template <typename T, typename RVal>				
@@ -151,7 +155,6 @@ namespace resophonic {
     array<T, RVal>::index_of(const std::vector<std::size_t>& indexes) const
     {									
       std::size_t index = 0;
-
       for (unsigned i=0; i<indexes.size(); i++)
 	index += indexes[i] * self().impl_->strides.get(i);
 
@@ -307,13 +310,14 @@ namespace resophonic {
       new_array.self().reshape(newdim, false);
       log_trace("done make new array");
       new_array.self().data_ = self().data_;
-      std::vector<std::size_t> starts(1);
-      if (ir.stride() > 0)
-	starts[0] = (ir.start() == ir.from_start()) ? 0 : ir.start();
-      else 
-	starts[0] = (ir.start() == ir.to_end()) ? self().impl_->dims.get(0)-1 : ir.start();
 
-      new_array.self().offset = index_of(starts);
+      std::size_t newstart; 
+      if (ir.stride() > 0)
+	newstart = (ir.start() == ir.from_start()) ? 0 : ir.start();
+      else 
+	newstart = (ir.start() == ir.to_end()) ? self().impl_->dims.get(0)-1 : ir.start();
+
+      new_array.self().offset = index_of(newstart);
       log_trace("offset is %d",  new_array.self().offset);
 
       new_array.self().impl_->strides.set(0, self().impl_->strides.get(0) * ir.stride());

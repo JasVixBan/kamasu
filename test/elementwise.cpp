@@ -28,6 +28,6 @@ TEST(pow_2)
   for (float i=0; i<n; i++)
     {
       ENSURE_EQUAL(a(i), i);
-      ENSURE_DISTANCE(b(i), i*i, i *i * 0.000001);
+      ENSURE_DISTANCE(b(i), i*i, i *i * 10e-07);
     }
 }

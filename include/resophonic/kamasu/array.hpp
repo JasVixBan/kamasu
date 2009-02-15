@@ -71,8 +71,8 @@ namespace resophonic {
 	return *this;
       }
 
-      array& operator<<(const boost::numeric::ublas::matrix<T>&); 
-      void operator>>(boost::numeric::ublas::matrix<T>&); 
+      array& operator<<(const boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
+      void operator>>(boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
 
 
       impl_t& self() { return self_; }

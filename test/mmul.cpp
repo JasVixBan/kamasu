@@ -75,7 +75,7 @@ TEST(matrix_mul)
   ENSURE_EQUAL(c(1,1), 19.0f);
 
 
-  bnu::matrix<float> A, B, C;
+  bnu::matrix<float, bnu::column_major> A, B, C;
   a >> A;
   b >> B;
   C = prod(A, B);
@@ -175,7 +175,7 @@ TEST(basic)
   ENSURE_EQUAL(c.dim(0), 4);
   ENSURE_EQUAL(c.dim(1), 3);
 
-  bnu::matrix<float> C, boost_c;
+  bnu::matrix<float, bnu::column_major> C, boost_c;
   
   c >> C;
 

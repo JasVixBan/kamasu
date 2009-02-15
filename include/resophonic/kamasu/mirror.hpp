@@ -62,21 +62,20 @@ namespace resophonic {
 
       void set(const std::vector<T>& hdata);
 
-      void set(unsigned i, T value) 
-      { 
+      void set(unsigned i, T value)
+      {
 	RESOPHONIC_KAMASU_THROW(i >= KAMASU_MAX_ARRAY_DIM, bad_index());
-	cpu_[i] = value; 
-	dirty = true; 
+	cpu_[i] = value;
+	dirty = true;
       }
 
-      T get(unsigned i) const 
-      { 
+      T get(unsigned i) const
+      {
 	RESOPHONIC_KAMASU_THROW(i >= KAMASU_MAX_ARRAY_DIM, bad_index());
-	return cpu_[i]; 
+	return cpu_[i];
       }
-      
+
       void reset();
-
     };
   }
 }

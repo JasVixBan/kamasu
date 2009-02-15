@@ -28,7 +28,7 @@ using namespace resophonic::kamasu;
 
 TEST_GROUP();
 
-void from_gpu_test(unsigned n, unsigned m, unsigned seed)
+void from_gpu_test(unsigned n, unsigned m)
 {
   array<float> a(n, m);
   
@@ -36,7 +36,7 @@ void from_gpu_test(unsigned n, unsigned m, unsigned seed)
     for (int j=0; j<m; j++)
       a(i,j) = i * m + j;
 
-  bnu::matrix<float> fetched;
+  bnu::matrix<float, bnu::column_major> fetched;
   a >> fetched;
 
   ENSURE_EQUAL(a.n_dims(), 2);
@@ -49,9 +49,9 @@ void from_gpu_test(unsigned n, unsigned m, unsigned seed)
     
 }
 
-void to_gpu_test(unsigned n, unsigned m, unsigned seed)
+void to_gpu_test(unsigned n, unsigned m)
 {
-  bnu::matrix<float> a(n, m);
+  bnu::matrix<float, bnu::column_major> a(n, m);
 
   for (int i=0; i<n; i++)
     for (int j=0; j<m; j++)
@@ -67,28 +67,28 @@ void to_gpu_test(unsigned n, unsigned m, unsigned seed)
 
   for (int i=0; i<n; i++)
     for (int j=0; j<m; j++)
+      //std::cout << i << "," << j << " == " << put(i,j) << " should be " << i*m+j << "\n";
       ENSURE_EQUAL(put(i,j), i * m + j);
 }
 
-#define MAKE_TEST(M, N, SEED) \
-  TEST(ublas_to_kamasu_##M##x##N##_seed##SEED)				\
-  {									\
-    to_gpu_test(M, N, SEED);						\
-  }									\
-  TEST(kamasu_to_ublas_##M##x##N##_seed##SEED)				\
-  {									\
-    from_gpu_test(M, N, SEED);						\
-  }									\
+#define MAKE_TEST(M, N)				\
+  TEST(ublas_to_kamasu_##M##x##N)		\
+  {						\
+    to_gpu_test(M, N);				\
+  }						\
+  TEST(kamasu_to_ublas_##M##x##N)		\
+  {						\
+    from_gpu_test(M, N);			\
+  }						\
 
-MAKE_TEST(1,1,1);
-MAKE_TEST(1,2,1);
-MAKE_TEST(2,1,1);
-MAKE_TEST(2,2,1);
-MAKE_TEST(3,7,1);
-MAKE_TEST(2,2,2);
-MAKE_TEST(3,3,3);
-MAKE_TEST(17,3,17);
-MAKE_TEST(51,3,0);
-MAKE_TEST(19,47,0);
-MAKE_TEST(419,247,0);
+MAKE_TEST(1,1);
+MAKE_TEST(1,2);
+MAKE_TEST(2,1);
+MAKE_TEST(2,2);
+MAKE_TEST(3,3);
+MAKE_TEST(3,7);
+MAKE_TEST(17,3);
+MAKE_TEST(51,3);
+MAKE_TEST(19,47);
+MAKE_TEST(419,247);
 

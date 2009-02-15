@@ -193,6 +193,7 @@ namespace resophonic {
 	  else
 	    {
 	      starts.push_back(ir.start());
+	      newshape.push_back(0);
 	    }
 	}
       log_trace("make new array");

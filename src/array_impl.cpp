@@ -123,12 +123,17 @@ namespace resophonic
       log_trace("%s", "reshape");
       detail::impl_t& impl = *impl_;
       offset = 0;
-      nd = shape.size();
-      for (int i=0; i<nd; i++)
+      nd = 0;
+      for (int i=0; i<shape.size(); i++)
 	{
-	  RESOPHONIC_KAMASU_THROW(shape[i] == 0, zero_dim(i));
-	  impl.dims.set(i, shape[i]);
+	  //	  RESOPHONIC_KAMASU_THROW(shape[i] == 0, zero_dim(i));
+	  if (shape[i] != 0)
+	    {
+	      impl.dims.set(nd, shape[i]);
+	      nd++;
+	    }
 	}
+
       std::size_t newsize = calculate_strides();
       calculate_factors();
       if (realloc)

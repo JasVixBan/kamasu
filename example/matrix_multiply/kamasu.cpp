@@ -27,7 +27,7 @@ int main(int argc, char** argv)
   boost::timer total, math;
   total.restart();
   
-  bnu::matrix<float> asrc(n,n), bsrc(n,n), cdst(n,n);
+  bnu::matrix<float, bnu::column_major> asrc(n,n), bsrc(n,n), cdst(n,n);
   rk::array<float> a(n,n), b(n,n), c;
 
   a << asrc;

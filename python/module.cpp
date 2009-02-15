@@ -6,7 +6,6 @@
 #include <resophonic/kamasu/index_range.hpp>
 #include <iostream>
 
-void hi() { log_info("hi"); }
 using namespace boost::python;
 namespace ks = resophonic::kamasu;
 
@@ -165,7 +164,6 @@ namespace {
   ks::array<T>
   op_mul(Array& arr, float value)
   {
-    log_trace("op mul!");
     ks::array<T> res;
     res = arr * value;
     return res;

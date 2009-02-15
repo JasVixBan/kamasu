@@ -21,9 +21,6 @@
 
 #include "kernel.h"
 
-#if !RESOPHONIC_KAMASU_DEBUG
-#error fleh
-#endif
 namespace resophonic {
   namespace kamasu {
 

@@ -14,16 +14,14 @@ using std::cout;
 
 #include <boost/timer.hpp>
 
-/*#include <cuda_runtime_api.h>
-  #include <cutil.h>*/
-
 namespace rk = resophonic::kamasu;
 namespace bnu = boost::numeric::ublas;
 
 int main(int argc, char** argv)
 {
   unsigned n = atoi(argv[1]);
-
+  unsigned times = argc == 3 ? atoi(argv[2]) : 1;
+  
   boost::timer total, math;
   total.restart();
   
@@ -33,9 +31,10 @@ int main(int argc, char** argv)
   a << asrc;
   b << bsrc;
 
-  std::cout << "multiplying NxN array by NxN array where N=" << n << "\n";
+  std::cout << "multiplying NxN array by NxN array where N=" << n << " (" << times << " times).\n";
   math.restart();
-  c = a * b;
+  for (int i=0; i<times; i++)
+    c = a * b;
 
   c >> cdst;
 

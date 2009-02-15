@@ -23,41 +23,21 @@ using namespace std;
 int main(int argc, char *argv[]) {
         
   unsigned n = atoi(argv[1]);
+  unsigned times = argc == 3 ? atoi(argv[2]) : 1;
         
   boost::timer t;
   double time;
         
   ublas::matrix<float> A(n,n), B(n,n), C(n, n);
   
-  cout << "computing X = A*B" << endl;
+  std::cout << "multiplying NxN array by NxN array where N=" << n << " (" << times << " times).\n";
   t.restart();
-  C = prod(A,B);
+  for (int i=0; i<times; i++)
+    C = prod(A,B);
+
   time = t.elapsed();
   cout << "elapsed time - " << time << "s" << endl << endl;
         
-#if 0
-        
-  // A*B*C
-  cout << "computing X = A*B*C" << endl;
-  t.restart();
-  //X = prod(A, prod(B,C)); // - !!!!!!!!!!!
-  X = prod(A, ublas::matrix<double> (prod(B,C)));
-  time = t.elapsed();
-  cout << "elapsed time - " << time << "s" << endl << endl;
-        
-        
-  // A*B*C*D
-  cout << "computing X = A*B*C*D" << endl;
-  t.restart();
-  //B = prod(A ,prod(B, prod(C,D))); // !!!!!!!!!
-  X = prod(A, ublas::matrix<double> (prod(B, ublas::matrix<d
-					  ouble> (prod(C,D)))));
-  time = t.elapsed();
-  cout << "elapsed time - " << time << "s" << endl;
-                
-        
-  cout << "end" << endl;
-#endif
   return 0;
 } 
 

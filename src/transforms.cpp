@@ -45,17 +45,17 @@ namespace resophonic {
 		      lhs_cols, // number columns of op(A) and rows of op(B)
 		      1.0, // alpha 
 		      lhs.data(), // data of lhs
-		      lhs_cols, // leading dimension of lhs
+		      lhs_rows, // leading dimension of lhs
 		      rhs.data(), // data of rhs
-		      rhs_cols, // leading dimension of rhs
+		      rhs_rows, // leading dimension of rhs
 		      0, // beta.  if zero, C just gets overwritten
 		      rv.data(), // pointer to C
-		      lhs_cols // leading dim of C
+		      lhs_rows // leading dim of C
 		      );
 	  
 	  cublasStatus s = cublasGetError();
 	  if (s != CUBLAS_STATUS_SUCCESS)
-	    BOOST_ASSERT(0);
+	    throw cublas_exception(s);
 	  return rv;
 	}
 

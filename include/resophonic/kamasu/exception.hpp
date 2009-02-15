@@ -4,6 +4,7 @@
 #include <exception>
 #include <cassert>
 #include <resophonic/kamasu/config.hpp>
+#include <cublas.h>
 
 namespace resophonic {
   namespace kamasu {
@@ -37,6 +38,16 @@ namespace resophonic {
       virtual const char* what() const throw()
       {
 	return "resophonic::kamasu error: wrong number of dimensions";
+      }
+    };
+
+    struct cublas_exception : virtual std::exception
+    {
+      cublasStatus s;
+      cublas_exception(cublasStatus s_) : s(s_) { }
+      virtual const char* what() const throw()
+      {
+	return "resophonic::kamasu error: cublas is unhappy";
       }
     };
 

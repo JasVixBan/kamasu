@@ -121,12 +121,13 @@ namespace resophonic
     array_impl<T, RVal>::reshape(const std::vector<std::size_t>& shape, bool realloc)
     {
       log_trace("%s", "reshape");
+      detail::impl_t& impl = *impl_;
       offset = 0;
       nd = shape.size();
       for (int i=0; i<nd; i++)
 	{
 	  RESOPHONIC_KAMASU_THROW(shape[i] == 0, zero_dim(i));
-	  impl_->dims.set(i, shape[i]);
+	  impl.dims.set(i, shape[i]);
 	}
       std::size_t newsize = calculate_strides();
       calculate_factors();
@@ -138,12 +139,13 @@ namespace resophonic
     void
     array_impl<T, RVal>::reshape(std::size_t shape, bool realloc)
     {
+      detail::impl_t& impl = *impl_;
       log_trace("%s", "reshape");
       offset = 0;
       nd = 1;
-      impl_->dims.set(0u, shape);
-      impl_->strides.set(0u, 1);
-      impl_->factors.set(0u, 1);
+      impl.dims.set(0u, shape);
+      impl.strides.set(0u, 1);
+      impl.factors.set(0u, 1);
       linear_size = shape;
       if (realloc)
 	data_->resize(shape);
@@ -153,22 +155,23 @@ namespace resophonic
     std::size_t
     array_impl<T, RVal>::calculate_strides()
     {
+      detail::impl_t& impl = *impl_;
       // this also calculates size but do we need this here...
       unsigned stride = 1;
-      impl_->strides.set(0, stride);
+      impl.strides.set(0, stride);
 
       for(unsigned i=1; i<nd; i++)
 	{
-	  stride *= impl_->dims.get(i-1);
-	  impl_->strides.set(i, stride);
+	  stride *= impl.dims.get(i-1);
+	  impl.strides.set(i, stride);
 	}
 
       for (unsigned i=0; i<nd; i++)
-	log_trace("dim %u is %u, stride %u",  i % impl_->dims.get(i) % impl_->strides.get(i));
+	log_trace("dim %u is %u, stride %u",  i % impl.dims.get(i) % impl.strides.get(i));
 
       std::size_t size = 1;
       for (int i=0; i<nd; i++)
-	size *= impl_->dims.get(i);
+	size *= impl.dims.get(i);
       return size;
     }
 
@@ -177,33 +180,25 @@ namespace resophonic
     array_impl<T, RVal>::calculate_factors()
     {
       BOOST_ASSERT(nd > 0);
+      detail::impl_t& impl = *impl_;
       linear_size = 1;
-      impl_->factors.set(0, 1);
+      impl.factors.set(0, 1);
       unsigned prev_factor = 1;
-      linear_size = impl_->dims.get(0);
+      linear_size = impl.dims.get(0);
       for(unsigned i=1; i<nd; i++)
 	{
-	  unsigned dim_left = impl_->dims.get(i-1);
-	  //BOOST_ASSERT(dim != 0);
+	  unsigned dim_left = impl.dims.get(i-1);
 	  unsigned newfactor = dim_left * prev_factor;
-	  impl_->factors.set(i, newfactor);
+	  impl.factors.set(i, newfactor);
 	  prev_factor = newfactor;
 
-	  linear_size *= impl_->dims.get(i);
-	  /*
-	  for (unsigned j=i+1; j<nd; j++)
-	    {
-	      unsigned f = impl_->factors.get(i);
-	      f *= impl_->dims.get(j);
-	      impl_->factors.set(i, f);
-	    }
-	  */
+	  linear_size *= impl.dims.get(i);
 	}
 
 
       for (unsigned i=0; i<nd; i++)
 	log_trace("dim %u is %u, factor %u", 
-		  i % impl_->dims.get(i) % impl_->factors.get(i));
+		  i % impl.dims.get(i) % impl.factors.get(i));
       log_trace("linear size is %u", linear_size); 
     }
 

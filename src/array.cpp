@@ -121,10 +121,6 @@ namespace resophonic {
       return *this;
     };
 
-#define BOOST_PP_ITERATION_LIMITS (1, KAMASU_MAX_ARRAY_DIM-1)
-#define BOOST_PP_FILENAME_1 "array.ipp"
-#include BOOST_PP_ITERATE()
-
     template <typename T, typename RVal>				
     std::size_t								
     array<T, RVal>::index_of(const std::vector<std::size_t>& indexes) const
@@ -288,6 +284,13 @@ namespace resophonic {
       return new_array;	
     }
     
+    //
+    //  "vararg" defns expanded here
+    //
+#define BOOST_PP_ITERATION_LIMITS (1, KAMASU_MAX_ARRAY_DIM-1)
+#define BOOST_PP_FILENAME_1 "array.ipp"
+#include BOOST_PP_ITERATE()
+
     template class array<float, boost::mpl::true_>;
     template class array<float, boost::mpl::false_>;
   }

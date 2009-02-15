@@ -59,3 +59,13 @@ TEST(assign){
   
   ENSURE(mp->gpu_data());
 }
+
+TEST(bad_set) {
+  mirror<unsigned> m;
+  ENSURE_THROWS(resophonic::kamasu::bad_index, m.set((unsigned)KAMASU_MAX_ARRAY_DIM, 0));
+}
+
+TEST(bad_get) {
+  mirror<unsigned> m;
+  ENSURE_THROWS(resophonic::kamasu::bad_index, m.get(KAMASU_MAX_ARRAY_DIM));
+}

@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <boost/format.hpp>
+#include <resophonic/kamasu/config.hpp>
 
 #define LOG_TRACE 0
 #define LOG_DEBUG 1
@@ -13,7 +14,11 @@
 #define LOG_FATAL 5
 
 #ifndef I3_PRINTF_LOGGING_LEVEL
+#if RESOPHONIC_KAMASU_DEBUG
 #define I3_PRINTF_LOGGING_LEVEL LOG_TRACE
+#else
+#define I3_PRINTF_LOGGING_LEVEL LOG_INFO
+#endif
 #endif
 
 struct log_op_eater 

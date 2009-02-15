@@ -17,8 +17,11 @@ std::vector<float> autocorrelate(std::vector<float>& signal)
 
   for(unsigned outer = 0; outer < signal.size() - winlen*2; outer++)
     {
-      cout << outer * 100 / signal.size() << "%\r";
-      cout.flush();
+      if (outer % 100 == 0)
+	{
+	  cout << outer * 100 / signal.size() << "%\r";
+	  cout.flush();
+	}
       for (unsigned inner = 0; inner < winlen; inner++)
 	{
 	  float sum = 0;

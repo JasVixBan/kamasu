@@ -71,7 +71,9 @@ namespace resophonic {
     array<T, RVal>::take(const array_impl<T, boost::mpl::true_>& rhs)
     {
       log_trace("%s",  "TAKING");
+#ifdef RESOPHONIC_KAMASU_DEBUG
       rhs.show();
+#endif
       BOOST_ASSERT(rhs.nd);
       BOOST_ASSERT(rhs.linear_size);
       self().copy_from(rhs);
@@ -82,7 +84,9 @@ namespace resophonic {
     array<T, RVal>::take(const array_impl<T, boost::mpl::false_>& rhs)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
+#ifdef RESOPHONIC_KAMASU_DEBUG
       rhs.show();
+#endif
       BOOST_ASSERT(rhs.nd);
       self().copy_from(rhs);
     }
@@ -108,9 +112,7 @@ namespace resophonic {
     void 
     array<T, RVal>::show() const
     {
-#ifndef NDEBUG
       self().show();
-#endif
     }
 
     template <typename T, typename RVal>
@@ -302,7 +304,7 @@ namespace resophonic {
 
       log_trace("make new array");
       array new_array;
-      new_array.self().reshape(newshape, false);
+      new_array.self().reshape(newdim, false);
       log_trace("done make new array");
       new_array.self().data_ = self().data_;
       std::vector<std::size_t> starts(1);

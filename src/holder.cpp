@@ -1,4 +1,4 @@
-// #define I3_PRINTF_LOGGING_LEVEL LOG_DEBUG
+#define I3_PRINTF_LOGGING_LEVEL LOG_WARN
 #include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/logging.hpp>

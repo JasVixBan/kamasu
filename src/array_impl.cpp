@@ -217,9 +217,10 @@ namespace resophonic
     void 
     array_impl<T, RVal>::copy_from(const array_impl<T, boost::mpl::true_>& rhs)
     {
+#if RESOPHONIC_KAMASU_DEBUG
       log_trace("%s",  __PRETTY_FUNCTION__);
       rhs.show();
-
+#endif
       nd = rhs.nd;
       impl_ = rhs.impl_;
       data_ = rhs.data_;
@@ -231,8 +232,10 @@ namespace resophonic
     void
     array_impl<T, RVal>::copy_from(const array_impl<T, boost::mpl::false_>& rhs)
     {
+#if RESOPHONIC_KAMASU_DEBUG
       log_trace("%s",  __PRETTY_FUNCTION__);
       rhs.show();
+#endif
       nd = rhs.nd;
       impl_ = rhs.impl_;
       data_ = rhs.data_;

@@ -23,8 +23,11 @@ rk::array<float> autocorrelate(rk::array<float>& signal)
   std::vector<float> corr_coeff(winlen);
   for (unsigned outer = 0; outer < 1900/*signal.dim(0) - winlen*2*/; outer++)
     {
-      cout << outer * 100 / signal.dim(0) << "%   \r";
-      cout.flush();
+      if (outer % 100 == 0)
+	{
+	  cout << outer * 100 / signal.dim(0) << "%   \r";
+	  cout.flush();
+	}
       rk::array<float> lhs(signal.slice(rk::index_range(outer, outer+winlen)));
       unsigned inner = 0;
       for (unsigned inner = 0; inner < winlen; inner++)

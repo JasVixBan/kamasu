@@ -42,7 +42,6 @@ TEST(slice0)
     {
       array<float> b = a.slice(index_range(_,_), index_range(_,_), index_range(slicedim));
   
-      log_trace("**** SLICE DONE ****");
       b.show();
 
       ENSURE_EQUAL(b.n_dims(), 2);
@@ -63,7 +62,6 @@ TEST(slice0_reverse)
     {
       array<float> b = a.slice(index_range(_,_,-1), index_range(_,_), index_range(slicedim));
   
-      log_trace("**** SLICE DONE ****");
       b.show();
 
       ENSURE_EQUAL(b.n_dims(), 2);
@@ -84,7 +82,6 @@ TEST(slice1)
     {
       array<float> b = a.slice(index_range(_,_), index_range(slicedim), index_range(_,_));
   
-      log_trace("**** SLICE DONE ****");
       b.show();
 
       ENSURE_EQUAL(b.n_dims(), 2);
@@ -105,7 +102,6 @@ TEST(slice1_reverse)
     {
       array<float> b = a.slice(index_range(_,_), index_range(slicedim), index_range(_,_,-1));
   
-      log_trace("**** SLICE DONE ****");
       b.show();
 
       ENSURE_EQUAL(b.n_dims(), 2);
@@ -126,7 +122,6 @@ TEST(slice2)
     {
       array<float> b = a.slice(index_range(slicedim), index_range(_,_), index_range(_,_));
   
-      log_trace("**** SLICE DONE ****");
       b.show();
 
       ENSURE_EQUAL(b.n_dims(), 2);
@@ -147,7 +142,6 @@ TEST(slice2_reverse)
     {
       array<float> b = a.slice(index_range(slicedim), index_range(_,_,-1), index_range(_,_));
   
-      log_trace("**** SLICE DONE ****");
       b.show();
 
       ENSURE_EQUAL(b.n_dims(), 2);
@@ -168,7 +162,6 @@ TEST(double_reverse)
     {
       array<float> b = a.slice(index_range(slicedim), index_range(_,_,-1), index_range(_,_,-1));
   
-      log_trace("**** SLICE DONE ****");
       b.show();
 
       ENSURE_EQUAL(b.n_dims(), 2);

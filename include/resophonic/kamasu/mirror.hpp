@@ -23,6 +23,7 @@
  */
 
 #include <resophonic/kamasu/config.hpp>
+#include <resophonic/kamasu/exception.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/array.hpp>
@@ -61,9 +62,18 @@ namespace resophonic {
 
       void set(const std::vector<T>& hdata);
 
-      void set(unsigned i, T value) { cpu_[i] = value; dirty = true; }
+      void set(unsigned i, T value) 
+      { 
+	RESOPHONIC_KAMASU_THROW(i >= KAMASU_MAX_ARRAY_DIM, bad_index());
+	cpu_[i] = value; 
+	dirty = true; 
+      }
 
-      T get(unsigned i) const { return cpu_[i]; }
+      T get(unsigned i) const 
+      { 
+	RESOPHONIC_KAMASU_THROW(i >= KAMASU_MAX_ARRAY_DIM, bad_index());
+	return cpu_[i]; 
+      }
       
       void reset();
 

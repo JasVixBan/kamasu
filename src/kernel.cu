@@ -147,35 +147,6 @@ gpu_div_vector_k(float* lhs, float* rhs)
   lhs[INDEX] /= rhs[INDEX];
 }
 
-/*
-//
-//  c-iface vector
-//
-void gpu_mul_vector(float* lhs, float* rhs, unsigned size)
-{
-  printf(">>> gpu_mul_vector %u %u\n", gridsize(size), threads_per_block);
-  gpu_mul_vector_k<<<gridsize(size), threads_per_block>>>(lhs, rhs);
-}
-
-void gpu_add_vector(float* lhs, float* rhs, unsigned size)
-{
-  gpu_add_vector_k<<<gridsize(size), threads_per_block>>>(lhs, rhs);
-}
-
-void gpu_sub_vector(float* lhs, float* rhs, unsigned size)
-{
-  gpu_sub_vector_k<<<gridsize(size), threads_per_block>>>(lhs, rhs);
-}
-
-void gpu_div_vector(float* lhs, float* rhs, unsigned size)
-{
-  gpu_div_vector_k<<<gridsize(size), threads_per_block>>>(lhs, rhs);
-}
-*/
-//
-//  testing:  add to matrix
-//
-                                                            
 __global__ void
 kamasu_testy_knl_thunk(Op op,
 		       float* data,

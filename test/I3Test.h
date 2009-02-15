@@ -101,6 +101,16 @@ namespace I3Test {
       throw test_failure(file, line, cond_txt, msg);
   }
 
+#define ENSURE_THROWS(EXTYPE, ...)					\
+  try {									\
+    __VA_ARGS__;							\
+    FAIL("That should have thrown a "					\
+	 # EXTYPE							\
+	 " but didn't throw anything at all");				\
+  } catch (const EXTYPE& e) {						\
+    /* ok, that threw as expected */					\
+  }
+
 #define ENSURE_DISTANCE(LEFT,RIGHT,DISTANCE,...)			\
   I3Test::ensure_distance(__FILE__,__LINE__,				\
 		  BOOST_PP_STRINGIZE(LEFT), BOOST_PP_STRINGIZE(RIGHT),	\

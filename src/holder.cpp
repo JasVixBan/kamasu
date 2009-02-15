@@ -2,6 +2,7 @@
 #include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/logging.hpp>
+#include <resophonic/kamasu/exception.hpp>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
@@ -148,9 +149,7 @@ namespace resophonic {
     T
     holder<T>::get(unsigned i) const
     {
-      if (not (i < size_))
-	log_error("egh, trying to get %u from block of size %u",  i % size_);
-      BOOST_ASSERT(i < size_);
+      RESOPHONIC_KAMASU_THROW(i >= size_, bad_index());
 
       T value;
       const T* addy = data_ + i;
@@ -163,7 +162,8 @@ namespace resophonic {
     void
     holder<T>::set(unsigned i, T value)
     {
-      BOOST_ASSERT(i < size_);
+      RESOPHONIC_KAMASU_THROW(i >= size_, bad_index());
+
       T* addy = data_ + i;
       CUDA_SAFE_CALL( cudaMemcpy(addy, &value, sizeof(T), cudaMemcpyHostToDevice) );
       log_trace("Set %s at %u of %u",  value % i % size_);

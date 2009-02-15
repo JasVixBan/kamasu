@@ -80,13 +80,13 @@ namespace resophonic {
 			int* strides,
 			float scalar)
 	{
-	  log_trace("*** DISPATCH TO KERNEL ***");
+	  log_trace("%s", "*** DISPATCH TO KERNEL ***");
 	  BOOST_ASSERT(lhs);
 	  BOOST_ASSERT(ndims);
 	  BOOST_ASSERT(factors);
 	  BOOST_ASSERT(last_index);
 	  kamasu_testy_knl(op_map<T>::value, lhs, ndims, last_index, factors, strides, scalar);
-	  log_trace("*** DONE DISPATCH TO KERNEL ***");
+	  log_trace("%s", "*** DONE DISPATCH TO KERNEL ***");
 	  BOOST_ASSERT(lhs);
 	  BOOST_ASSERT(ndims);
 	  BOOST_ASSERT(factors);
@@ -101,9 +101,9 @@ namespace resophonic {
 			      const rk::array_impl<float, IsRVal>& v, 
 			      const float& f)
     {
-      log_trace("*** CREATE TEMPORARY ***");
+      log_trace("%s", "*** CREATE TEMPORARY ***");
       rk::array_impl<float, boost::mpl::true_> rv(v);
-      log_trace("*** DONE CREATE TEMPORARY ***");
+      log_trace("%s", "*** DONE CREATE TEMPORARY ***");
       v.show();
       rv.show();
 

@@ -53,8 +53,6 @@ TEST(matrix_mul)
   // 6  7   14 27
   // 4  5   10 19
 
-
-  log_trace("*** START matrix multiply ***");
   c = a * b;
 
   ENSURE_EQUAL(a(0,0), 0.0f);

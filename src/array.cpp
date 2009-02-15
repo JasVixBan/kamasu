@@ -11,14 +11,19 @@
 #include <boost/foreach.hpp>
 
 #include "cutil.h"
+#include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/array.hpp>
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/rval.hpp>
 #include <resophonic/kamasu/make_vector.hpp>
+#include <resophonic/kamasu/exception.hpp>
 
 #include "kernel.h"
 
+#if !RESOPHONIC_KAMASU_DEBUG
+#error fleh
+#endif
 namespace resophonic {
   namespace kamasu {
 
@@ -34,12 +39,15 @@ namespace resophonic {
       
     }
 
+#define CHECK_DIM(Z, N, DATA) RESOPHONIC_KAMASU_THROW(DATA##N == 0, zero_dim(N));
+    
+
 #define VARARG_CONSTRUCTOR_DEFN(Z, N, DATA)				\
     template <typename T, typename RVal>				\
     array<T, RVal>::array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) :	\
     self_(boost::proto::value(*this))					\
     {									\
-      log_trace("%s",  __PRETTY_FUNCTION__);				\
+      BOOST_PP_REPEAT(N, CHECK_DIM, Arg);				\
       std::vector<std::size_t> shape = KAMASU_MAKE_VECTOR(N, Arg);	\
       self().reshape(shape);						\
     }						
@@ -143,8 +151,10 @@ namespace resophonic {
     array<T, RVal>::index_of(const std::vector<std::size_t>& indexes) const
     {									
       std::size_t index = 0;
+
       for (unsigned i=0; i<indexes.size(); i++)
 	index += indexes[i] * self().impl_->strides.get(i);
+
       return index;
     }
 
@@ -322,14 +332,22 @@ namespace resophonic {
     //  these could go via std::vector
     //
 
-#define STRIDE_TERM(Z, N, DATA)			\
-    + Arg ## N * self().impl_->strides.get(N)
+#ifdef RESOPHONIC_KAMASU_DEBUG
+#define DIM_CHECK(Z, N, DATA) RESOPHONIC_KAMASU_THROW(DATA##N >= self().impl_->dims.get(N), \
+						      bad_index());
+#else
+#define DIM_CHECK(Z, N, DATA) ;
+#endif
+
+#define STRIDE_TERM(Z, N, DATA)	+ DATA ## N * self().impl_->strides.get(N)
 
 #define FNCALL_LVALUE_OPERATOR_DEFN(Z, N, DATA)				\
     template <typename T, typename RVal>				\
     T									\
     array<T, RVal>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const \
     {									\
+      RESOPHONIC_KAMASU_THROW(N != self().nd, dimensions_dont_match());	\
+      BOOST_PP_REPEAT(N, DIM_CHECK, Arg);				\
       int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		\
       log_trace("getting lvalue from offset %d",  (self().offset + index)); \
       return self().data_->get(index);					\
@@ -344,7 +362,8 @@ namespace resophonic {
     rval<T>								\
     array<T, RVal>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) \
     {									\
-      BOOST_ASSERT(N == self().nd);					\
+      RESOPHONIC_KAMASU_THROW(N != self().nd, dimensions_dont_match());	\
+      BOOST_PP_REPEAT(N, DIM_CHECK, Arg);				\
       int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		\
       log_trace("getting rvalue offset=%u index=%d",  self().offset % index); \
       return rval<T>(self().data_, index + self().offset);		\

@@ -30,5 +30,6 @@ namespace boost {
 
 #include <resophonic/kamasu/array.hpp>
 #include <resophonic/kamasu/grammar.hpp>
+#include <resophonic/kamasu/exception.hpp>
 
 #endif

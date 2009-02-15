@@ -37,7 +37,6 @@ void test_multiplies(unsigned n)
   ENSURE_EQUAL(a.n_dims(), 1);
   ENSURE_EQUAL(a.dim(0), n);
 
-  log_trace("**** START MULTIPLY ****");
   b = a * 2.0f;
 
   ENSURE_EQUAL(b.linear_size(), n);
@@ -211,7 +210,6 @@ TEST(multiplies)
   array<float> a = make_4x5();
 
   array<float> b;
-  log_trace("*** START MULTIPLY OF 4x5 ***");
   b = a * 2.0f;
 
   ENSURE_EQUAL(a(0,0), 1.0f);
@@ -232,7 +230,7 @@ TEST(plus)
   array<float> a = make_4x5();
 
   array<float> b;
-  log_trace("*** START MULTIPLY OF 4x5 ***");
+
   b = a + 2.5f;
 
   ENSURE_EQUAL(a(0,0), 1.0f);

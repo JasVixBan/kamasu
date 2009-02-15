@@ -28,11 +28,6 @@ using namespace resophonic::kamasu;
 
 TEST_GROUP();
 
-TEST(zero_dim_is_illegal)
-{
-  ks::array<float> a(3,3,0,3);
-}
-
 #define VALUE(Z, N, TEXT) TEXT
 #define LOOPVAR(Z, N, LOOPEND) for (unsigned var##N = 0; var##N < LOOPEND; var##N++)
 
@@ -127,6 +122,47 @@ TEST(make_4x5)
   ENSURE_EQUAL(a(2,2), 11);
   ENSURE_EQUAL(a(3,3), 16);
 }
+
+#if RESOPHONIC_KAMASU_DEBUG
+TEST(zero_dim_throws_1d)
+{
+  try {
+    ks::array<float> a(0);
+    FAIL("That should have thrown resophonic::kamasu::zero_dim");
+  } catch (const resophonic::kamasu::zero_dim& e) {
+    if (e.which_dim != 0)
+      FAIL("threw right exception but wrong dimension");
+  } catch (const std::exception& e) {
+    std::cout << "caught " << e.what() << "\n";
+    FAIL("Didn't throw right exception type");
+  }
+}
+
+TEST(zero_dim_throws_3d)
+{
+  try {
+    ks::array<float> a(0);
+    FAIL("That should have thrown resophonic::kamasu::zero_dim");
+  } catch (const resophonic::kamasu::zero_dim& e) {
+    if (e.which_dim != 0)
+      FAIL("threw right exception but wrong dimension");
+  } catch (const std::exception& e) {
+    std::cout << "caught " << e.what() << "\n";
+    FAIL("Didn't throw right exception type");
+  }
+}
+
+TEST(dims_throw)
+{
+  array<float> a = make_4x5();
+  ENSURE_THROWS(resophonic::kamasu::dimensions_dont_match, a(4));
+  ENSURE_THROWS(resophonic::kamasu::dimensions_dont_match, a(4,0,1));
+  ENSURE_THROWS(resophonic::kamasu::dimensions_dont_match, a(4,0,1,2));
+  ENSURE_THROWS(resophonic::kamasu::bad_index, a(4,0));
+  ENSURE_THROWS(resophonic::kamasu::bad_index, a(0,5));
+  ENSURE_THROWS(resophonic::kamasu::bad_index, a(4,5));
+}
+#endif
 
 TEST(slice_2d_reduce)
 {
@@ -385,7 +421,6 @@ TEST(1d_slice)
 {
   array<float> a = linspace(0, 9, 10);
   
-  log_trace("about to slice");
   index_range ir(0,10,1);
   array<float> sliced = a.slice(ir);
   ENSURE_EQUAL(sliced.linear_size(), 10);
@@ -397,7 +432,6 @@ TEST(1d_slice_rev)
 {
   array<float> a = linspace(0, 9, 10);
   
-  log_trace("about to slice");
   index_range ir(9,-1,-1);
   array<float> sliced = a.slice(ir);
   ENSURE_EQUAL(sliced.linear_size(), 10);
@@ -409,7 +443,6 @@ TEST(1d_slice_underscore)
 {
   array<float> a = linspace(0, 9, 10);
   
-  log_trace("about to slice");
   index_range ir(_,_);
   array<float> sliced = a.slice(ir);
   ENSURE_EQUAL(sliced.n_dims(), 1);
@@ -423,7 +456,6 @@ TEST(1d_slice_from_left)
 {
   array<float> a = linspace(0, 9, 10);
   
-  log_trace("about to slice");
   index_range ir(5,_);
   array<float> sliced = a.slice(ir);
   ENSURE_EQUAL(sliced.n_dims(), 1);
@@ -439,7 +471,6 @@ TEST(1d_slice_from_right)
 {
   array<float> a = linspace(0, 9, 10);
   
-  log_trace("about to slice");
   index_range ir(_,5);
   array<float> sliced = a.slice(ir);
   ENSURE_EQUAL(sliced.n_dims(), 1);
@@ -455,7 +486,6 @@ TEST(1d_underscore_reverse)
 {
   array<float> a = linspace(0, 9, 10);
   
-  log_trace("about to slice");
   index_range ir(_, _, -1);
   array<float> sliced = a.slice(ir);
   ENSURE_EQUAL(sliced.n_dims(), 1);
@@ -473,7 +503,6 @@ TEST(1d_underscore_reverse_2)
 {
   array<float> a = linspace(0, 9, 10);
   
-  log_trace("about to slice");
   // slice to 9 7 5 3 1
   index_range ir(_, _, -2);
   array<float> sliced = a.slice(ir);

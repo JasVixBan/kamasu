@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <cassert>
+#include <resophonic/kamasu/config.hpp>
 
 namespace resophonic {
   namespace kamasu {
@@ -16,6 +17,30 @@ namespace resophonic {
 	return "resophonic::kamasu error: bad index";
       }
     };
+
+    struct zero_dim : virtual std::exception
+    {
+      std::size_t which_dim;
+      zero_dim(std::size_t which) : which_dim(which) { }
+
+      virtual const char* what() const throw()
+      {
+	return "resophonic::kamasu error:"
+	  "illegal zero dimension (minimum is 1 for a degenerate slice)";
+      }
+    };
+
+    struct dimensions_dont_match : virtual std::exception
+    {
+      dimensions_dont_match() { }
+
+      virtual const char* what() const throw()
+      {
+	return "resophonic::kamasu error: wrong number of dimensions";
+      }
+    };
+
+
   }
 }
 

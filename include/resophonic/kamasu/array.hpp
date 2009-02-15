@@ -87,10 +87,10 @@ namespace resophonic {
       template <typename Expr>
       void assign(Expr const& expr)
       {
-	log_trace("START EVAL/TRANSFORM");
+	log_trace("%s", "START EVAL/TRANSFORM");
 	typename boost::result_of<Grammar(Expr const&)>::type thingy 
 	  = Grammar()(expr);
-	log_trace("END EVAL/TRANSFORM");
+	log_trace("%s", "END EVAL/TRANSFORM");
 	//log_trace("thingy is %s") % name_of(thingy);
 	this->take(thingy);
       }

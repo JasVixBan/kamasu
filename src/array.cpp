@@ -19,6 +19,8 @@
 #include <resophonic/kamasu/make_vector.hpp>
 #include <resophonic/kamasu/exception.hpp>
 
+#include <boost/preprocessor/iteration/iterate.hpp>
+
 #include "kernel.h"
 
 namespace resophonic {
@@ -38,25 +40,9 @@ namespace resophonic {
       
     }
 
-#define CHECK_DIM(Z, N, DATA) RESOPHONIC_KAMASU_THROW(DATA##N == 0, zero_dim(N));
-    
-
-#define VARARG_CONSTRUCTOR_DEFN(Z, N, DATA)				\
-    template <typename T, typename RVal>				\
-    array<T, RVal>::array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) :	\
-    self_(boost::proto::value(*this))					\
-    {									\
-      BOOST_PP_REPEAT(N, CHECK_DIM, Arg);				\
-      std::vector<std::size_t> shape = KAMASU_MAKE_VECTOR(N, Arg);	\
-      self().reshape(shape);						\
-    }						
-
-    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, VARARG_CONSTRUCTOR_DEFN, ~);
-
-#undef VARARG_CONSTRUCTOR_DEFN
-
     template <typename T, typename RVal>
-    array<T, RVal>::array(const std::vector<std::size_t>& shape) : self_(boost::proto::value(*this))
+    array<T, RVal>::array(const std::vector<std::size_t>& shape) 
+      : self_(boost::proto::value(*this))
     { 
       self().reshape(shape);
     }
@@ -135,20 +121,9 @@ namespace resophonic {
       return *this;
     };
 
-#define INDEX_OF_TERM(Z, N, DATA) + (Arg##N * strides.get(N))
-
-#define INDEX_OF_DEFN(Z, N, DATA)					\
-    template <typename T, typename RVal>				\
-    std::size_t								\
-    array<T, RVal>::index_of(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const \
-    {									\
-      const mirror<int>& strides(self().impl_->strides);		\
-      return 0 BOOST_PP_REPEAT(N, INDEX_OF_TERM, ~);			\
-    }
-    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, INDEX_OF_DEFN, Arg);
-
-#undef INDEX_OF_TERM
-#undef INDEX_OF_DEFN
+#define BOOST_PP_ITERATION_LIMITS (1, KAMASU_MAX_ARRAY_DIM-1)
+#define BOOST_PP_FILENAME_1 "array.ipp"
+#include BOOST_PP_ITERATE()
 
     template <typename T, typename RVal>				
     std::size_t								
@@ -249,18 +224,6 @@ namespace resophonic {
       return new_array;	
     }
 
-#define SLICE_DEFN(Z, N, DATA)						\
-    template <typename T, typename RVal>				\
-    array<T, RVal>							\
-    array<T, RVal>::slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const \
-    {									\
-      return slice(KAMASU_MAKE_VECTOR(N, Arg));				\
-    }
-
-    BOOST_PP_REPEAT_FROM_TO(2, KAMASU_MAX_ARRAY_DIM, SLICE_DEFN, ~);
-
-#undef SLICE_DEFN
-
     template <typename T, typename RVal>				
     array<T, RVal>							
     array<T, RVal>::slice(const index_range& ir) const
@@ -325,50 +288,6 @@ namespace resophonic {
       return new_array;	
     }
     
-
-    //
-    //  these could go via std::vector
-    //
-
-#ifdef RESOPHONIC_KAMASU_DEBUG
-#define DIM_CHECK(Z, N, DATA) RESOPHONIC_KAMASU_THROW(DATA##N >= self().impl_->dims.get(N), \
-						      bad_index());
-#else
-#define DIM_CHECK(Z, N, DATA) ;
-#endif
-
-#define STRIDE_TERM(Z, N, DATA)	+ DATA ## N * self().impl_->strides.get(N)
-
-#define FNCALL_LVALUE_OPERATOR_DEFN(Z, N, DATA)				\
-    template <typename T, typename RVal>				\
-    T									\
-    array<T, RVal>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const \
-    {									\
-      RESOPHONIC_KAMASU_THROW(N != self().nd, dimensions_dont_match());	\
-      BOOST_PP_REPEAT(N, DIM_CHECK, Arg);				\
-      int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		\
-      log_trace("getting lvalue from offset %d",  (self().offset + index)); \
-      return self().data_->get(index);					\
-    }
-
-
-    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, FNCALL_LVALUE_OPERATOR_DEFN, ~);
-
-
-#define FNCALL_RVALUE_OPERATOR_DEFN(Z, N, DATA)				\
-    template <typename T, typename RVal>				\
-    rval<T>								\
-    array<T, RVal>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) \
-    {									\
-      RESOPHONIC_KAMASU_THROW(N != self().nd, dimensions_dont_match());	\
-      BOOST_PP_REPEAT(N, DIM_CHECK, Arg);				\
-      int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		\
-      log_trace("getting rvalue offset=%u index=%d",  self().offset % index); \
-      return rval<T>(self().data_, index + self().offset);		\
-    }
-
-    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, FNCALL_RVALUE_OPERATOR_DEFN, ~);
-
     template class array<float, boost::mpl::true_>;
     template class array<float, boost::mpl::false_>;
   }

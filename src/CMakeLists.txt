@@ -1,4 +1,6 @@
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 cuda_add_library(resophonic_barracuda SHARED
 
   # gpuvector.cu

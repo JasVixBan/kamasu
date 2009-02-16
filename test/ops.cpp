@@ -339,3 +339,24 @@ TEST(plus_assign)
   ENSURE_EQUAL(b(0,4), 34.0f);
 }
 
+TEST(plus_assign_slice)
+{
+  array<float> a = linspace(0,99,100);
+  array<float> a2 = linspace(0,9,10);
+
+  array<float> b = a.slice(index_range(10,20));
+  b += a2;
+
+  for (int i=0; i<99; i++)
+    {
+      if (i>=10 && i<20)
+	{
+	  ENSURE_EQUAL(a(i), i + i-10);
+	}
+      else
+	{
+	  ENSURE_EQUAL(a(i), i);
+	}
+    }
+}
+

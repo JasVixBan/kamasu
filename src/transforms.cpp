@@ -75,8 +75,8 @@ namespace resophonic {
 	  log_trace("%s", "*** DISPATCH TO AA KERNEL ***");
 	  kamasu_aa_knl(op_map<bp::tag::plus>::value,
 			lhs.nd, // ndims
-			lhs.data_->data(),
-			rhs.data_->data(),
+			lhs.data_->data() + lhs.offset,
+			rhs.data_->data() + rhs.offset,
 			lhs.impl_->factors.gpu_data(),
 			rhs.impl_->factors.gpu_data(),
 			lhs.impl_->strides.gpu_data(),

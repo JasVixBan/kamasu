@@ -1,4 +1,6 @@
 add_subdirectory(autocorrelation)
+add_subdirectory(dotproduct)
 add_subdirectory(fourier_analysis)
 add_subdirectory(matrix_multiply)
+add_subdirectory(fir_filter)
 

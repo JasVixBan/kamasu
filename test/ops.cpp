@@ -319,8 +319,23 @@ TEST(dot)
   ENSURE_EQUAL(dp, 120.0f);
 }
 
-
-TEST(smallslice)
+TEST(plus_assign)
 {
-  array<float> a(2,2);
+  array<float> a = make_4x5();
+
+  array<float> b = make_4x5();
+  b += a;
+
+  ENSURE_EQUAL(a(0,0), 1.0f);
+  ENSURE_EQUAL(a(1,2), 10.0f);
+  ENSURE_EQUAL(a(3,0), 4.0f);
+  ENSURE_EQUAL(a(0,4), 17.0f);
+  ENSURE_EQUAL(a(3,4), 20.0f);
+
+  ENSURE_EQUAL(b(3,4), 40.0f);
+  ENSURE_EQUAL(b(0,0), 2.0f);
+  ENSURE_EQUAL(b(1,2), 20.0f);
+  ENSURE_EQUAL(b(3,0), 8.0f);
+  ENSURE_EQUAL(b(0,4), 34.0f);
 }
+

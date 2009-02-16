@@ -24,6 +24,7 @@ namespace resophonic {
     {
       typedef array_impl<T, RVal> impl_t;
       typedef Expression<typename boost::proto::terminal<impl_t>::type> base_t;
+      typedef array<T, boost::mpl::true_> rval_t;
 
       impl_t& self_;
 
@@ -32,6 +33,7 @@ namespace resophonic {
       array& operator=(const array& rhs);
 
       array();
+
       array(const std::vector<std::size_t>& shape);
       array(const array<T, boost::mpl::true_>& rhs);
       ~array();
@@ -48,10 +50,10 @@ namespace resophonic {
 #undef VARARG_DECL
 
       std::size_t index_of(const std::vector<size_t>& indexes) const;
-      array<T, boost::mpl::true_> slice(const std::vector<index_range>& ranges) const;
+      rval_t slice(const std::vector<index_range>& ranges) const;
 
 
-      array<T, boost::mpl::true_> copy() const;
+      rval_t copy() const;
 
       std::size_t n_dims() const { return self().nd; }
       std::size_t n_strides() const { return self().nd; }
@@ -80,6 +82,15 @@ namespace resophonic {
       impl_t& self() { return self_; }
       const impl_t& self() const { return self_; }
 
+      template <typename Expr>
+      void 
+      operator+=(const Expr& expr)
+      {
+	typename boost::result_of<Grammar(Expr const&)>::type rhs_evaluated 
+	  = Grammar()(expr);
+	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated);
+      }
+
     private:
       
       void take(const std::vector<T>& rhs);
@@ -97,6 +108,8 @@ namespace resophonic {
 	this->take(thingy);
       }
     };
+
+
 
   }  
 }

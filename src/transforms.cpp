@@ -59,6 +59,34 @@ namespace resophonic {
 	  return rv;
 	}
 
+	template <typename LhsIsRVal, typename RhsIsRVal>
+	rk::array_impl<float, boost::mpl::true_>
+	operator()(bp::tag::plus_assign,
+		   const rk::array_impl<float, LhsIsRVal>& lhs, 
+		   const rk::array_impl<float, RhsIsRVal>& rhs)
+	{
+	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
+	  
+	  for (int i=0; i<lhs.nd; i++)
+	    RESOPHONIC_KAMASU_THROW(lhs.impl_->dims.get(i) != rhs.impl_->dims.get(i), 
+				    dimensions_dont_match());
+
+	  std::cout  <<"dispatchy!\n";
+	  log_trace("%s", "*** DISPATCH TO AA KERNEL ***");
+	  kamasu_aa_knl(op_map<bp::tag::plus>::value,
+			lhs.nd, // ndims
+			lhs.data_->data(),
+			rhs.data_->data(),
+			lhs.impl_->factors.gpu_data(),
+			rhs.impl_->factors.gpu_data(),
+			lhs.impl_->strides.gpu_data(),
+			rhs.impl_->strides.gpu_data(),
+			lhs.linear_size);
+	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
+			
+	  return rk::array_impl<float, boost::mpl::true_>();
+	}
+
 	void operator()(bp::tag::divides, 
 			float* lhs, float * rhs, unsigned size)
 	{
@@ -168,6 +196,7 @@ namespace resophonic {
 
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus);
     INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::multiplies);
+    INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus_assign);
     //INSTANTIATE_ARRAYARRAY_OP(tag::dot);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::divides);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);

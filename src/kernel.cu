@@ -181,6 +181,67 @@ kamasu_testy_knl_thunk(Op op,
     data[actual_index] = pow(data[actual_index], scalar);
 }
 
+__global__ void
+kamasu_aa_knl_thunk(Op op,
+		    unsigned n_dims,
+		    float* data_l,
+		    float* data_r,
+		    unsigned* factors_l,
+		    unsigned* factors_r,
+		    int* strides_l,
+		    int* strides_r,
+		    unsigned linear_size)
+{
+  unsigned index_l = INDEX, index_r = INDEX;
+  unsigned actual_index_l = 0, actual_index_r = 0;
+
+  if (INDEX >= linear_size)
+    return;
+
+  for (int i = n_dims-1; i>=0; i--)
+    {
+      unsigned this_component_l = index_l / factors_l[i];
+      unsigned this_component_r = index_r / factors_r[i];
+      actual_index_l += this_component_l * strides_l[i];
+      actual_index_r += this_component_r * strides_r[i];
+      index_l -= this_component_l * factors_l[i];
+      index_r -= this_component_r * factors_r[i];
+    }
+
+  if (op == MULTIPLIES)
+    data_l[actual_index_l] *= data_r[actual_index_r];
+  else if (op == DIVIDES)
+    data_l[actual_index_l] /= data_r[actual_index_r];
+  else if (op == PLUS)
+    data_l[actual_index_l] += data_r[actual_index_r];
+  else if (op == MINUS)
+    data_l[actual_index_l] -= data_r[actual_index_r];
+}
+
+void kamasu_aa_knl(Op op,
+		   unsigned n_dims,
+		   float* data_l,
+		   float* data_r,
+		   unsigned* factors_l,
+		   unsigned* factors_r,
+		   int* strides_l,
+		   int* strides_r,
+		   unsigned linear_size)
+{
+  bd_t bd = gridsize(linear_size);
+  //printf("%s with gridsize %u %u\n", __PRETTY_FUNCTION__, bd.first, bd.second);
+  //printf("n_dims=%u linear_size=%zu", n_dims, linear_size);
+  
+  kamasu_aa_knl_thunk<<<bd.first, bd.second>>>(op, 
+					       n_dims,
+					       data_l,
+					       data_r,
+					       factors_l,
+					       factors_r,
+					       strides_l,
+					       strides_r,
+					       linear_size);
+}
 
 void kamasu_testy_knl(Op op,
 		      float* data, 
@@ -190,8 +251,8 @@ void kamasu_testy_knl(Op op,
 		      float scalar)
 {
   bd_t bd = gridsize(linear_size);
-  printf("%s with gridsize %u %u\n", __PRETTY_FUNCTION__, bd.first, bd.second);
-  printf("n_dims=%u linear_size=%zu", n_dims, linear_size);
+  //printf("%s with gridsize %u %u\n", __PRETTY_FUNCTION__, bd.first, bd.second);
+  //printf("n_dims=%u linear_size=%zu", n_dims, linear_size);
   
   kamasu_testy_knl_thunk<<<bd.first, bd.second>>>(op, 
 						  data,

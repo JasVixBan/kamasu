@@ -61,5 +61,16 @@ void kamasu_testy_knl(Op op,
 		      unsigned* factors, int* strides, 
 		      float scalar);
 
+void kamasu_aa_knl(Op op,
+		   unsigned n_dims,
+		   float* data_l,
+		   float* data_r,
+		   unsigned* factors_l,
+		   unsigned* factors_r,
+		   int* strides_l,
+		   int* strides_r,
+		   unsigned linear_size);
+
+
 
 #endif

@@ -3,51 +3,34 @@
 #include <resophonic/kamasu/dumper_context.hpp>
 #include <resophonic/kamasu/array_impl.hpp>
 
+#include "pool.hpp"
 #include "cutil.h"
 #include <cuda_runtime.h>
 #include <cassert>
 
-#include <boost/pool/singleton_pool.hpp>
 #include <boost/bind.hpp>
 
 namespace resophonic 
 {
   namespace kamasu 
   {
-    namespace {
 
-      struct tag { };
-
-      struct cuda_alloc
-      {
-	typedef std::size_t size_type;
-	typedef std::ptrdiff_t difference_type;
-
-	static char* malloc(const size_type bytes)
-	{
-	  void *ptr;
-	  CUDA_SAFE_CALL(cudaMallocHost(&ptr, bytes));
-	  return (char*)ptr;
-	}
-
-	static void free(char* const block)
-	{
-	  CUDA_SAFE_CALL(cudaFree(block));
-	}
-
-      };
-
-      typedef boost::singleton_pool<tag, sizeof(holder<float>), cuda_alloc> holder_pool;
-      typedef boost::singleton_pool<tag, sizeof(detail::impl_t), cuda_alloc> impl_pool;
-
-    }
+    template<typename T, typename RVal>
+    void
+    array_impl<T, RVal>::alloc() 
+    {
+      data_ = boost::shared_ptr<holder<T> >(new (holder_pool::malloc()) holder<T>,
+					    (void (*)(void*))holder_pool::free);
+      impl_ = boost::shared_ptr<detail::impl_t>(new (impl_pool::malloc()) detail::impl_t,
+					       (void (*)(void*))impl_pool::free);
+    } 
 
     template<typename T, typename RVal>
     array_impl<T, RVal>::array_impl() 
-      : data_(new (holder_pool::malloc()) holder<float>,
+      : /*data_(new (holder_pool::malloc()) holder<float>,
 	      (void (*)(void*))holder_pool::free),
 	      impl_(new (impl_pool::malloc()) detail::impl_t,
-	      (void (*)(void*))impl_pool::free),
+	      (void (*)(void*))impl_pool::free),*/
 	linear_size(0),
 	offset(0)
     { }
@@ -107,22 +90,6 @@ namespace resophonic
       }
     }
 
-    template <typename T, typename RVal>
-    void
-    array_impl<T, RVal>::show() const
-    {
-      log_trace("%s", "____ Array ____");
-      log_trace("offset %u,  nd %u",  offset % nd);
-      for (unsigned i=0; i < nd; i++)
-	log_trace("dims[%u]      %u",  i % impl_->dims.get(i));
-      for (unsigned i=0; i < nd; i++)
-	log_trace("factors[%u]   %u",  i % impl_->factors.get(i));
-      for (unsigned i=0; i < nd; i++)
-	log_trace("stride[%u]   %u",  i % impl_->strides.get(i));
-      log_trace("off      %lu",  offset);
-      log_trace("last     %lu",  linear_size);
-    }
-
     template<typename T, typename RVal>
     array_impl<T, RVal>::array_impl(const this_t& rhs)
     {
@@ -142,6 +109,7 @@ namespace resophonic
     array_impl<T, RVal>::reshape(const std::vector<std::size_t>& shape, bool realloc)
     {
       log_trace("%s", "reshape");
+      if (!impl_) alloc();
       detail::impl_t& impl = *impl_;
       offset = 0;
       nd = 0;
@@ -164,6 +132,7 @@ namespace resophonic
     void
     array_impl<T, RVal>::reshape(std::size_t shape, bool realloc)
     {
+      if (!impl_) alloc();
       detail::impl_t& impl = *impl_;
       log_trace("%s", "reshape");
       offset = 0;
@@ -232,6 +201,7 @@ namespace resophonic
     {
       impl_.reset();
     }
+
 
     template<typename T, typename RVal>
     void 
@@ -307,6 +277,22 @@ namespace resophonic
     template<typename T, typename RVal>
     array_impl<T, RVal>::~array_impl()
     { 
+    }
+
+    template <typename T, typename RVal>
+    void
+    array_impl<T, RVal>::show() const
+    {
+      log_trace("%s", "____ Array ____");
+      log_trace("offset %u,  nd %u",  offset % nd);
+      for (unsigned i=0; i < nd; i++)
+	log_trace("dims[%u]      %u",  i % impl_->dims.get(i));
+      for (unsigned i=0; i < nd; i++)
+	log_trace("factors[%u]   %u",  i % impl_->factors.get(i));
+      for (unsigned i=0; i < nd; i++)
+	log_trace("stride[%u]   %u",  i % impl_->strides.get(i));
+      log_trace("off      %lu",  offset);
+      log_trace("last     %lu",  linear_size);
     }
 
     template class array_impl<float, boost::mpl::false_>;

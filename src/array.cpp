@@ -112,7 +112,7 @@ namespace resophonic {
 
     template <typename T, typename RVal>
     array<T, boost::mpl::true_>
-    array<T, RVal>:: copy() const
+    array<T, RVal>::copy() const
     {
       array<T, boost::mpl::true_> newarray;
       self_.copy_into(newarray.self());
@@ -145,7 +145,6 @@ namespace resophonic {
     {									
       detail::impl_t& impl = *(self_.impl_);
 
-      log_trace("slicing!");						
       BOOST_ASSERT(ranges.size() == self_.nd);				
 
       std::vector<std::size_t> newshape, starts;				
@@ -203,13 +202,10 @@ namespace resophonic {
 	      newshape.push_back(0);
 	    }
 	}
-      log_trace("make new array");
       array<T, boost::mpl::true_> new_array;
       new_array.self().reshape(newshape, false);
-      log_trace("done make new array");
       new_array.self().data_ = self_.data_;
       new_array.self().offset = index_of(starts);
-      log_trace("offset is %d",  new_array.self_.offset);
 
       std::vector<int> new_strides;
       for (unsigned i=0; i<ranges.size(); i++)
@@ -228,7 +224,6 @@ namespace resophonic {
     array<T, RVal>::slice(const index_range& ir) const
     {									
       detail::impl_t& impl = *(self_.impl_);
-      log_trace("slicing!");						
       BOOST_ASSERT(1  == self_.nd);				
 
       if (ir.is_degenerate())
@@ -268,10 +263,8 @@ namespace resophonic {
       unsigned newdim = std::abs(diff/ir.stride());		
       log_trace("newdim is %u",  newdim);
 
-      log_trace("make new array");
       array<T, boost::mpl::true_> new_array;
       new_array.self().reshape(newdim, false);
-      log_trace("done make new array");
       new_array.self().data_ = self_.data_;
 
       std::size_t newstart; 

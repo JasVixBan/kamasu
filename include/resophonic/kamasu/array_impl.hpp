@@ -69,6 +69,8 @@ namespace resophonic {
       std::size_t calculate_strides();
       void calculate_factors();
 
+      void alloc();
+
     };
 
   }

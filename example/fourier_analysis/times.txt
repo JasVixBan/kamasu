@@ -1,0 +1,4 @@
+fft-python.py gbs.raw gbs.python.fft.dat  39.55s user 0.68s system 99% cpu 40.251 total
+./bin/fft-cpu gbs.raw gbs.cpu.fft.dat  1.86s user 15.80s system 99% cpu 17.724 total
+./bin/fft-kamasu gbs.raw gbs.kamasu.fft.dat  0.72s user 0.95s system 100% cpu 1.674 total
+

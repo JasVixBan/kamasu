@@ -20,9 +20,6 @@ using std::cout;
 
 namespace rk = resophonic::kamasu;
 
-const float sr = 48000.0;
-const unsigned winlen = sr/70;
-
 int main(int argc, char** argv)
 {
   struct stat sb;
@@ -90,10 +87,10 @@ int main(int argc, char** argv)
 	}
       CUFFT_SAFE_CALL( cufftExecR2C(plan, gpu_indata+i, gpu_outdata) );
 
+      /*
       CUDA_SAFE_CALL( cudaMemcpy(host_outdata+ nfreqs*j, gpu_outdata, 
 	sizeof(cufftComplex) * nfreqs, cudaMemcpyDeviceToHost) );
 
-      /*
       for (int k=nfreqs-1; k>=0; k--)
 	{
 	  cufftComplex& thingy = host_outdata[k];

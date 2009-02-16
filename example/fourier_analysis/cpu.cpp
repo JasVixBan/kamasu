@@ -10,9 +10,6 @@
 
 using std::cout;
 
-const float sr = 48000.0;
-const unsigned winlen = sr/70;
-
 #include <fftw3.h>
 
 hann_window hann(fftsize);

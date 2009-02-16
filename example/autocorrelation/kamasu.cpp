@@ -14,14 +14,14 @@ using std::cout;
 namespace rk = resophonic::kamasu;
 
 const float sr = 48000.0;
-const unsigned winlen = sr/70;
+const unsigned winlen = sr/20;
 
 rk::array<float> autocorrelate(rk::array<float>& signal)
 {
   rk::array<float> freqs(signal.dim(0) - winlen);
 
   std::vector<float> corr_coeff(winlen);
-  for (unsigned outer = 0; outer < 1900/*signal.dim(0) - winlen*2*/; outer++)
+  for (unsigned outer = 0; outer < signal.dim(0) - winlen*2; outer++)
     {
       if (outer % 100 == 0)
 	{

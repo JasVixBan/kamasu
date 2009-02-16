@@ -13,7 +13,7 @@ using std::cout;
 namespace rk = resophonic::kamasu;
 
 const float sr = 48000.0;
-const unsigned winlen = sr/70;
+const unsigned winlen = sr/20;
 
 rk::array<float> autocorrelate(rk::array<float>& signal)
 {

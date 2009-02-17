@@ -55,13 +55,6 @@ namespace resophonic {
     }
 
     template <typename T, typename RVal>
-    std::size_t
-    array<T, RVal>::linear_size() const
-    {
-      return self_.linear_size;
-    }
-
-    template <typename T, typename RVal>
     void 
     array<T, RVal>::take(const array_impl<T, boost::mpl::true_>& rhs)
     {
@@ -134,7 +127,7 @@ namespace resophonic {
     {									
       std::size_t index = 0;
       for (unsigned i=0; i<indexes.size(); i++)
-	index += indexes[i] * self_.impl_->strides.get(i);
+	index += indexes[i] * stride(i);
 
       return index;
     }
@@ -143,8 +136,6 @@ namespace resophonic {
     array<T, boost::mpl::true_>							
     array<T, RVal>::slice(const std::vector<index_range>& ranges) const
     {									
-      detail::impl_t& impl = *(self_.impl_);
-
       BOOST_ASSERT(ranges.size() == self_.nd);				
 
       std::vector<std::size_t> newshape, starts;				
@@ -166,7 +157,7 @@ namespace resophonic {
 		  if (ir.finish() != ir.to_end())
 		    finish = ir.finish();
 		  else
-		    finish = impl.dims.get(i);
+		    finish = dim(i);
 
 		  starts.push_back(ir.start() == ir.from_start() 
 				   ? 0 : ir.start());
@@ -176,14 +167,14 @@ namespace resophonic {
 		  if (ir.start() != ir.to_end())
 		    start = ir.start();
 		  else
-		    start = impl.dims.get(i)-1;
+		    start = dim(i)-1;
 
 		  if (ir.finish() != ir.from_start())
 		    finish = ir.finish();
 		  else
 		    finish = -1;
 		  starts.push_back(ir.start() == ir.to_end() 
-				   ? impl.dims.get(i)-1 : ir.start());
+				   ? dim(i)-1 : ir.start());
 
 		}
 
@@ -207,14 +198,11 @@ namespace resophonic {
       new_array.self().data_ = self_.data_;
       new_array.self().offset = index_of(starts);
 
-      std::vector<int> new_strides;
-      for (unsigned i=0; i<ranges.size(); i++)
+      for (unsigned i=0, j=0; i<ranges.size(); i++)
 	{
 	  if (!ranges[i].is_degenerate())
-	    new_strides.push_back(impl.strides.get(i) * ranges[i].stride());
+	    new_array.stride(j++) = stride(i) * ranges[i].stride();
 	}
-
-      new_array.self().impl_->strides.set(new_strides);
       new_array.self().calculate_factors();
       return new_array;	
     }
@@ -223,8 +211,7 @@ namespace resophonic {
     array<T, boost::mpl::true_>							
     array<T, RVal>::slice(const index_range& ir) const
     {									
-      detail::impl_t& impl = *(self_.impl_);
-      BOOST_ASSERT(1  == self_.nd);				
+      RESOPHONIC_KAMASU_THROW(1 != self_.nd, dimensions_dont_match());				
 
       if (ir.is_degenerate())
 	throw std::runtime_error("degenerate slice of 1d array");
@@ -241,14 +228,14 @@ namespace resophonic {
 	  if (ir.finish() != ir.to_end())
 	    finish = ir.finish();
 	  else
-	    finish = impl.dims.get(0);
+	    finish = dim(0);
 	}
       else
 	{
 	  if (ir.start() != ir.to_end())
 	    start = ir.start();
 	  else
-	    start = impl.dims.get(0)-1;
+	    start = dim(0)-1;
 
 	  if (ir.finish() != ir.from_start())
 	    finish = ir.finish();
@@ -265,18 +252,19 @@ namespace resophonic {
 
       array<T, boost::mpl::true_> new_array;
       new_array.self().reshape(newdim, false);
+      RESOPHONIC_KAMASU_THROW(new_array.nd() != 1, std::runtime_error("internal error"));
       new_array.self().data_ = self_.data_;
 
       std::size_t newstart; 
       if (ir.stride() > 0)
 	newstart = (ir.start() == ir.from_start()) ? 0 : ir.start();
       else 
-	newstart = (ir.start() == ir.to_end()) ? impl.dims.get(0)-1 : ir.start();
+	newstart = (ir.start() == ir.to_end()) ? dim(0)-1 : ir.start();
 
       new_array.self().offset = index_of(newstart);
       log_trace("offset is %d",  new_array.self().offset);
 
-      new_array.self().impl_->strides.set(0, impl.strides.get(0) * ir.stride());
+      new_array.stride(0) = stride(0) * ir.stride();
       new_array.self().calculate_factors();
       return new_array;	
     }

@@ -1,4 +1,5 @@
 #include <resophonic/kamasu.hpp>
+#include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/make_vector.hpp>
 
@@ -25,10 +26,10 @@ namespace resophonic {
 	{
 	  BOOST_ASSERT(lhs.nd == 2);
 	  BOOST_ASSERT(rhs.nd == 2);
-	  std::size_t lhs_rows = lhs.impl_->dims.get(0);
-	  std::size_t lhs_cols = lhs.impl_->dims.get(1);
-	  std::size_t rhs_rows = rhs.impl_->dims.get(0);
-	  std::size_t rhs_cols = rhs.impl_->dims.get(1);
+	  std::size_t lhs_rows = lhs.dim(0);
+	  std::size_t lhs_cols = lhs.dim(1);
+	  std::size_t rhs_rows = rhs.dim(0);
+	  std::size_t rhs_cols = rhs.dim(1);
 
 	  BOOST_ASSERT(lhs_cols == rhs_rows);
 
@@ -68,11 +69,11 @@ namespace resophonic {
 	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
 	  
 	  for (int i=0; i<lhs.nd; i++)
-	    RESOPHONIC_KAMASU_THROW(lhs.impl_->dims.get(i) != rhs.impl_->dims.get(i), 
+	    RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
 				    dimensions_dont_match());
 
-	  std::cout  <<"dispatchy!\n";
 	  log_trace("%s", "*** DISPATCH TO AA KERNEL ***");
+	  /*
 	  kamasu_aa_knl(op_map<bp::tag::plus>::value,
 			lhs.nd, // ndims
 			lhs.data_->data() + lhs.offset,
@@ -82,6 +83,7 @@ namespace resophonic {
 			lhs.impl_->strides.gpu_data(),
 			rhs.impl_->strides.gpu_data(),
 			lhs.linear_size);
+	  */
 	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
 			
 	  return rk::array_impl<float, boost::mpl::true_>();
@@ -99,26 +101,34 @@ namespace resophonic {
 	  BOOST_ASSERT(size > 0);
 	  kamasu_vector_vector_sub(size, lhs, 1, rhs, 1);
 	}
-	template <typename T>
-	void operator()(T, 
-			float* lhs, 
-			std::size_t ndims,
-			std::size_t last_index,
-			unsigned* factors,
-			int* strides,
-			float scalar)
+	template <typename Op, typename T, typename IsRVal>
+	void operator()(Op, 
+			const rk::array_impl<T, IsRVal>& a,
+			T scalar) 
 	{
-	  log_trace("%s", "*** DISPATCH TO KERNEL ***");
-	  BOOST_ASSERT(lhs);
-	  BOOST_ASSERT(ndims);
-	  BOOST_ASSERT(factors);
-	  BOOST_ASSERT(last_index);
-	  kamasu_testy_knl(op_map<T>::value, lhs, ndims, last_index, factors, strides, scalar);
-	  log_trace("%s", "*** DONE DISPATCH TO KERNEL ***");
-	  BOOST_ASSERT(lhs);
-	  BOOST_ASSERT(ndims);
-	  BOOST_ASSERT(factors);
-	  BOOST_ASSERT(last_index);
+	  log_trace("%s", __PRETTY_FUNCTION__);
+	  switch (a.nd) {
+	    std::cout<< "a.nd==" << a.nd << "\n";
+#define DISPATCH_CASE(Z, N, DATA)					\
+	    case N:							\
+	      log_trace("Case %d", N); \
+	    BOOST_PP_CAT(kamasu_elementwise_,N)				\
+	    (op_map<Op>::value,						\
+	     a.data() + a.offset,					\
+	     a.linear_size,						\
+	     a.factors,							\
+	     a.strides,							\
+	     scalar);							\
+	    break;
+
+	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
+
+	  default:
+	    throw std::runtime_error("kamasu internal error");
+	  }
+
+#undef DISPATCH_CASE
+
 	}
       };
     }
@@ -136,21 +146,13 @@ namespace resophonic {
       rv.show();
 
       BOOST_ASSERT(rv.nd > 0);
-      //BOOST_ASSERT(rv.dims->get(0) > 0);
-      //BOOST_ASSERT(v.dims->get(0) > 0);
 
       BOOST_ASSERT(v.linear_size == rv.linear_size);
       
-      int* eff = rv.impl_->strides.gpu_data();
-      BOOST_ASSERT(eff);
+      //      int* eff = rv.impl_->strides.gpu_data();
+      //      BOOST_ASSERT(eff);
 
-      detail::dispatch()(Op(), 
-			 rv.data() + rv.offset,  
-			 rv.linear_size,
-			 rv.nd, 
-			 rv.impl_->factors.gpu_data(),
-			 rv.impl_->strides.gpu_data(),
-			 f);
+      detail::dispatch()(Op(), rv, f);
       
       return rv;
     }

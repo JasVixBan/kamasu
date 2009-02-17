@@ -4,7 +4,10 @@
 #include <exception>
 #include <cassert>
 #include <resophonic/kamasu/config.hpp>
+#include <cuda.h>
 #include <cublas.h>
+#include <cutil.h>
+#include <cuda_runtime.h>
 
 namespace resophonic {
   namespace kamasu {
@@ -48,6 +51,21 @@ namespace resophonic {
       virtual const char* what() const throw()
       {
 	return "resophonic::kamasu error: cublas is unhappy";
+      }
+    };
+
+    struct cuda_exception : virtual std::exception
+    {
+      cudaError_t e;
+      const char *file, *msg;
+      unsigned line;
+
+      cuda_exception(cudaError_t e_, const char* file_, unsigned line_) 
+	: e(e_), file(file_), msg(cudaGetErrorString(e_)), line(line_)  
+      { }
+      virtual const char* what() const throw()
+      {
+	return msg;
       }
     };
 

@@ -221,7 +221,7 @@ void mmul_test(const unsigned M, const unsigned N, const unsigned K)
 
   c = a * b;
 
-  ENSURE_EQUAL(c.n_dims(), 2);
+  ENSURE_EQUAL(c.nd(), 2);
   ENSURE_EQUAL(c.dim(0), M);
   ENSURE_EQUAL(c.dim(1), K);
 

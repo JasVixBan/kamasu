@@ -1,6 +1,7 @@
 #ifndef RESOPHONIC_GPUMATH_KERNEL_H_INCLUDED
 #define RESOPHONIC_GPUMATH_KERNEL_H_INCLUDED
 
+#include <boost/preprocessor.hpp>
 #include <map>
 
 #define X      threadIdx.x  
@@ -71,6 +72,15 @@ void kamasu_aa_knl(Op op,
 		   int* strides_r,
 		   unsigned linear_size);
 
+#define ENUMERATED_DECLS(Z, N, DATA)					\
+  void BOOST_PP_CAT(kamasu_elementwise_,N)				\
+    (Op op,								\
+     float* data,							\
+     std::size_t linear_size,						\
+     const std::size_t* factors,					\
+     const int* strides,						\
+     float scalar);
 
+BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 
 #endif

@@ -21,8 +21,10 @@ namespace resophonic
     {
       data_ = boost::shared_ptr<holder<T> >(new (holder_pool::malloc()) holder<T>,
 					    (void (*)(void*))holder_pool::free);
+      /*
       impl_ = boost::shared_ptr<detail::impl_t>(new (impl_pool::malloc()) detail::impl_t,
 					       (void (*)(void*))impl_pool::free);
+      */
     } 
 
     template<typename T, typename RVal>
@@ -44,7 +46,9 @@ namespace resophonic
       {
 	lhs.nd = rhs.nd;
 	lhs.data_ = rhs.data_;
-	lhs.impl_ = rhs.impl_;
+	memcpy(lhs.dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+	memcpy(lhs.factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+	memcpy(lhs.strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;
@@ -57,7 +61,9 @@ namespace resophonic
       {
 	lhs.nd = rhs.nd;
 	lhs.data_ = rhs.data_;
-	lhs.impl_ = rhs.impl_;
+	memcpy(lhs.dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+	memcpy(lhs.factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+	memcpy(lhs.strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;
@@ -69,7 +75,10 @@ namespace resophonic
 		const array_impl<T, boost::mpl::false_>& rhs)
       {
 	lhs.nd = rhs.nd;
-	lhs.impl_ = rhs.impl_ ? rhs.impl_->clone() : rhs.impl_;
+	memcpy(lhs.dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+	memcpy(lhs.factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+	memcpy(lhs.strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
+
 	lhs.data_ = rhs.data_ ? rhs.data_->clone() : rhs.data_;
 
 	lhs.offset = rhs.offset;
@@ -82,8 +91,11 @@ namespace resophonic
 		const array_impl<T, boost::mpl::false_>& rhs)
       {
 	lhs.nd = rhs.nd;
-	lhs.impl_ = rhs.impl_ ? rhs.impl_->clone() : rhs.impl_;
 	lhs.data_ = rhs.data_ ? rhs.data_->clone() : rhs.data_;
+	memcpy(lhs.dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+	memcpy(lhs.factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+	memcpy(lhs.strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
+
 
 	lhs.offset = rhs.offset;
 	lhs.linear_size = rhs.linear_size;
@@ -109,37 +121,42 @@ namespace resophonic
     array_impl<T, RVal>::reshape(const std::vector<std::size_t>& shape, bool realloc)
     {
       log_trace("%s", "reshape");
-      if (!impl_) alloc();
-      detail::impl_t& impl = *impl_;
+      //      if (!impl_) alloc();
+      //detail::impl_t& impl = *impl_;
       offset = 0;
       nd = 0;
       for (int i=0; i<shape.size(); i++)
 	{
 	  if (shape[i] != 0)
 	    {
-	      impl.dims.set(nd, shape[i]);
 	      nd++;
+	      dim(nd-1) = shape[i];
 	    }
 	}
 
       std::size_t newsize = calculate_strides();
       calculate_factors();
       if (realloc)
-	data_->resize(newsize);
+	{
+	  if (!data_)
+	    data_ = boost::shared_ptr<holder<T> >(new holder<T>(newsize));
+	  else
+	    data_->resize(newsize);
+	}
     }
 
     template <typename T, typename RVal>
     void
     array_impl<T, RVal>::reshape(std::size_t shape, bool realloc)
     {
-      if (!impl_) alloc();
-      detail::impl_t& impl = *impl_;
+      //if (!impl_) alloc();
+      //detail::impl_t& impl = *impl_;
       log_trace("%s", "reshape");
       offset = 0;
       nd = 1;
-      impl.dims.set(0u, shape);
-      impl.strides.set(0u, 1);
-      impl.factors.set(0u, 1);
+      dim(0) = shape;
+      stride(0) = 1;
+      factor(0) = 1; 
       linear_size = shape;
       if (realloc)
 	data_->resize(shape);
@@ -149,23 +166,23 @@ namespace resophonic
     std::size_t
     array_impl<T, RVal>::calculate_strides()
     {
-      detail::impl_t& impl = *impl_;
+      //detail::impl_t& impl = *impl_;
       // this also calculates size but do we need this here...
-      unsigned stride = 1;
-      impl.strides.set(0, stride);
+      unsigned s = 1;
+      stride(0) = s;
 
       for(unsigned i=1; i<nd; i++)
 	{
-	  stride *= impl.dims.get(i-1);
-	  impl.strides.set(i, stride);
+	  s *= dim(i-1);
+	  stride(i) = s;
 	}
 
       for (unsigned i=0; i<nd; i++)
-	log_trace("dim %u is %u, stride %u",  i % impl.dims.get(i) % impl.strides.get(i));
+	log_trace("dim %u is %u, stride %u",  i % dim(i) % stride(i));
 
       std::size_t size = 1;
       for (int i=0; i<nd; i++)
-	size *= impl.dims.get(i);
+	size *= dim(i);
       return size;
     }
 
@@ -174,32 +191,32 @@ namespace resophonic
     array_impl<T, RVal>::calculate_factors()
     {
       BOOST_ASSERT(nd > 0);
-      detail::impl_t& impl = *impl_;
+
       linear_size = 1;
-      impl.factors.set(0, 1);
+      factor(0) = 1;
       unsigned prev_factor = 1;
-      linear_size = impl.dims.get(0);
+      linear_size = dim(0);
       for(unsigned i=1; i<nd; i++)
 	{
-	  unsigned dim_left = impl.dims.get(i-1);
+	  unsigned dim_left = dim(i-1);
 	  unsigned newfactor = dim_left * prev_factor;
-	  impl.factors.set(i, newfactor);
+	  factor(i) = newfactor;
 	  prev_factor = newfactor;
 
-	  linear_size *= impl.dims.get(i);
+	  linear_size *= dim(i);
 	}
 
 
       for (unsigned i=0; i<nd; i++)
 	log_trace("dim %u is %u, factor %u", 
-		  i % impl.dims.get(i) % impl.factors.get(i));
+		  i % dim(i) % factor(i));
       log_trace("linear size is %u", linear_size); 
     }
 
     template <typename T, typename RVal>
     void array_impl<T, RVal>::reset()
     {
-      impl_.reset();
+      //impl_.reset();
     }
 
 
@@ -212,8 +229,10 @@ namespace resophonic
       rhs.show();
 #endif
       nd = rhs.nd;
-      impl_ = rhs.impl_;
       data_ = rhs.data_;
+      memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
       offset = rhs.offset;
       linear_size = rhs.linear_size;
     }
@@ -227,8 +246,10 @@ namespace resophonic
       rhs.show();
 #endif
       nd = rhs.nd;
-      impl_ = rhs.impl_;
       data_ = rhs.data_;
+      memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
 
       offset = rhs.offset;
       linear_size = rhs.linear_size;
@@ -241,7 +262,10 @@ namespace resophonic
       log_trace("%s",  __PRETTY_FUNCTION__);
       rhs.nd = nd;
       rhs.data_ = data_->clone();
-      rhs.impl_ = impl_->clone();
+      memcpy(rhs.dims, dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(rhs.factors, factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(rhs.strides, strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
+
 
       rhs.offset = offset;
       rhs.linear_size = linear_size;
@@ -254,7 +278,9 @@ namespace resophonic
       log_trace("%s",  __PRETTY_FUNCTION__);
       rhs.nd = nd;
       rhs.data_ = data_->clone();
-      rhs.impl_ = impl_->clone();
+      memcpy(rhs.dims, dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(rhs.factors, factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(rhs.strides, strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
 
       rhs.offset = offset;
       rhs.linear_size = linear_size;
@@ -286,11 +312,11 @@ namespace resophonic
       log_trace("%s", "____ Array ____");
       log_trace("offset %u,  nd %u",  offset % nd);
       for (unsigned i=0; i < nd; i++)
-	log_trace("dims[%u]      %u",  i % impl_->dims.get(i));
+	log_trace("dims[%u]      %u",  i % dim(i));
       for (unsigned i=0; i < nd; i++)
-	log_trace("factors[%u]   %u",  i % impl_->factors.get(i));
+	log_trace("factors[%u]   %u",  i % factor(i));
       for (unsigned i=0; i < nd; i++)
-	log_trace("stride[%u]   %u",  i % impl_->strides.get(i));
+	log_trace("stride[%u]   %u",  i % stride(i));
       log_trace("off      %lu",  offset);
       log_trace("last     %lu",  linear_size);
     }

@@ -22,11 +22,15 @@ namespace resophonic {
     class array 
       : public Expression<typename boost::proto::terminal<array_impl<T, RVal> >::type>
     {
+      typedef array<T, boost::mpl::true_> rval_t;
+      typedef array<T, typename boost::mpl::not_<RVal>::type> other_t;
+
       typedef array_impl<T, RVal> impl_t;
       typedef Expression<typename boost::proto::terminal<impl_t>::type> base_t;
-      typedef array<T, boost::mpl::true_> rval_t;
 
       impl_t& self_;
+
+      friend class array<T, typename boost::mpl::not_<RVal>::type>;
 
     public:
     
@@ -55,16 +59,47 @@ namespace resophonic {
 
       rval_t copy() const;
 
-      std::size_t n_dims() const { return self().nd; }
-      std::size_t n_strides() const { return self().nd; }
-      std::size_t n_factors() const { return self().nd; }
-      // const typename impl_t::dims_t& dims() const { return self().dims; }
-      std::size_t dim(std::size_t index) const { return self().impl_->dims.get(index); }
-      std::size_t stride(std::size_t index) const { return self().impl_->strides.get(index); }
-      std::size_t factor(std::size_t index) const { return self().impl_->factors.get(index); }
-      std::size_t linear_size() const;
+      std::size_t nd() const { return self().nd; }
+
+      std::size_t& dim(std::size_t index) 
+      { 
+	return self().dim(index); 
+      }
+      std::size_t dim(std::size_t index) const 
+      { 
+	return self().dim(index); 
+      }
+
+      int& stride(std::size_t index)
+      { 
+	return self().stride(index); 
+      }
+      int stride(std::size_t index) const 
+      { 
+	return self().stride(index); 
+      }
+
+      std::size_t& factor(std::size_t index)
+      { 
+	return self().factor(index); 
+      }
+      std::size_t factor(std::size_t index) const 
+      { 
+	return self().factor(index); 
+      }
+
+      std::size_t linear_size() const
+      {
+	return self().linear_size;
+      };
+      std::size_t offset() const
+      {
+	return self().offset;
+      };
 
       void show() const;
+
+      T* data() { return self().data(); }
 
       template <typename Expr>
       array& operator=(Expr const& expr)
@@ -79,9 +114,6 @@ namespace resophonic {
       void operator>>(boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
 
 
-      impl_t& self() { return self_; }
-      const impl_t& self() const { return self_; }
-
       template <typename Expr>
       void 
       operator+=(const Expr& expr)
@@ -93,6 +125,9 @@ namespace resophonic {
 
     private:
       
+      impl_t& self() { return self_; }
+      const impl_t& self() const { return self_; }
+
       void take(const std::vector<T>& rhs);
       void take(const array_impl<T, boost::mpl::true_>& rhs);
       void take(const array_impl<T, boost::mpl::false_>& rhs);

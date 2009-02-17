@@ -1,12 +1,11 @@
 #define N BOOST_PP_ITERATION()
 
-#define INDEX_OF_TERM(Z, N, DATA) + (Arg##N * strides.get(N))
+#define INDEX_OF_TERM(Z, N, DATA) + (Arg##N * stride(N))
 
 template <typename T, typename RVal>				
 std::size_t							
 array<T, RVal>::index_of(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const 
 {								
-  const mirror<int>& strides(self().impl_->strides);	
   return 0 BOOST_PP_REPEAT(N, INDEX_OF_TERM, ~);		
 }
 
@@ -38,13 +37,12 @@ array<T, RVal>::slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const
 #endif
 
 #ifdef RESOPHONIC_KAMASU_DEBUG
-#define DIM_CHECK(Z, N, DATA) RESOPHONIC_KAMASU_THROW(DATA##N >= self().impl_->dims.get(N), \
-						      bad_index());
+#define DIM_CHECK(Z, N, DATA) RESOPHONIC_KAMASU_THROW(DATA##N >= dim(N), bad_index());
 #else
 #define DIM_CHECK(Z, N, DATA) ;
 #endif
 
-#define STRIDE_TERM(Z, N, DATA)	+ DATA ## N * self().impl_->strides.get(N)
+#define STRIDE_TERM(Z, N, DATA)	+ DATA ## N * stride(N)
 
 template <typename T, typename RVal>				
 T									

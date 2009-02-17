@@ -39,7 +39,7 @@ void from_gpu_test(unsigned n, unsigned m)
   bnu::matrix<float, bnu::column_major> fetched;
   a >> fetched;
 
-  ENSURE_EQUAL(a.n_dims(), 2);
+  ENSURE_EQUAL(a.nd(), 2);
   ENSURE_EQUAL(a.dim(0), fetched.size1());
   ENSURE_EQUAL(a.dim(1), fetched.size2());
 
@@ -61,7 +61,7 @@ void to_gpu_test(unsigned n, unsigned m)
 
   put << a;
 
-  ENSURE_EQUAL(put.n_dims(), 2);
+  ENSURE_EQUAL(put.nd(), 2);
   ENSURE_EQUAL(put.dim(0), a.size1());
   ENSURE_EQUAL(put.dim(1), a.size2());
 

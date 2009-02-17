@@ -172,7 +172,7 @@ TEST(slice_2d_reduce)
   // 2 6 10 14 18
   array<float> sliced = a.slice(index_range(1), index_range(0, 5));
 
-  ENSURE_EQUAL(sliced.n_dims(), 1);
+  ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 5);
 
   for (unsigned i=0; i<5; i++)
@@ -194,7 +194,7 @@ TEST(slice_2d)
     //    7  11  15
 
     array<float> sliced = a.slice(index_range(1,3), index_range(1,4));
-    ENSURE_EQUAL(sliced.n_dims(), 2);
+    ENSURE_EQUAL(sliced.nd(), 2);
     ENSURE_EQUAL(sliced.dim(0), 2);
     ENSURE_EQUAL(sliced.dim(1), 3);
 
@@ -210,7 +210,7 @@ TEST(slice_2d)
     // 5 6 7 8
 
     array<float> sliced = a.slice(index_range(0,4), index_range(1));
-    ENSURE_EQUAL(sliced.n_dims(), 1);
+    ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
     log_trace("[0] == %f",  sliced(0));
@@ -225,7 +225,7 @@ TEST(slice_2d)
     // 5 6 7 8
 
     array<float> sliced = a.slice(index_range(_,_), index_range(1));
-    ENSURE_EQUAL(sliced.n_dims(), 1);
+    ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
     log_trace("[0] == %f",  sliced(0));
@@ -240,7 +240,7 @@ TEST(slice_2d)
     // 8 7 6 5 
 
     array<float> sliced = a.slice(index_range(_,_,-1), index_range(1));
-    ENSURE_EQUAL(sliced.n_dims(), 1);
+    ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
     log_trace("[0] == %f",  sliced(0));
@@ -254,7 +254,7 @@ TEST(slice_2d)
     // slice to
     // 8 7 6 5
     array<float> sliced = a.slice(index_range(3, -1, -1), index_range(1));
-    ENSURE_EQUAL(sliced.n_dims(), 1);
+    ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
     log_trace("[0] == %f",  sliced(0));
@@ -268,7 +268,7 @@ TEST(slice_2d)
     // slice to
     // 4 8 12 16 20
     array<float> sliced = a.slice(index_range(3), index_range(_,_));
-    ENSURE_EQUAL(sliced.n_dims(), 1);
+    ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 5);
 
     log_trace("[0] == %f",  sliced(0));
@@ -283,7 +283,7 @@ TEST(slice_2d)
     // slice to
     // 20 16 12 8 4
     array<float> sliced = a.slice(index_range(3), index_range(_,_,-1));
-    ENSURE_EQUAL(sliced.n_dims(), 1);
+    ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 5);
 
     log_trace("[0] == %f",  sliced(0));
@@ -299,7 +299,7 @@ TEST(slice_2d)
     // 15 11 7
     // 14 10 6
     array<float> sliced = a.slice(index_range(2, 0, -1), index_range(3, 0, -1));
-    ENSURE_EQUAL(sliced.n_dims(), 2);
+    ENSURE_EQUAL(sliced.nd(), 2);
     ENSURE_EQUAL(sliced.dim(0), 2);
     ENSURE_EQUAL(sliced.dim(1), 3);
 
@@ -318,7 +318,7 @@ TEST(slice_2d)
     // 1 9 17
     // 3 11 19
     array<float> sliced = a.slice(index_range(0, 3, 2), index_range(0, 5, 2));
-    ENSURE_EQUAL(sliced.n_dims(), 2);
+    ENSURE_EQUAL(sliced.nd(), 2);
     ENSURE_EQUAL(sliced.dim(0), 2);
     ENSURE_EQUAL(sliced.dim(1), 3);
 
@@ -336,7 +336,7 @@ TEST(slice_2d)
     // 17 9 1
     // 19 11 3
     array<float> sliced = a.slice(index_range(0, 3, 2), index_range(4, -1, -2));
-    ENSURE_EQUAL(sliced.n_dims(), 2);
+    ENSURE_EQUAL(sliced.nd(), 2);
     ENSURE_EQUAL(sliced.dim(0), 2);
     ENSURE_EQUAL(sliced.dim(1), 3);
 
@@ -406,6 +406,9 @@ TEST(linspace)
 {
   array<float> onetoten = linspace(0, 10, 11);
   ENSURE_EQUAL(onetoten.linear_size(), 11);
+  ENSURE_EQUAL(onetoten.dim(0), 11);
+  ENSURE_EQUAL(onetoten.nd(), 1);
+
   for (unsigned i=0; i<11; i++)
     ENSURE_EQUAL(onetoten(i), i); 
 
@@ -423,6 +426,8 @@ TEST(1d_slice)
   
   index_range ir(0,10,1);
   array<float> sliced = a.slice(ir);
+  ENSURE_EQUAL(sliced.nd(), 1);
+  ENSURE_EQUAL(sliced.dim(0), 10);
   ENSURE_EQUAL(sliced.linear_size(), 10);
   for (unsigned i=0; i<9; i++)
     ENSURE_EQUAL(sliced(i), i); 
@@ -448,7 +453,7 @@ TEST(1d_slice_underscore)
   
   index_range ir(_,_);
   array<float> sliced = a.slice(ir);
-  ENSURE_EQUAL(sliced.n_dims(), 1);
+  ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 10);
   ENSURE_EQUAL(sliced.linear_size(), 10);
   for (unsigned i=0; i<9; i++)
@@ -461,7 +466,7 @@ TEST(1d_slice_from_left)
   
   index_range ir(5,_);
   array<float> sliced = a.slice(ir);
-  ENSURE_EQUAL(sliced.n_dims(), 1);
+  ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 5);
   ENSURE_EQUAL(sliced.linear_size(), 5);
   for (unsigned i=0; i<5; i++)
@@ -476,7 +481,7 @@ TEST(1d_slice_from_right)
   
   index_range ir(_,5);
   array<float> sliced = a.slice(ir);
-  ENSURE_EQUAL(sliced.n_dims(), 1);
+  ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 5);
   ENSURE_EQUAL(sliced.linear_size(), 5);
   for (unsigned i=0; i<5; i++)
@@ -491,7 +496,7 @@ TEST(1d_underscore_reverse)
   
   index_range ir(_, _, -1);
   array<float> sliced = a.slice(ir);
-  ENSURE_EQUAL(sliced.n_dims(), 1);
+  ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 10);
   ENSURE_EQUAL(sliced.linear_size(), 10);
   ENSURE_EQUAL(sliced.stride(0), -1);
@@ -509,7 +514,7 @@ TEST(1d_underscore_reverse_2)
   // slice to 9 7 5 3 1
   index_range ir(_, _, -2);
   array<float> sliced = a.slice(ir);
-  ENSURE_EQUAL(sliced.n_dims(), 1);
+  ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 5);
   ENSURE_EQUAL(sliced.linear_size(), 5);
   ENSURE_EQUAL(sliced.stride(0), -2);
@@ -525,14 +530,14 @@ TEST(assignment)
   // shared semantics
   array<float> a(3,4,5);
   ENSURE_EQUAL(a.linear_size(), 60);
-  ENSURE_EQUAL(a.n_dims(), 3);
+  ENSURE_EQUAL(a.nd(), 3);
   ENSURE_EQUAL(a.dim(0), 3);
   ENSURE_EQUAL(a.dim(1), 4);
   ENSURE_EQUAL(a.dim(2), 5);
   array<float> b;
   b = a;
   ENSURE_EQUAL(b.linear_size(), 60);
-  ENSURE_EQUAL(b.n_dims(), 3);
+  ENSURE_EQUAL(b.nd(), 3);
   ENSURE_EQUAL(b.dim(0), 3);
   ENSURE_EQUAL(b.dim(1), 4);
   ENSURE_EQUAL(b.dim(2), 5);
@@ -544,18 +549,18 @@ TEST(copy_construct)
   // again shared semantics
   array<float> a(3,4,5);
   ENSURE_EQUAL(a.linear_size(), 60);
-  ENSURE_EQUAL(a.n_dims(), 3);
+  ENSURE_EQUAL(a.nd(), 3);
   ENSURE_EQUAL(a.dim(0), 3);
   ENSURE_EQUAL(a.dim(1), 4);
   ENSURE_EQUAL(a.dim(2), 5);
   array<float> b(a);
 
   ENSURE_EQUAL(b.linear_size(), 60);
-  ENSURE_EQUAL(b.n_dims(), 3);
+  ENSURE_EQUAL(b.nd(), 3);
   ENSURE_EQUAL(b.dim(0), 3);
   ENSURE_EQUAL(b.dim(1), 4);
   ENSURE_EQUAL(b.dim(2), 5);
-  ENSURE_EQUAL(a.self().data(), b.self().data());
+  ENSURE_EQUAL(a.data(), b.data());
 
   a(0,0,0) = 17.5;
   ENSURE_EQUAL(a(0,0,0), 17.5);
@@ -574,6 +579,29 @@ TEST(construct)
   shape.push_back(9);
 
   array<float> arr(shape);
+
+  ENSURE_EQUAL(arr.nd(), 3);
+  ENSURE_EQUAL(arr.stride(0), 1);
+  ENSURE_EQUAL(arr.stride(1), 7);
+  ENSURE_EQUAL(arr.stride(2), 7*3);
+  ENSURE_EQUAL(arr.linear_size(), 7*3*9)
+  ENSURE_EQUAL(arr.factor(0), 1);
+  ENSURE_EQUAL(arr.factor(1), 7);
+  ENSURE_EQUAL(arr.factor(2), 21);
+}
+
+TEST(construct_2)
+{
+  array<float> arr(7,3,9);
+
+  ENSURE_EQUAL(arr.nd(), 3);
+  ENSURE_EQUAL(arr.stride(0), 1);
+  ENSURE_EQUAL(arr.stride(1), 7);
+  ENSURE_EQUAL(arr.stride(2), 7*3);
+  ENSURE_EQUAL(arr.linear_size(), 7*3*9)
+  ENSURE_EQUAL(arr.factor(0), 1);
+  ENSURE_EQUAL(arr.factor(1), 7);
+  ENSURE_EQUAL(arr.factor(2), 21);
 }
 
 
@@ -581,16 +609,17 @@ TEST(copy_semantics)
 {
   array<float> a(1);
   ENSURE_EQUAL(a.linear_size(), 1);
-  ENSURE_EQUAL(a.n_dims(), 1);
+  ENSURE_EQUAL(a.nd(), 1);
   ENSURE_EQUAL(a.dim(0), 1);
   array<float> b;
   b = a.copy();
-  
+  ENSURE(a.data() != b.data());
+
   ENSURE_EQUAL(b.linear_size(), 1);
-  ENSURE_EQUAL(b.n_dims(), 1);
+  ENSURE_EQUAL(b.nd(), 1);
   ENSURE_EQUAL(b.dim(0), 1);
 
-  ENSURE_NOT_EQUAL(a.self().data(), b.self().data());
+  ENSURE_NOT_EQUAL(a.data(), b.data());
 
   b(0) = 33.5;
   ENSURE_EQUAL(b(0), 33.5);
@@ -603,18 +632,18 @@ TEST(copy_semantics_on_assign_2)
 {
   array<float> a(2,2);
   ENSURE_EQUAL(a.linear_size(), 4);
-  ENSURE_EQUAL(a.n_dims(), 2);
+  ENSURE_EQUAL(a.nd(), 2);
   ENSURE_EQUAL(a.dim(0), 2);
   ENSURE_EQUAL(a.dim(1), 2);
   array<float> b;
   b = a.copy();
 
   ENSURE_EQUAL(b.linear_size(), 4);
-  ENSURE_EQUAL(b.n_dims(), 2);
+  ENSURE_EQUAL(b.nd(), 2);
   ENSURE_EQUAL(b.dim(0), 2);
   ENSURE_EQUAL(b.dim(1), 2);
 
-  ENSURE_NOT_EQUAL(a.self().data(), b.self().data());
+  ENSURE_NOT_EQUAL(a.data(), b.data());
 
   b(0,0) = 33.5;
   ENSURE_EQUAL(b(0,0), 33.5);

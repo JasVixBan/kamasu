@@ -24,7 +24,6 @@ int main(int argc, char *argv[])
 {
   unsigned data_len = atoi(argv[1]);
   const unsigned N = atoi(argv[2]);
-  unsigned times = argc == 3 ? atoi(argv[2]) : 1;
   
   boost::timer total, math;
   total.restart();
@@ -33,11 +32,10 @@ int main(int argc, char *argv[])
   std::vector<float> coeff(N);
   math.restart();
 
-  for (int x=0; x<data_len-N; x++)
-    for (int n=0; n<N; n++)
-      filtered[x] += coeff[n] * a[x+n];
+  for (int n=0; n<N; n++)
+    for (int x=0; x<data_len-N; x++)
+      filtered[x] += a[x+n] * coeff[n];
 
   std::cout << "mathtime: " << math.elapsed() << "\n";
-  std::cout << "w/ data transfer: " << total.elapsed() << "\n";
 } 
 

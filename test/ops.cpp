@@ -34,13 +34,13 @@ void test_multiplies(unsigned n)
 {
   array<float> a = make_1d(n), b;
   ENSURE_EQUAL(a.linear_size(), n);
-  ENSURE_EQUAL(a.n_dims(), 1);
+  ENSURE_EQUAL(a.nd(), 1);
   ENSURE_EQUAL(a.dim(0), n);
 
   b = a * 2.0f;
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.n_dims(), 1);
+  ENSURE_EQUAL(b.nd(), 1);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (unsigned i=0; i<n; i++)
@@ -108,9 +108,7 @@ void test_stride(unsigned length, unsigned stride)
 
   b = a.slice(index_range(0, length, stride));
 
-  ENSURE_EQUAL(b.n_factors(), 1);
-  ENSURE_EQUAL(b.n_dims(), 1);
-  ENSURE_EQUAL(b.n_strides(), 1);
+  ENSURE_EQUAL(b.nd(), 1);
   ENSURE_EQUAL(b.stride(0), stride);
   //  ENSURE_EQUAL(b.dim(0), slicedim);
 
@@ -120,9 +118,7 @@ void test_stride(unsigned length, unsigned stride)
 
   c = b + factor;
 
-  ENSURE_EQUAL(c.n_factors(), 1);
-  ENSURE_EQUAL(c.n_dims(), 1);
-  ENSURE_EQUAL(c.n_strides(), 1);
+  ENSURE_EQUAL(c.nd(), 1);
   ENSURE_EQUAL(c.stride(0), stride);
 
   for (unsigned i=0; i<length; i++)

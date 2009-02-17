@@ -39,6 +39,7 @@ namespace resophonic {
       ~holder();
 
       holder();
+      holder(std::size_t);
       std::size_t size() const;
       T* data();
       const T* data() const;

@@ -12,6 +12,7 @@
 namespace resophonic {
   namespace kamasu {
 
+    /*
     namespace detail {
       struct impl_t {
 	mirror<unsigned> dims;
@@ -29,7 +30,7 @@ namespace resophonic {
 	}
       };
     }
-
+    */
     template <typename T, 
 	      typename RVal = boost::mpl::false_>
     struct array_impl 
@@ -37,9 +38,13 @@ namespace resophonic {
       typedef array_impl<T, RVal> this_t;
       typedef array_impl<T, typename boost::mpl::not_<RVal>::type> other_t;
       
-      mutable boost::shared_ptr<detail::impl_t> impl_;
+      //mutable boost::shared_ptr<detail::impl_t> impl_;
 
       typedef uint64_t offset_t;
+      std::size_t dims[KAMASU_MAX_ARRAY_DIM];
+      std::size_t factors[KAMASU_MAX_ARRAY_DIM];
+      int strides[KAMASU_MAX_ARRAY_DIM];
+
       offset_t offset;
       std::size_t linear_size;
       unsigned nd;
@@ -71,6 +76,38 @@ namespace resophonic {
 
       void alloc();
 
+      std::size_t& dim(std::size_t index) 
+      { 
+	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
+	return dims[index]; 
+      }
+      std::size_t dim(std::size_t index) const 
+      { 
+	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
+	return dims[index]; 
+      }
+
+      int& stride(std::size_t index)
+      { 
+	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
+	return strides[index]; 
+      }
+      int stride(std::size_t index) const 
+      { 
+	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
+	return strides[index]; 
+      }
+
+      std::size_t& factor(std::size_t index)
+      { 
+	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
+	return factors[index]; 
+      }
+      std::size_t factor(std::size_t index) const 
+      { 
+	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
+	return factors[index]; 
+      }
     };
 
   }

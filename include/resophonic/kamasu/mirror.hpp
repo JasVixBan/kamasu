@@ -25,8 +25,8 @@
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/exception.hpp>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
+// #include <boost/shared_ptr.hpp>
+// #include <boost/array.hpp>
 
 #include <vector>
 
@@ -36,11 +36,11 @@ namespace resophonic {
     template <typename T>
     class mirror
     {
-      boost::array<T, KAMASU_MAX_ARRAY_DIM> cpu_;
-      mutable T*   gpu_;
-      mutable bool dirty;
+      T cpu_[KAMASU_MAX_ARRAY_DIM];
+      //      mutable T*   gpu_;
+      //      mutable bool dirty;
 
-      T* gpu_malloc() const;
+      //      T* gpu_malloc() const;
 
 
       void set_impl(const T* hdata, std::size_t s);
@@ -53,12 +53,14 @@ namespace resophonic {
 
       mirror();
 
+      /*
       T* gpu_data();
       const T* gpu_data() const;
+      */
 
       void clone(const mirror& rhs);
 
-      boost::shared_ptr<mirror> clone() const;
+      mirror* clone() const;
 
       void set(const std::vector<T>& hdata);
 
@@ -66,7 +68,7 @@ namespace resophonic {
       {
 	RESOPHONIC_KAMASU_THROW(i >= KAMASU_MAX_ARRAY_DIM, bad_index());
 	cpu_[i] = value;
-	dirty = true;
+	//	dirty = true;
       }
 
       T get(unsigned i) const

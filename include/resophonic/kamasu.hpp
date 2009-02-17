@@ -32,4 +32,11 @@ namespace boost {
 #include <resophonic/kamasu/grammar.hpp>
 #include <resophonic/kamasu/exception.hpp>
 
+#define KAMASU_SAFE_CALL( call ) do {					\
+    cudaError err = call;						\
+    if( cudaSuccess != err) {						\
+      throw resophonic::kamasu::cuda_exception(err, __FILE__, __LINE__); \
+    } } while (false)
+
+
 #endif

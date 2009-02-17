@@ -21,14 +21,14 @@ namespace resophonic {
 
       log_trace("%s",  __PRETTY_FUNCTION__);
       //      log_trace("the type is: %s") % name_of(lrv);
-      BOOST_ASSERT(lrv.self().nd == 1);
-      BOOST_ASSERT(rrv.self().nd == 1);
+      RESOPHONIC_KAMASU_THROW(lrv.nd() == 1, dimensions_dont_match());
+      RESOPHONIC_KAMASU_THROW(rrv.nd() == 1, dimensions_dont_match());
 
-      return cublasSdot(lrv.self().impl_->dims.get(0),
-			lrv.self().data() + lrv.self().offset,
-			lrv.self().impl_->strides.get(0),
-			rrv.self().data() + rrv.self().offset,
-			rrv.self().impl_->strides.get(0));
+      return cublasSdot(lrv.dim(0),
+			lrv.data() + lrv.offset(),
+			lrv.stride(0),
+			rrv.data() + rrv.offset(),
+			rrv.stride(0));
     }
   }
 }

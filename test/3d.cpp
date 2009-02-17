@@ -44,7 +44,7 @@ TEST(slice0)
   
       b.show();
 
-      ENSURE_EQUAL(b.n_dims(), 2);
+      ENSURE_EQUAL(b.nd(), 2);
       ENSURE_EQUAL(b.dim(0), n);
       ENSURE_EQUAL(b.dim(1), n);
 
@@ -64,7 +64,7 @@ TEST(slice0_reverse)
   
       b.show();
 
-      ENSURE_EQUAL(b.n_dims(), 2);
+      ENSURE_EQUAL(b.nd(), 2);
       ENSURE_EQUAL(b.dim(0), n);
       ENSURE_EQUAL(b.dim(1), n);
 
@@ -84,7 +84,7 @@ TEST(slice1)
   
       b.show();
 
-      ENSURE_EQUAL(b.n_dims(), 2);
+      ENSURE_EQUAL(b.nd(), 2);
       ENSURE_EQUAL(b.dim(0), n);
       ENSURE_EQUAL(b.dim(1), n);
 
@@ -104,7 +104,7 @@ TEST(slice1_reverse)
   
       b.show();
 
-      ENSURE_EQUAL(b.n_dims(), 2);
+      ENSURE_EQUAL(b.nd(), 2);
       ENSURE_EQUAL(b.dim(0), n);
       ENSURE_EQUAL(b.dim(1), n);
 
@@ -124,7 +124,7 @@ TEST(slice2)
   
       b.show();
 
-      ENSURE_EQUAL(b.n_dims(), 2);
+      ENSURE_EQUAL(b.nd(), 2);
       ENSURE_EQUAL(b.dim(0), n);
       ENSURE_EQUAL(b.dim(1), n);
 
@@ -144,7 +144,7 @@ TEST(slice2_reverse)
   
       b.show();
 
-      ENSURE_EQUAL(b.n_dims(), 2);
+      ENSURE_EQUAL(b.nd(), 2);
       ENSURE_EQUAL(b.dim(0), n);
       ENSURE_EQUAL(b.dim(1), n);
 
@@ -164,7 +164,7 @@ TEST(double_reverse)
   
       b.show();
 
-      ENSURE_EQUAL(b.n_dims(), 2);
+      ENSURE_EQUAL(b.nd(), 2);
       ENSURE_EQUAL(b.dim(0), n);
       ENSURE_EQUAL(b.dim(1), n);
 

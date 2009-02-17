@@ -1,8 +1,13 @@
+#define BOOST_NO_EXCEPTIONS
+
+#include <resophonic/kamasu/config.hpp>
+#include <resophonic/kamasu/mirror.hpp>
 #include "kernel.h"
 #include "cutil.h"
 #include <stdio.h>
 #include <cublas.h>
 #include <map>
+
 
 #define SDATA( index)      CUT_BANK_CHECKER(sdata, index)
 
@@ -115,10 +120,6 @@ void gpu_div_scalar(float* data, unsigned size, float scalar)
   cublasSscal(size, 1.0f/scalar, data, 1);
 }
 
-
-
-
-
 //
 //  vector-vector knls
 //
@@ -180,6 +181,10 @@ kamasu_testy_knl_thunk(Op op,
   else if (op == POW)
     data[actual_index] = pow(data[actual_index], scalar);
 }
+
+#define BOOST_PP_ITERATION_LIMITS (1, KAMASU_MAX_ARRAY_DIM-1)
+#define BOOST_PP_FILENAME_1 "kernel.ipp"
+#include BOOST_PP_ITERATE()
 
 __global__ void
 kamasu_aa_knl_thunk(Op op,
@@ -276,4 +281,5 @@ void kamasu_testy_knl(Op op,
     unsigned index = INDEX;						\
     unsigned r = 0;							\
   }
+
 

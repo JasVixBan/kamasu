@@ -19,6 +19,13 @@ namespace resophonic {
       log_trace("%s",  __PRETTY_FUNCTION__);
     }
 
+    template<typename T>
+    holder<T>::holder(std::size_t s) : data_(0), size_(0) 
+    { 
+      resize(s);
+      log_trace("%s",  __PRETTY_FUNCTION__);
+    }
+
     template <typename T>
     void
     holder<T>::reset()
@@ -32,6 +39,8 @@ namespace resophonic {
 
       if (data_)
 	{
+	  // not kamasu safe call, which throws.  this is called
+	  // from the destructor.
 	  CUDA_SAFE_CALL(cudaFree(data_));
 	  data_ = 0;
 	  size_ = 0;
@@ -49,7 +58,7 @@ namespace resophonic {
     T* holder<T>::gpu_mallocn(unsigned n)
     {
       T* devmem;
-      CUDA_SAFE_CALL( cudaMalloc( (void**) &devmem, n * sizeof(T)));
+      KAMASU_SAFE_CALL( cudaMalloc( (void**) &devmem, n * sizeof(T)));
       log_trace ("malloc %u = %x",  (n * sizeof(T)) % devmem);
       cudaMemset(devmem, 0, n * sizeof(T));
       return devmem;
@@ -87,9 +96,9 @@ namespace resophonic {
 	return;
       size_ = rhs.size_;
       data_ = gpu_mallocn(rhs.size_);
-      CUDA_SAFE_CALL( cudaMemcpy( data_, rhs.data_, 
-				  sizeof(T) * size_,
-				  cudaMemcpyDeviceToDevice) );
+      KAMASU_SAFE_CALL( cudaMemcpy( data_, rhs.data_, 
+				    sizeof(T) * size_,
+				    cudaMemcpyDeviceToDevice) );
       log_debug("*** CLONED RHS %u bytes @%p***",  size_ % data_);
     }
 
@@ -109,7 +118,7 @@ namespace resophonic {
 	return;
       size_ = s;
       data_ = gpu_mallocn(size_ * sizeof(T));
-      CUDA_SAFE_CALL( cudaMemcpy( data_,  hdata, size_ * sizeof(T),
+      KAMASU_SAFE_CALL( cudaMemcpy( data_,  hdata, size_ * sizeof(T),
 				  cudaMemcpyHostToDevice) );
     }
 
@@ -119,7 +128,7 @@ namespace resophonic {
     {
       if (size_ == 0)
 	return;
-      CUDA_SAFE_CALL( cudaMemcpy( hdata, data_, size_ * sizeof(T),
+      KAMASU_SAFE_CALL( cudaMemcpy( hdata, data_, size_ * sizeof(T),
 				  cudaMemcpyDeviceToHost) );
     }
 
@@ -153,7 +162,7 @@ namespace resophonic {
 
       T value;
       const T* addy = data_ + i;
-      CUDA_SAFE_CALL( cudaMemcpy(&value, addy, sizeof(T), cudaMemcpyDeviceToHost) );
+      KAMASU_SAFE_CALL( cudaMemcpy(&value, addy, sizeof(T), cudaMemcpyDeviceToHost) );
       log_trace("Got %s from [%u] of %u ",  value % i % size_);
       return value;
     }
@@ -165,7 +174,7 @@ namespace resophonic {
       RESOPHONIC_KAMASU_THROW(i >= size_, bad_index());
 
       T* addy = data_ + i;
-      CUDA_SAFE_CALL( cudaMemcpy(addy, &value, sizeof(T), cudaMemcpyHostToDevice) );
+      KAMASU_SAFE_CALL( cudaMemcpy(addy, &value, sizeof(T), cudaMemcpyHostToDevice) );
       log_trace("Set %s at %u of %u",  value % i % size_);
     }
 

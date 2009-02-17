@@ -22,12 +22,30 @@ TEST(pow_2)
   b = rk::pow(a, 2.0f);
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.n_dims(), 1);
+  ENSURE_EQUAL(b.nd(), 1);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (float i=0; i<n; i++)
     {
       ENSURE_EQUAL(a(i), i);
       ENSURE_DISTANCE(b(i), i*i, i *i * 10e-07);
+    }
+}
+
+TEST(plus)
+{
+  unsigned n = 1000;
+  array<float> a = make_1d(n), b;
+
+  b = a + 13.0f;
+
+  ENSURE_EQUAL(b.linear_size(), n);
+  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.dim(0), n);
+
+  for (float i=0; i<n; i++)
+    {
+      ENSURE_EQUAL(a(i), i);
+      ENSURE_EQUAL(b(i), i + 13);
     }
 }

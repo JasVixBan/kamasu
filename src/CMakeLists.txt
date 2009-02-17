@@ -1,14 +1,16 @@
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+cuda_include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 cuda_add_library(resophonic_barracuda SHARED
 
   # gpuvector.cu
   kernel.cu
-  sadd.cu
-  smul.cu
-  sdiv.cu
-  ssub.cu
+
+  # sadd.cu
+  # smul.cu
+  # sdiv.cu
+  # ssub.cu
 
   holder.cpp
   mirror.cpp
@@ -22,11 +24,11 @@ cuda_add_library(resophonic_barracuda SHARED
 
   logging.cpp
 
-  vector_splay.cu
-  vector_vector_mul.cu
-  vector_vector_div.cu
-  vector_vector_add.cu
-  vector_vector_sub.cu
+  #  vector_splay.cu
+  #  vector_vector_mul.cu
+  #  vector_vector_div.cu
+  #  vector_vector_add.cu
+  #  vector_vector_sub.cu
   )
 
 add_custom_target(gencode

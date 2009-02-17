@@ -89,21 +89,41 @@ namespace resophonic
 		>
     { };
 
-    struct ArrayArrayOps
-      : bp::or_<bp::when<bp::plus<Array, Array>,
-			 ArrayArrayOp(bp::tag::plus(), 
-				      Array(bp::_left), Array(bp::_right))>,
-		bp::when<bp::multiplies<Array, Array>,
-			 ArrayArrayOp(bp::tag::multiplies(), 
-				      Array(bp::_left), Array(bp::_right))>,
-		bp::when<bp::divides<Array, Array>,
-			 ArrayArrayOp(bp::tag::divides(), 
-				      Array(bp::_left), Array(bp::_right))>,
-		bp::when<bp::minus<Array, Array>,
-			 ArrayArrayOp(bp::tag::minus(), 
-				      Array(bp::_left), Array(bp::_right))>
-		>
-    { };
+    struct ArrayArrayOpsCases 
+    {
+      template <typename Tag, int ___ = 0>
+      struct case_ : boost::proto::not_<boost::proto::_> { };
+
+
+      template <int ___>
+      struct case_<bp::tag::plus, ___>
+	: bp::when<bp::plus<Array, Array>,
+		   ArrayArrayOp(bp::tag::plus(), 
+				Array(bp::_left), Array(bp::_right))>
+      { };
+
+      template <int ___>
+      struct case_<bp::tag::multiplies, ___>
+	: bp::when<bp::multiplies<Array, Array>,
+		   ArrayArrayOp(bp::tag::multiplies(), 
+				Array(bp::_left), Array(bp::_right))>
+      { };
+
+      template <int ___>
+      struct case_<bp::tag::divides, ___>
+	: bp::when<bp::divides<Array, Array>,
+		   ArrayArrayOp(bp::tag::divides(), 
+				Array(bp::_left), Array(bp::_right))>
+      { };
+
+      template <int ___>
+      struct case_<bp::tag::minus, ___>
+	: bp::when<bp::minus<Array, Array>,
+		   ArrayArrayOp(bp::tag::minus(), 
+				Array(bp::_left), Array(bp::_right))>
+      { };
+    };
+    struct ArrayArrayOps : bp::switch_<ArrayArrayOpsCases> { };
 
     struct Vector
       : StdVectorTerminal

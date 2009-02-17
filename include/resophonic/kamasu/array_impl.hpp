@@ -12,25 +12,6 @@
 namespace resophonic {
   namespace kamasu {
 
-    /*
-    namespace detail {
-      struct impl_t {
-	mirror<unsigned> dims;
-	mirror<unsigned> factors;
-	mirror<int>      strides;
-
-	boost::shared_ptr<impl_t> clone()
-	{
-	  boost::shared_ptr<impl_t> newimpl(new impl_t);
-	  impl_t& i(*newimpl);
-	  i.dims.clone(dims);
-	  i.factors.clone(factors);
-	  i.strides.clone(strides);
-	  return newimpl;
-	}
-      };
-    }
-    */
     template <typename T, 
 	      typename RVal = boost::mpl::false_>
     struct array_impl 

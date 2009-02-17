@@ -13,24 +13,13 @@ BOOST_PP_CAT(kamasu_elementwise_array_scalar_knl_,N)(Op op,
 					BOOST_PP_ENUM_PARAMS(N, const int stride),
 					float scalar)
 {
-    unsigned index = INDEX;
-    unsigned actual_index = 0;
+  if (INDEX >= linear_size)
+    return;
 
-    if (INDEX >= linear_size)
-      return;
+#define CALC_INDEX(Z, N_, DATA) + unsigned(INDEX/factor ## N_)*stride ## N_
 
-    std::size_t factors[N];
-    int strides[N];
-#define SET(Z,N_,DATA) factors[N_] = BOOST_PP_CAT(factor,N_); strides[N_]=BOOST_PP_CAT(stride,N_);
-    BOOST_PP_REPEAT(N, SET, ~);
-#undef SET
-
-    for (int i = N-1; i>=0; i--)
-    {
-      unsigned this_component = index / factors[i];
-      actual_index += this_component * strides[i];
-      index -= this_component * factors[i];
-    }
+    unsigned actual_index = 0 BOOST_PP_REPEAT(N, CALC_INDEX, ~);
+#undef CALC_INDEX
 
     if (op == MULTIPLIES)
       data[actual_index] *= scalar;
@@ -77,34 +66,15 @@ BOOST_PP_CAT(kamasu_elementwise_array_array_knl_,N)(Op op,
 						    BOOST_PP_ENUM_PARAMS(N, const int stride_l),
 						    BOOST_PP_ENUM_PARAMS(N, const int stride_r))
 {
-  unsigned index_l = INDEX, index_r = INDEX;
-  unsigned actual_index_l = 0, actual_index_r = 0;
-
   if (INDEX >= linear_size)
     return;
 
-  std::size_t factors_l[N], factors_r[N];
-  int strides_l[N], strides_r[N];
-#define SET(Z,N_,DATA)			     \
-  factors_l[N_] = BOOST_PP_CAT(factor_l,N_); \
-  factors_r[N_] = BOOST_PP_CAT(factor_r,N_); \
-  strides_l[N_] = BOOST_PP_CAT(stride_l,N_); \
-  strides_r[N_] = BOOST_PP_CAT(stride_r,N_);
+#define CALC_INDEX(Z, N_, DATA) + unsigned(INDEX/factor ## DATA ## N_)*stride ## DATA ## N_
 
-    BOOST_PP_REPEAT(N, SET, ~);
+    unsigned actual_index_l = 0 BOOST_PP_REPEAT(N, CALC_INDEX, _l);
+    unsigned actual_index_r = 0 BOOST_PP_REPEAT(N, CALC_INDEX, _r);
 
-#undef SET
-
-
-  for (int i = N-1; i>=0; i--)
-    {
-      unsigned this_component_l = index_l / factors_l[i];
-      unsigned this_component_r = index_r / factors_r[i];
-      actual_index_l += this_component_l * strides_l[i];
-      actual_index_r += this_component_r * strides_r[i];
-      index_l -= this_component_l * factors_l[i];
-      index_r -= this_component_r * factors_r[i];
-    }
+#undef CALC_INDEX
 
   if (op == MULTIPLIES)
     data_l[actual_index_l] *= data_r[actual_index_r];
@@ -127,8 +97,6 @@ BOOST_PP_CAT(kamasu_elementwise_array_array_,N)(Op op,
 						const int* strides_r)
 {
   bd_t bd = gridsize(linear_size);
-  //printf("%s with gridsize %u %u\n", __PRETTY_FUNCTION__, bd.first, bd.second);
-  //printf("n_dims=%u linear_size=%zu", n_dims, linear_size);
   
   BOOST_PP_CAT(kamasu_elementwise_array_array_knl_,N)<<<bd.first, bd.second>>>
     (op, 

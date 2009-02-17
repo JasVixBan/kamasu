@@ -21,8 +21,8 @@ namespace resophonic {
 
       log_trace("%s",  __PRETTY_FUNCTION__);
       //      log_trace("the type is: %s") % name_of(lrv);
-      RESOPHONIC_KAMASU_THROW(lrv.nd() == 1, dimensions_dont_match());
-      RESOPHONIC_KAMASU_THROW(rrv.nd() == 1, dimensions_dont_match());
+      RESOPHONIC_KAMASU_THROW(lrv.nd() != 1, dimensions_dont_match());
+      RESOPHONIC_KAMASU_THROW(rrv.nd() != 1, dimensions_dont_match());
 
       return cublasSdot(lrv.dim(0),
 			lrv.data() + lrv.offset(),

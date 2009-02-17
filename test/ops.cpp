@@ -322,6 +322,7 @@ TEST(plus_assign)
   array<float> b = make_4x5();
   b += a;
 
+  ENSURE_NOT_EQUAL(b.data(), a.data());
   ENSURE_EQUAL(a(0,0), 1.0f);
   ENSURE_EQUAL(a(1,2), 10.0f);
   ENSURE_EQUAL(a(3,0), 4.0f);

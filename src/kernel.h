@@ -66,20 +66,34 @@ void kamasu_aa_knl(Op op,
 		   unsigned n_dims,
 		   float* data_l,
 		   float* data_r,
-		   unsigned* factors_l,
-		   unsigned* factors_r,
-		   int* strides_l,
-		   int* strides_r,
+		   std::size_t factor_l1,
+		   std::size_t factor_l2,
+		   std::size_t factor_r1,
+		   std::size_t factor_r2,
+		   int stride_l1,
+		   int stride_l2,
+		   int stride_r1,
+		   int stride_r2,
 		   unsigned linear_size);
 
 #define ENUMERATED_DECLS(Z, N, DATA)					\
-  void BOOST_PP_CAT(kamasu_elementwise_,N)				\
+  void BOOST_PP_CAT(kamasu_elementwise_array_scalar_,N)			\
     (Op op,								\
      float* data,							\
      std::size_t linear_size,						\
      const std::size_t* factors,					\
      const int* strides,						\
-     float scalar);
+     float scalar);							\
+  void BOOST_PP_CAT(kamasu_elementwise_array_array_,N)			\
+    (Op op,								\
+     std::size_t linear_size_l,						\
+     float* data_l,							\
+     float* data_r,							\
+     const std::size_t* factors_l,					\
+     const std::size_t* factors_r,					\
+     const int* strides_l,						\
+     const int* strides_r);
+
 
 BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 

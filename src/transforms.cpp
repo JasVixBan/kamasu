@@ -72,20 +72,31 @@ namespace resophonic {
 	    RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
 				    dimensions_dont_match());
 
-	  log_trace("%s", "*** DISPATCH TO AA KERNEL ***");
-	  /*
-	  kamasu_aa_knl(op_map<bp::tag::plus>::value,
-			lhs.nd, // ndims
-			lhs.data_->data() + lhs.offset,
-			rhs.data_->data() + rhs.offset,
-			lhs.impl_->factors.gpu_data(),
-			rhs.impl_->factors.gpu_data(),
-			lhs.impl_->strides.gpu_data(),
-			rhs.impl_->strides.gpu_data(),
-			lhs.linear_size);
-	  */
+	  log_trace("%s", "*** DISPATCH TO ARRAY-ARRAY KERNEL ***");
+
+	  switch (lhs.nd) {
+	    std::cout<< "a.nd==" << lhs.nd << "\n";
+#define DISPATCH_CASE(Z, N, DATA) case N:				\
+             BOOST_PP_CAT(kamasu_elementwise_array_array_,N) \
+	      (op_map<bp::tag::plus>::value,				\
+	       lhs.linear_size,						\
+	       lhs.data() + lhs.offset,					\
+	       rhs.data() + rhs.offset,					\
+	       lhs.factors,						\
+	       rhs.factors,						\
+	       lhs.strides,						\
+	       rhs.strides);						\
+	    break;
+
+	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
+
+	  default:
+	    throw std::runtime_error("kamasu internal error");
+	  }
+
+#undef DISPATCH_CASE
+	  
 	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
-			
 	  return rk::array_impl<float, boost::mpl::true_>();
 	}
 
@@ -112,7 +123,7 @@ namespace resophonic {
 #define DISPATCH_CASE(Z, N, DATA)					\
 	    case N:							\
 	      log_trace("Case %d", N); \
-	    BOOST_PP_CAT(kamasu_elementwise_,N)				\
+	    BOOST_PP_CAT(kamasu_elementwise_array_scalar_,N)		\
 	    (op_map<Op>::value,						\
 	     a.data() + a.offset,					\
 	     a.linear_size,						\

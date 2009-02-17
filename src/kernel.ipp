@@ -43,8 +43,6 @@ BOOST_PP_CAT(kamasu_elementwise_array_scalar_,N)(Op op,
 {
   bd_t bd = gridsize(linear_size);
 
-  printf ("GONNA LAUNCH>>> %s\n", __PRETTY_FUNCTION__);
-
   BOOST_PP_CAT(kamasu_elementwise_array_scalar_knl_,N)<<<bd.first, bd.second>>>
     (op,
      data,

@@ -47,6 +47,7 @@ namespace resophonic
 
     struct Scalar
       : bp::or_<bp::when<bp::terminal<float>, bp::_value>, 
+		bp::when<bp::terminal<int>, bp::_value>, 
 		bp::when<bp::multiplies<Scalar, Scalar>, bp::_default<Scalar> >
 		>
     { };
@@ -70,54 +71,78 @@ namespace resophonic
 
     struct Vector;
 
-    struct ArrayScalarOps 
-      : bp::or_<bp::when<bp::multiplies<Array, Scalar>,
-			 ArrayScalarOp(bp::tag::multiplies(), 
-					Array(bp::_left), Scalar(bp::_right))>,
-		bp::when<bp::plus<Array, Scalar>,
-			 ArrayScalarOp(bp::tag::plus(), 
-					Array(bp::_left), Scalar(bp::_right))>,
-		bp::when<bp::minus<Array, Scalar>,
-			 ArrayScalarOp(bp::tag::minus(), 
-					Array(bp::_left), Scalar(bp::_right))>,
-		bp::when<bp::divides<Array, Scalar>,
-			 ArrayScalarOp(bp::tag::divides(), 
-				       Array(bp::_left), Scalar(bp::_right))>,
-		bp::when<bp::function<PowTag, Array, Scalar>,
-			 ArrayScalarOp(tag::pow(), 
-				       Array(bp::_child1), Scalar(bp::_child2))>
-		>
-    { };
+    struct ArrayScalarOpsCases
+    { 
+      template <typename Tag, int _=0>
+      struct case_ : boost::proto::not_<boost::proto::_> { };
+
+      template <int _> 
+      struct case_<bp::tag::multiplies, _>
+      : bp::when<bp::multiplies<Array, Scalar>,
+		 ArrayScalarOp(bp::tag::multiplies(), 
+			       Array(bp::_left), Scalar(bp::_right))>
+      { };
+
+      template <int _> 
+      struct case_<bp::tag::plus, _>
+      : bp::when<bp::plus<Array, Scalar>,
+		 ArrayScalarOp(bp::tag::plus(), 
+			       Array(bp::_left), Scalar(bp::_right))>
+      { };
+
+      template <int _> 
+      struct case_<bp::tag::minus, _>
+      : bp::when<bp::minus<Array, Scalar>,
+		 ArrayScalarOp(bp::tag::minus(), 
+			       Array(bp::_left), Scalar(bp::_right))>
+      { };
+
+      template <int _> 
+      struct case_<bp::tag::divides, _>
+      : bp::when<bp::divides<Array, Scalar>,
+		 ArrayScalarOp(bp::tag::divides(), 
+			       Array(bp::_left), Scalar(bp::_right))>
+      { };
+
+      template <int _> 
+      struct case_<bp::tag::function, _>
+	: bp::when<bp::function<PowTag, Array, Scalar>,
+		   ArrayScalarOp(tag::pow(), 
+				 Array(bp::_child1), Scalar(bp::_child2))>
+      { };
+
+    };
+    
+    struct ArrayScalarOps : bp::switch_<ArrayScalarOpsCases> { };
 
     struct ArrayArrayOpsCases 
     {
-      template <typename Tag, int ___ = 0>
+      template <typename Tag, int _=0>
       struct case_ : boost::proto::not_<boost::proto::_> { };
 
-
-      template <int ___>
-      struct case_<bp::tag::plus, ___>
+      template <int _>
+      struct case_<bp::tag::plus, _>
 	: bp::when<bp::plus<Array, Array>,
 		   ArrayArrayOp(bp::tag::plus(), 
 				Array(bp::_left), Array(bp::_right))>
       { };
 
-      template <int ___>
-      struct case_<bp::tag::multiplies, ___>
+      template <int _>
+      struct case_<bp::tag::multiplies, _>
 	: bp::when<bp::multiplies<Array, Array>,
 		   ArrayArrayOp(bp::tag::multiplies(), 
 				Array(bp::_left), Array(bp::_right))>
       { };
 
-      template <int ___>
-      struct case_<bp::tag::divides, ___>
+      template <int _>
+      struct case_<bp::tag::divides, _>
 	: bp::when<bp::divides<Array, Array>,
 		   ArrayArrayOp(bp::tag::divides(), 
 				Array(bp::_left), Array(bp::_right))>
       { };
 
-      template <int ___>
-      struct case_<bp::tag::minus, ___>
+      template <int _>
+      struct case_<bp::tag::minus, _>
 	: bp::when<bp::minus<Array, Array>,
 		   ArrayArrayOp(bp::tag::minus(), 
 				Array(bp::_left), Array(bp::_right))>

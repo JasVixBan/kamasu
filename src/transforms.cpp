@@ -103,15 +103,15 @@ namespace resophonic {
 	void operator()(bp::tag::divides, 
 			float* lhs, float * rhs, unsigned size)
 	{
-	  BOOST_ASSERT(size > 0);
-	  kamasu_vector_vector_div(size, lhs, 1, rhs, 1);
+	  RESOPHONIC_KAMASU_THROW(true, not_implemented());
 	}
+
 	void operator()(bp::tag::minus, 
 			float* lhs, float * rhs, unsigned size)
 	{
-	  BOOST_ASSERT(size > 0);
-	  kamasu_vector_vector_sub(size, lhs, 1, rhs, 1);
+	  RESOPHONIC_KAMASU_THROW(true, not_implemented());
 	}
+
 	template <typename Op, typename T, typename IsRVal>
 	void operator()(Op, 
 			const rk::array_impl<T, IsRVal>& a,

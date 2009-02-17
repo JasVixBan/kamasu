@@ -22,6 +22,16 @@ namespace resophonic {
       }
     };
 
+    struct not_implemented : virtual std::exception
+    {
+      not_implemented() { }
+
+      virtual const char* what() const throw()
+      {
+	return "resophonic::kamasu error: operation not implemented";
+      }
+    };
+
     struct zero_dim : virtual std::exception
     {
       std::size_t which_dim;

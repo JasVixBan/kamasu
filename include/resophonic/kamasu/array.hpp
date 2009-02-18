@@ -139,12 +139,9 @@ namespace resophonic {
 	typename boost::result_of<Grammar(Expr const&)>::type thingy 
 	  = Grammar()(expr);
 	log_trace("%s", "END EVAL/TRANSFORM");
-	//log_trace("thingy is %s") % name_of(thingy);
 	this->take(thingy);
       }
     };
-
-
 
   }  
 }

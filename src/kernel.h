@@ -31,7 +31,23 @@ static bd_t gridsize(unsigned size)
 
 enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW, EXP, EXP2, LOG10 };
 
+#define FN_NAME(NAME,TAG,N) NAME##_##TAG##_##N
+
+#define UNARY_FN(R, DATA, ELEM)						\
+  void FN_NAME(kamasu_elementwise_array, ELEM,DATA)			\
+    (float* data,							\
+     std::size_t linear_size,						\
+     const std::size_t* factors,					\
+     const int* strides);
+
+#define UNARY_TAGS (exp)(exp2)(log10)
+
+BOOST_PP_SEQ_FOR_EACH(UNARY_FN, N, UNARY_TAGS);
+
+
+
 #define ENUMERATED_DECLS(Z, N, DATA)					\
+  BOOST_PP_SEQ_FOR_EACH(UNARY_FN, N, UNARY_TAGS);			\
   void BOOST_PP_CAT(kamasu_elementwise_array_op_,N)			\
     (Op op,								\
      float* data,							\
@@ -57,5 +73,8 @@ enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW, EXP, EXP2, LOG10 };
 
 
 BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
+
+#undef FN_NAME
+#undef UNARY_TAGS
 
 #endif

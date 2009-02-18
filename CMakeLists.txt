@@ -92,3 +92,9 @@ add_subdirectory(test)
 add_subdirectory(example)
 
 add_executable(proto proto.cpp)
+
+add_custom_target(generate
+  COMMAND ./templates/unary_array_op.py
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+

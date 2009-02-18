@@ -6,6 +6,7 @@ cuda_add_library(resophonic_barracuda SHARED
 
   # gpuvector.cu
   kernel.cu
+  unary_array_op.cu
 
   # sadd.cu
   # smul.cu
@@ -29,11 +30,6 @@ cuda_add_library(resophonic_barracuda SHARED
   #  vector_vector_div.cu
   #  vector_vector_add.cu
   #  vector_vector_sub.cu
-  )
-
-add_custom_target(gencode
-  COMMAND ./gencode.py
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 target_link_libraries(resophonic_barracuda

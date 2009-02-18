@@ -17,11 +17,11 @@ functions = ['sqrt', 'rsqrt','cbrt',
 
 KAMASU_MAX_ARRAY_DIM = 6
 
-files = ['elementwise_array_op.cu', 'elementwise_array_op.h']
+files = ['unary_array_op.cu', 'unary_array_op.h']
 
 for fname in files:
     ifile = open('templates/' + fname)
-    ofile = open('src/' + fname, 'w')
+    ofile = open('src/' + fname + '.generated', 'w')
 
     lines = ifile.read()
 

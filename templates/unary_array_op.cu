@@ -1,14 +1,6 @@
-#include "kernel.h"
-#include "cutil.h"
-
-//
-//
-//  ops
-//
-//  
 
 __global__ void
-kamasu_elementwise_array_/*OP*/_/*N*/_knl
+kamasu_unary_array_/*OP*/_/*N*/_knl
 (float* data,
  unsigned linear_size,
  /*', '.join(['const std::size_t factor%d' % x for x in range(N)])*/,
@@ -23,14 +15,14 @@ kamasu_elementwise_array_/*OP*/_/*N*/_knl
 }
 
 void 
-BOOST_PP_CAT(kamasu_elementwise_array_/*OP*/_/*N*/(float* data, 
-							std::size_t linear_size,
-							const std::size_t* factors, 
-							const int* strides)
+kamasu_unary_array_/*OP*/_/*N*/(float* data, 
+				std::size_t linear_size,
+				const std::size_t* factors, 
+				const int* strides)
 {
   bd_t bd = gridsize(linear_size);
 
-  kamasu_elementwise_array_/*OP*/_/*N*/_knl<<<bd.first, bd.second>>>
+  kamasu_unary_array_/*OP*/_/*N*/_knl<<<bd.first, bd.second>>>
     (data,
      linear_size,
      /*','.join(['factors[%d]' % x for x in range(N)])*/,

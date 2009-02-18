@@ -10,6 +10,8 @@
 #include <cublas.h>
 #include <cutil.h>
 
+#include "unary_array_op.h"
+
 namespace resophonic {
   namespace kamasu {
 
@@ -174,7 +176,7 @@ namespace resophonic {
 
 #define DISPATCH_CASE(Z, N, DATA)					\
 	case N:								\
-	    FN_NAME(kamasu_elementwise_array, DATA,N)\
+	    FN_NAME(kamasu_unary_array, DATA,N)\
 	    (a.data() + a.offset,					\
 	     a.linear_size,						\
 	     a.factors,							\

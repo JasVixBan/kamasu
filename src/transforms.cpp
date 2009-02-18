@@ -143,35 +143,7 @@ namespace resophonic {
 
 #undef DISPATCH_CASE
 
-#if 0
-	template <typename Op, typename T, typename RVal>
-	void
-	operator()(Op, const rk::array_impl<T, RVal>& a)
-	{
-	  log_trace("%s", __PRETTY_FUNCTION__);
-	  switch (a.nd) {
-	    std::cout<< "a.nd==" << a.nd << "\n";
-#define DISPATCH_CASE(Z, N, DATA)					\
-	    case N:							\
-	    BOOST_PP_CAT(kamasu_elementwise_array_op_,N)\
-		(op_map<Op>::value,					\
-		 a.data() + a.offset,					\
-		 a.linear_size,						\
-		 a.factors,						\
-		 a.strides);						\
-	      break;
-
-	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
-
-	  default:
-	    throw std::runtime_error("kamasu internal error");
-	  }
-
-#undef DISPATCH_CASE
-	  
-	}
-#endif
-
+	/*
 #define FN_NAME(NAME,TAG,N) NAME##_##TAG##_##N
 
 #define DISPATCH_CASE(Z, N, DATA)					\
@@ -206,7 +178,10 @@ namespace resophonic {
 
 
 #undef DISPATCH_CASE
-	  
+	*/
+
+#include "unary_array_transforms.h.generated"
+
       };
     }
 

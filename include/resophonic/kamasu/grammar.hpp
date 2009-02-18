@@ -13,20 +13,27 @@ namespace resophonic
     namespace bp = boost::proto;
     namespace rk = resophonic::kamasu;
 
+#define MAKE_STRUCT(R, DATA, ELEM) struct ELEM { };
+
     namespace tag {
-      //      struct dot { };
+
+      BOOST_PP_SEQ_FOR_EACH(MAKE_STRUCT, ~, RESOPHONIC_KAMASU_UNARY_ARRAY_FUNCTIONS);
       struct pow { };
-      struct log10 { };
-      struct exp { };
-      struct exp2 { };
+
+#undef MAKE_STRUCT
+
     }
-    // struct DotTag : bp::terminal<tag::dot> { };
-    // struct PowTag : bp::terminal<tag::pow> { };
+
+#define MAKE_TERMINAL(R, DATA, ELEM) bp::terminal<tag::ELEM>::type const ELEM = {{}};
+
+    BOOST_PP_SEQ_FOR_EACH(MAKE_TERMINAL, ~, RESOPHONIC_KAMASU_UNARY_ARRAY_FUNCTIONS);
+
+#undef MAKE_TERMINAL
 
     bp::terminal<tag::pow>::type const pow = {{}};
-    bp::terminal<tag::log10>::type const log10 = {{}};
-    bp::terminal<tag::exp>::type const exp = {{}};
-    bp::terminal<tag::exp2>::type const exp2 = {{}};
+    //    bp::terminal<tag::log10>::type const log10 = {{}};
+    //    bp::terminal<tag::exp>::type const exp = {{}};
+    //    bp::terminal<tag::exp2>::type const exp2 = {{}};
 
     template <typename T, typename RVal = boost::mpl::false_>
     class array;

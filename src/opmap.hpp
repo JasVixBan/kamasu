@@ -41,9 +41,5 @@ namespace resophonic {
 
     KAMASU_OPMAP_SPECIALIZATION(pow, resophonic::kamasu::tag, POW);
 
-    KAMASU_OPMAP_SPECIALIZATION(exp, resophonic::kamasu::tag, EXP);
-    KAMASU_OPMAP_SPECIALIZATION(exp2, resophonic::kamasu::tag, EXP2);
-    KAMASU_OPMAP_SPECIALIZATION(log10, resophonic::kamasu::tag, LOG10);
-
   }
 }

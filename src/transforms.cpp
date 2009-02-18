@@ -137,10 +137,37 @@ namespace resophonic {
 	  default:
 	    throw std::runtime_error("kamasu internal error");
 	  }
+	}
 
 #undef DISPATCH_CASE
 
+	template <typename Op, typename T, typename RVal>
+	void
+	operator()(Op, const rk::array_impl<T, RVal>& a)
+	{
+	  log_trace("%s", __PRETTY_FUNCTION__);
+	  switch (a.nd) {
+	    std::cout<< "a.nd==" << a.nd << "\n";
+#define DISPATCH_CASE(Z, N, DATA)					\
+	    case N:							\
+	    BOOST_PP_CAT(kamasu_elementwise_array_op_,N)\
+		(op_map<Op>::value,					\
+		 a.data() + a.offset,					\
+		 a.linear_size,						\
+		 a.factors,						\
+		 a.strides);						\
+	      break;
+
+	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
+
+	  default:
+	    throw std::runtime_error("kamasu internal error");
+	  }
+
+#undef DISPATCH_CASE
+	    
 	}
+
       };
     }
 
@@ -214,6 +241,31 @@ namespace resophonic {
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::divides);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);
 
+
+    template <typename Op, typename IsRVal>
+    typename ArrayScalarOp::result_type
+    UnaryFunctionDispatch::operator()(Op, 
+				      const rk::array_impl<float, IsRVal>& v) 
+    {
+      rk::array_impl<float, boost::mpl::true_> rv(v);
+
+      detail::dispatch()(Op(), rv);
+      
+      return rv;
+    }
+
+#define INSTANTIATE_UNARYFUNCTION_OP_IMPL(OP, RV) template		\
+    UnaryFunctionDispatch::result_type					\
+    UnaryFunctionDispatch::operator()(OP,				\
+			     const rk::array_impl<float, boost::mpl:: RV>&);
+
+#define INSTANTIATE_UNARYFUNCTION_OP(OP)			\
+    INSTANTIATE_UNARYFUNCTION_OP_IMPL(OP , false_);		\
+	INSTANTIATE_UNARYFUNCTION_OP_IMPL(OP, true_);
+
+    INSTANTIATE_UNARYFUNCTION_OP(tag::exp);
+    INSTANTIATE_UNARYFUNCTION_OP(tag::exp2);
+    INSTANTIATE_UNARYFUNCTION_OP(tag::log10);
 
   }
 }

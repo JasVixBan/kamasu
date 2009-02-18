@@ -2,7 +2,6 @@
 #define RESOPHONIC_GPUMATH_KERNEL_H_INCLUDED
 
 #include <boost/preprocessor.hpp>
-#include <map>
 
 #define X      threadIdx.x  
 #define XSIZE  blockDim.x
@@ -30,9 +29,15 @@ static bd_t gridsize(unsigned size)
 }
 
 
-enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW } ;
+enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW, EXP, EXP2, LOG10 };
 
 #define ENUMERATED_DECLS(Z, N, DATA)					\
+  void BOOST_PP_CAT(kamasu_elementwise_array_op_,N)			\
+    (Op op,								\
+     float* data,							\
+     std::size_t linear_size,						\
+     const std::size_t* factors,					\
+     const int* strides);						\
   void BOOST_PP_CAT(kamasu_elementwise_array_scalar_,N)			\
     (Op op,								\
      float* data,							\
@@ -48,7 +53,7 @@ enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW } ;
      const std::size_t* factors_l,					\
      const std::size_t* factors_r,					\
      const int* strides_l,						\
-     const int* strides_r);
+     const int* strides_r);						\
 
 
 BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);

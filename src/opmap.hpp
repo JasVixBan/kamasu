@@ -29,18 +29,21 @@ namespace resophonic {
     struct op_map
     { };
 
-#define KAMASU_OPMAP_SPECIALIZATION(PROTO_OP, KAMASU_OPCODE)	\
-    template <> struct op_map<boost::proto::tag::PROTO_OP> {	\
-      const static Op value = KAMASU_OPCODE;			\
+#define KAMASU_OPMAP_SPECIALIZATION(PROTO_OP, NAMESPACE, KAMASU_OPCODE)	\
+    template <> struct op_map<NAMESPACE :: PROTO_OP> {			\
+      const static Op value = KAMASU_OPCODE;				\
     }
 
-    KAMASU_OPMAP_SPECIALIZATION(plus, PLUS);
-    KAMASU_OPMAP_SPECIALIZATION(minus, MINUS);
-    KAMASU_OPMAP_SPECIALIZATION(multiplies, MULTIPLIES);
-    KAMASU_OPMAP_SPECIALIZATION(divides, DIVIDES);
+    KAMASU_OPMAP_SPECIALIZATION(plus, boost::proto::tag, PLUS);
+    KAMASU_OPMAP_SPECIALIZATION(minus, boost::proto::tag, MINUS);
+    KAMASU_OPMAP_SPECIALIZATION(multiplies, boost::proto::tag, MULTIPLIES);
+    KAMASU_OPMAP_SPECIALIZATION(divides, boost::proto::tag, DIVIDES);
 
-    template <> struct op_map<tag::pow> {
-      const static Op value = POW;
-    };
+    KAMASU_OPMAP_SPECIALIZATION(pow, resophonic::kamasu::tag, POW);
+
+    KAMASU_OPMAP_SPECIALIZATION(exp, resophonic::kamasu::tag, EXP);
+    KAMASU_OPMAP_SPECIALIZATION(exp2, resophonic::kamasu::tag, EXP2);
+    KAMASU_OPMAP_SPECIALIZATION(log10, resophonic::kamasu::tag, LOG10);
+
   }
 }

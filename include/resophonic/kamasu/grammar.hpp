@@ -16,11 +16,17 @@ namespace resophonic
     namespace tag {
       //      struct dot { };
       struct pow { };
+      struct log10 { };
+      struct exp { };
+      struct exp2 { };
     }
-    //    struct DotTag : bp::terminal<tag::dot> { };
-    struct PowTag : bp::terminal<tag::pow> { };
+    // struct DotTag : bp::terminal<tag::dot> { };
+    // struct PowTag : bp::terminal<tag::pow> { };
 
-    PowTag::type const pow = {{}};
+    bp::terminal<tag::pow>::type const pow = {{}};
+    bp::terminal<tag::log10>::type const log10 = {{}};
+    bp::terminal<tag::exp>::type const exp = {{}};
+    bp::terminal<tag::exp2>::type const exp2 = {{}};
 
     template <typename T, typename RVal = boost::mpl::false_>
     class array;
@@ -43,6 +49,15 @@ namespace resophonic
       template <typename Op, typename IsRVal>
       result_type 
       operator()(Op, const rk::array_impl<float, IsRVal>& v, const float& f);
+    };
+
+    struct UnaryFunctionDispatch : bp::callable
+    {
+      typedef rk::array_impl<float, boost::mpl::true_> result_type;
+
+      template <typename Op, typename IsRVal>
+      result_type 
+      operator()(Op, const rk::array_impl<float, IsRVal>& v);
     };
 
     struct Scalar
@@ -106,13 +121,17 @@ namespace resophonic
 
       template <int _> 
       struct case_<bp::tag::function, _>
-	: bp::when<bp::function<PowTag, Array, Scalar>,
-		   ArrayScalarOp(tag::pow(), 
-				 Array(bp::_child1), Scalar(bp::_child2))>
+	: bp::when<bp::function<bp::terminal<tag::pow>, Array, Scalar>,
+		   ArrayScalarOp(tag::pow(), Array(bp::_child1), Scalar(bp::_child2))>
       { };
-
+      
     };
     
+    struct UnaryFunctionCall
+      : bp::when<bp::function<bp::terminal<bp::_>, Array>,
+		 UnaryFunctionDispatch(bp::_value(bp::_child0), Array(bp::_child1))>
+    { };
+
     struct ArrayScalarOps : bp::switch_<ArrayScalarOpsCases> { };
 
     struct ArrayArrayOpsCases 
@@ -157,6 +176,7 @@ namespace resophonic
     struct Array
       : bp::or_<ArrayScalarOps,
 		ArrayArrayOps,
+		UnaryFunctionCall,
 		RkArrayTerminal
 		>
     { };

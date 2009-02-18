@@ -90,3 +90,5 @@ add_subdirectory(src)
 add_subdirectory(python)
 add_subdirectory(test)
 add_subdirectory(example)
+
+add_executable(proto proto.cpp)

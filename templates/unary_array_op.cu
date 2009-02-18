@@ -1,4 +1,3 @@
-
 __global__ void
 kamasu_unary_array_/*OP*/_/*N*/_knl
 (float* data,

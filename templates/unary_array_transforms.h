@@ -1,5 +1,4 @@
 
-
   template <typename T, typename RVal>					
   void									
   operator()(tag::/*OP*/, const rk::array_impl<T, RVal>& a)		
@@ -15,4 +14,4 @@
       throw std::runtime_error("kamasu internal error");		
     }								
   }
-	  
+

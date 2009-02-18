@@ -15,19 +15,5 @@
 #define RESOPHONIC_KAMASU_THROW(PRED, EX)
 #endif
 
-#define RESOPHONIC_KAMASU_UNARY_ARRAY_FUNCTIONS \
-  (sqrt)(rsqrt)(cbrt)				\
-  (exp)(exp2)(exp10)(expm1)			\
-  (log)(log2)(log10)(log1p)			\
-  (sin)(cos)(tan)				\
-  (asin)(acos)(atan)				\
-  (sinh)(cosh)(tanh)				\
-  (asinh)(acosh)(atanh)				\
-  (erf)(erfc)(lgamma)(tgamma)			\
-  (logb)(ilogb)					\
-  (trunc)(round)(rint)(nearbyint)		\
-  (ceil)(floor)(lrint)(lround)(llrint)		\
-  (llround)  
-
 #endif
 

@@ -6,6 +6,8 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 
+#include <resophonic/kamasu/unary_array_grammar.hpp>
+
 namespace resophonic 
 {
   namespace kamasu 
@@ -13,27 +15,13 @@ namespace resophonic
     namespace bp = boost::proto;
     namespace rk = resophonic::kamasu;
 
-#define MAKE_STRUCT(R, DATA, ELEM) struct ELEM { };
-
     namespace tag {
 
-      BOOST_PP_SEQ_FOR_EACH(MAKE_STRUCT, ~, RESOPHONIC_KAMASU_UNARY_ARRAY_FUNCTIONS);
       struct pow { };
-
-#undef MAKE_STRUCT
 
     }
 
-#define MAKE_TERMINAL(R, DATA, ELEM) bp::terminal<tag::ELEM>::type const ELEM = {{}};
-
-    BOOST_PP_SEQ_FOR_EACH(MAKE_TERMINAL, ~, RESOPHONIC_KAMASU_UNARY_ARRAY_FUNCTIONS);
-
-#undef MAKE_TERMINAL
-
     bp::terminal<tag::pow>::type const pow = {{}};
-    //    bp::terminal<tag::log10>::type const log10 = {{}};
-    //    bp::terminal<tag::exp>::type const exp = {{}};
-    //    bp::terminal<tag::exp2>::type const exp2 = {{}};
 
     template <typename T, typename RVal = boost::mpl::false_>
     class array;

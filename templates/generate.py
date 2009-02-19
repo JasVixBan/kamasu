@@ -17,6 +17,13 @@ functions = ['sqrt', 'rsqrt','cbrt',
 
 KAMASU_MAX_ARRAY_DIM = 6
 
+one_to_n = range(1,KAMASU_MAX_ARRAY_DIM)
+
+def enum(thing, upto):
+    return ','.join([thing % n for n in range(upto)])
+
+
+
 def forall(**kwargs):
     if len(kwargs) == 1:
         k = kwargs.keys()[0]
@@ -31,8 +38,6 @@ def forall(**kwargs):
             del(newargs[k])
             for nextthing in forall(**newargs):
                 yield[(k,value)] + nextthing
-
-one_to_n = range(1,KAMASU_MAX_ARRAY_DIM)
 
 stuff = [
 
@@ -55,6 +60,10 @@ stuff = [
     { 'src' : 'templates/elementwise_array_scalar.cu',
       'dest' : 'src/elementwise_array_scalar.cu.generated',
       'next' : forall(N=one_to_n) },
+
+    { 'src' : 'templates/elementwise_array_array.cu',
+      'dest' : 'src/elementwise_array_array.cu.generated',
+      'next' : forall(N=one_to_n, enum=[enum]) },
     ]
 
 pattern = re.compile(r'\/\*(.*?)\*\/', re.DOTALL)

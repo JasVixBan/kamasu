@@ -12,7 +12,6 @@
 // includes, project
 
 #include <resophonic/kamasu.hpp>
-#include <resophonic/kamasu/mirror.hpp>
 
 #include <vector>
 #include <cassert>

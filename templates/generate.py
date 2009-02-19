@@ -50,8 +50,11 @@ stuff = [
 
     { 'src' : 'templates/unary_array_op.h',
       'dest' : 'src/unary_array_op.h.generated',
-      'next' : forall(OP=functions, N=one_to_n) }
+      'next' : forall(OP=functions, N=one_to_n) },
 
+    { 'src' : 'templates/elementwise_array_scalar.cu',
+      'dest' : 'src/elementwise_array_scalar.cu.generated',
+      'next' : forall(N=one_to_n) },
     ]
 
 pattern = re.compile(r'\/\*(.*?)\*\/', re.DOTALL)
@@ -61,7 +64,7 @@ for target in stuff:
     ifile = open(target['src'])
     try:
         os.unlink(target['dest'])
-    finally:
+    except:
         pass
     ofile = open(target['dest'], 'w')
     

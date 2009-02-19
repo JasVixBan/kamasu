@@ -180,9 +180,35 @@ TEST(m2_2d_stride)
   // 3 11 19
   b = a.slice(index_range(0,4,2), index_range(0, 5, 2));
 
-  c = b + 0.5555f;
+  for (int i=0; i<b.dim(0); i++)
+    for (int j=0; j<b.dim(1); j++)
+      {
+	log_trace("b(%d,%d) = %f", i % j % b(i,j));
+	ENSURE_EQUAL(b(i,j), a(i*2, j*2));
+      }
+
+  float trm = 100.0f;
+
+  c = b + trm;
+
+  ENSURE_EQUAL(c.nd(), b.nd());
+  ENSURE_EQUAL(c.factor(0), b.factor(0));
+  ENSURE_EQUAL(c.factor(1), b.factor(1));
+
+  ENSURE_EQUAL(c.dim(0), b.dim(0));
+  ENSURE_EQUAL(c.dim(1), b.dim(1));
+
+  ENSURE_EQUAL(c.stride(0), b.stride(0));
+  ENSURE_EQUAL(c.stride(1), b.stride(1));
+
+  ENSURE_NOT_EQUAL(c.data(), b.data());
 
   check_unchanged_4x5(a);
+
+  for (int i=0; i<c.dim(0); i++)
+    for (int j=0; j<c.dim(1); j++)
+      log_trace("c(%d,%d) = %f", i % j % c(i,j));
+
 
   ENSURE_EQUAL(b(0,0), 1.0f);
   ENSURE_EQUAL(b(0,1), 9.0f);
@@ -191,13 +217,13 @@ TEST(m2_2d_stride)
   ENSURE_EQUAL(b(1,1), 11.0f);
   ENSURE_EQUAL(b(1,2), 19.0f);
 
-  ENSURE_EQUAL(c(0,0), 1.5555f);
-  ENSURE_EQUAL(c(0,1), 9.5555f);
-  ENSURE_EQUAL(c(0,2), 17.5555f);
-  ENSURE_EQUAL(c(1,0), 3.5555f);
-  ENSURE_EQUAL(c(1,1), 11.5555f);
-  ENSURE_EQUAL(c(1,2), 19.5555f);
+  ENSURE_EQUAL(c(0,0), b(0,0) + trm);
+  ENSURE_EQUAL(c(1,0), b(1,0) + trm);
+  ENSURE_EQUAL(c(1,1), b(1,1) + trm);
+  ENSURE_EQUAL(c(1,2), b(1,2) + trm);
 
+  ENSURE_EQUAL(c(0,1), b(0,1) + trm);
+  ENSURE_EQUAL(c(0,2), b(0,2) + trm);
 }
 
 

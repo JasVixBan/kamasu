@@ -3,6 +3,7 @@
 #define DEREF(Z,N_,DATA) DATA[N_]
 
 
+/*
 //
 //
 //  ops
@@ -20,7 +21,7 @@ BOOST_PP_CAT(kamasu_elementwise_array_scalar_knl_,N)(Op op,
   if (INDEX >= linear_size)
     return;
 
-#define CALC_INDEX(Z, N_, DATA) + unsigned(INDEX/factor ## N_)*stride ## N_
+#define CALC_INDEX(Z, N_, DATA) + (INDEX%factor ## N_/factor ## N_ * stride ## N_
 
   unsigned actual_index = 0 BOOST_PP_REPEAT(N, CALC_INDEX, ~);
 #undef CALC_INDEX
@@ -56,7 +57,7 @@ BOOST_PP_CAT(kamasu_elementwise_array_scalar_,N)(Op op,
      scalar);
 }
 
-
+*/
 
 __global__ void
 BOOST_PP_CAT(kamasu_elementwise_array_array_knl_,N)(Op op,

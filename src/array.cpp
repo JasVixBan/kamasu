@@ -121,6 +121,15 @@ namespace resophonic {
       return *this;
     };
 
+    template <typename T, typename RVal>
+    array<T, RVal>& 
+    array<T, RVal>::operator=(const other_t& rhs) 
+    {
+      log_trace("%s",  __PRETTY_FUNCTION__);
+      this->take(rhs.self_);
+      return *this;
+    };
+
     template <typename T, typename RVal>				
     std::size_t								
     array<T, RVal>::index_of(const std::vector<std::size_t>& indexes) const

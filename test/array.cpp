@@ -14,6 +14,7 @@
 // includes, project
 
 #include <resophonic/kamasu.hpp>
+#include <resophonic/kamasu/linspace.hpp>
 
 #include "cuda_runtime_api.h"
 #include "cutil.h"
@@ -404,7 +405,7 @@ TEST(slice_1d)
 
 TEST(linspace)
 {
-  array<float> onetoten = linspace(0, 10, 11);
+  array<float> onetoten = linspace<float>(0, 10, 11);
   ENSURE_EQUAL(onetoten.linear_size(), 11);
   ENSURE_EQUAL(onetoten.dim(0), 11);
   ENSURE_EQUAL(onetoten.nd(), 1);
@@ -412,17 +413,22 @@ TEST(linspace)
   for (unsigned i=0; i<11; i++)
     ENSURE_EQUAL(onetoten(i), i); 
 
-  array<float> tentoone = linspace(10, 0, 11);
+  array<float> tentoone = linspace<float>(10, 0, 11);
   ENSURE_EQUAL(tentoone.linear_size(), 11);
+  ENSURE_EQUAL(tentoone.dim(0), 11);
+  ENSURE_EQUAL(tentoone.nd(), 1);
   for (unsigned i=0; i<11; i++)
-    ENSURE_EQUAL(tentoone(i), 10.-i); 
+    {
+      ENSURE_EQUAL(tentoone(i), 10.-i); 
+      std::cout << i << ":" << tentoone(i) << "\n";
+    }
 }
 
 using resophonic::kamasu::_;
 
 TEST(1d_slice)
 {
-  array<float> a = linspace(0, 9, 10);
+  array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(0,10,1);
   array<float> sliced = a.slice(ir);
@@ -435,7 +441,7 @@ TEST(1d_slice)
 
 TEST(1d_slice_rev)
 {
-  array<float> a = linspace(0, 9, 10);
+  array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(9,-1,-1);
   array<float> sliced = a.slice(ir);
@@ -449,7 +455,7 @@ TEST(1d_slice_rev)
 
 TEST(1d_slice_underscore)
 {
-  array<float> a = linspace(0, 9, 10);
+  array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(_,_);
   array<float> sliced = a.slice(ir);
@@ -462,7 +468,7 @@ TEST(1d_slice_underscore)
 
 TEST(1d_slice_from_left)
 {
-  array<float> a = linspace(0, 9, 10);
+  array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(5,_);
   array<float> sliced = a.slice(ir);
@@ -477,7 +483,7 @@ TEST(1d_slice_from_left)
 
 TEST(1d_slice_from_right)
 {
-  array<float> a = linspace(0, 9, 10);
+  array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(_,5);
   array<float> sliced = a.slice(ir);
@@ -492,7 +498,7 @@ TEST(1d_slice_from_right)
 
 TEST(1d_underscore_reverse)
 {
-  array<float> a = linspace(0, 9, 10);
+  array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(_, _, -1);
   array<float> sliced = a.slice(ir);
@@ -509,7 +515,7 @@ TEST(1d_underscore_reverse)
 
 TEST(1d_underscore_reverse_2)
 {
-  array<float> a = linspace(0, 9, 10);
+  array<float> a = linspace<float>(0, 9, 10);
   
   // slice to 9 7 5 3 1
   index_range ir(_, _, -2);

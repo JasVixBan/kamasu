@@ -15,6 +15,7 @@
 
 #include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/dot.hpp>
+#include <resophonic/kamasu/linspace.hpp>
 
 #include "cuda_runtime_api.h"
 #include "cutil.h"
@@ -364,8 +365,8 @@ TEST(plus_assign)
 
 TEST(plus_assign_slice)
 {
-  array<float> a = linspace(0,99,100);
-  array<float> a2 = linspace(0,9,10);
+  array<float> a = linspace<float>(0,99,100);
+  array<float> a2 = linspace<float>(0,9,10);
 
   array<float> b = a.slice(index_range(10,20));
   b += a2;
@@ -383,3 +384,19 @@ TEST(plus_assign_slice)
     }
 }
 
+array<float> my_linspace(float start, float end, unsigned n_steps)
+{
+  array<float> a(n_steps);
+  for (unsigned n = 0; n < n_steps; n++)
+    {
+      float value = start + ((end-start)/(n_steps-1.0)) * (float)n;
+      a(n) = value;
+    }
+  return a;
+}
+
+TEST(linspace_1)
+{
+
+
+}

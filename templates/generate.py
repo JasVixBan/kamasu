@@ -22,8 +22,6 @@ one_to_n = range(1,KAMASU_MAX_ARRAY_DIM)
 def enum(thing, upto):
     return ','.join([thing % n for n in range(upto)])
 
-
-
 def forall(**kwargs):
     if len(kwargs) == 1:
         k = kwargs.keys()[0]

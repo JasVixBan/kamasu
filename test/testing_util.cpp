@@ -137,14 +137,3 @@ void check_3d(const array<float>&a, unsigned n)
 	ENSURE_EQUAL(a(i,j,k), counter++);
 }
 
-array<float> linspace(float start, float end, unsigned n_steps)
-{
-  array<float> a(n_steps);
-  for (unsigned n = 0; n < n_steps; n++)
-    {
-      float value = start + ((end-start)/(n_steps-1.0)) * (float)n;
-      a(n) = value;
-    }
-  return a;
-}
-

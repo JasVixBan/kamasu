@@ -115,6 +115,12 @@ namespace resophonic
       { };
 
       template <int _> 
+      struct case_<bp::tag::plus_assign, _>
+	: bp::when<bp::plus_assign<Array, Scalar>,
+		   ArrayScalarOp(bp::tag::plus_assign(), Array(bp::_child0), Scalar(bp::_child1))>
+      { };
+      
+      template <int _> 
       struct case_<bp::tag::function, _>
 	: bp::when<bp::function<bp::terminal<tag::pow>, Array, Scalar>,
 		   ArrayScalarOp(tag::pow(), Array(bp::_child1), Scalar(bp::_child2))>
@@ -138,6 +144,13 @@ namespace resophonic
       struct case_<bp::tag::plus, _>
 	: bp::when<bp::plus<Array, Array>,
 		   ArrayArrayOp(bp::tag::plus(), 
+				Array(bp::_left), Array(bp::_right))>
+      { };
+
+      template <int _>
+      struct case_<bp::tag::plus_assign, _>
+	: bp::when<bp::plus<Array, Array>,
+		   ArrayArrayOp(bp::tag::plus_assign(), 
 				Array(bp::_left), Array(bp::_right))>
       { };
 

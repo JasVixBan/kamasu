@@ -9,6 +9,12 @@ set(BOOST_ROOT
 
 add_definitions(-DBOOST_SP_USE_QUICK_ALLOCATOR)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-DKAMASU_WHITEBOX_TESTING)
+endif ()
+
+
+
 #
 #  This should contain common/inc/cutil.h, common/lib/libcutil.a, etc.
 #

@@ -79,6 +79,29 @@ namespace resophonic {
       self_.copy_from(rhs);
     }
 
+    /*
+    template <typename T, typename RVal>
+    void 
+    array<T, RVal>::take(const array<T, boost::mpl::true_>& rhs)
+    {
+      log_trace("%s",  "TAKING");
+#ifdef RESOPHONIC_KAMASU_DEBUG
+      rhs.show();
+#endif
+      self_.copy_from(rhs.self_);
+    }
+
+    template <typename T, typename RVal>
+    void 
+    array<T, RVal>::take(const array<T, boost::mpl::false_>& rhs)
+    {
+      log_trace("%s",  __PRETTY_FUNCTION__);
+#ifdef RESOPHONIC_KAMASU_DEBUG
+      rhs.show();
+#endif
+      self_.copy_from(rhs.self_);
+    }
+    */
     template <typename T, typename RVal>
     array<T, RVal>&
     array<T, RVal>::operator<<(const boost::numeric::ublas::matrix<T,boost::numeric::ublas::column_major>& m)

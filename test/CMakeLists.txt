@@ -5,6 +5,7 @@ add_executable(test
   conversion.cpp
   one.cpp
   mmul.cpp
+  whitebox.cpp
   array.cpp
   3d.cpp
   ops.cpp

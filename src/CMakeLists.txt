@@ -21,6 +21,7 @@ cuda_add_library(resophonic_barracuda SHARED
   transforms.cpp
 
   logging.cpp
+  testing.cpp
   )
 
 

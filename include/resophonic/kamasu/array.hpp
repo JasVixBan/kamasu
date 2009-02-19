@@ -12,6 +12,8 @@
 #include <resophonic/kamasu/dumper_context.hpp>
 #include <boost/proto/proto.hpp>
 #include <boost/multi_array.hpp>
+#include <boost/type_traits/is_pod.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/preprocessor.hpp>
 
 namespace resophonic {
@@ -41,6 +43,14 @@ namespace resophonic {
 
       array(const std::vector<std::size_t>& shape);
       array(const array<T, boost::mpl::true_>& rhs);
+
+      template <typename Expr>
+      array(Expr const& expr, typename boost::disable_if<boost::is_pod<Expr> >::type* = 0) 
+	: self_(boost::proto::value(*this))
+      {
+	this->assign(expr);
+      }
+
       ~array();
 
 #define VARARG_DECL(Z, N, DATA)						\
@@ -114,14 +124,20 @@ namespace resophonic {
       array& operator<<(const boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
       void operator>>(boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
 
-
       template <typename Expr>
       void 
       operator+=(const Expr& expr)
       {
-	typename boost::result_of<Grammar(Expr const&)>::type rhs_evaluated 
-	  = Grammar()(expr);
-	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated);
+	typedef typename proto::result_of::as_child<Expr const>::type as_child_t;
+	typedef typename proto::result_of::make_expr<proto::tag::plus_assign,
+	  array const &,
+	  as_child_t>::type expr_t;
+
+	typedef typename boost::result_of<Grammar(expr_t)>::type result_t;
+
+	result_t rhs_evaluated = Grammar()(proto::make_expr<proto::tag::plus_assign>(proto::as_child(*this), proto::as_child(expr)));
+	std::cout << "rhst is " << name_of(rhs_evaluated) << "\n";
+	// ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated);
       }
 
     private:
@@ -132,6 +148,9 @@ namespace resophonic {
       void take(const std::vector<T>& rhs);
       void take(const array_impl<T, boost::mpl::true_>& rhs);
       void take(const array_impl<T, boost::mpl::false_>& rhs);
+      /*
+      void take(const array<T, boost::mpl::true_>& rhs);
+      void take(const array<T, boost::mpl::false_>& rhs);*/
 
       template <typename Expr>
       void assign(Expr const& expr)

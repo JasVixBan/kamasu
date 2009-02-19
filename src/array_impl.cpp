@@ -106,7 +106,14 @@ namespace resophonic
     array_impl<T, RVal>::array_impl(const this_t& rhs)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
-      construct(*this, rhs);
+      nd = rhs.nd;
+      data_ = rhs.data_;
+      memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
+
+      offset = rhs.offset;
+      linear_size = rhs.linear_size;
     }
 
     template<typename T, typename RVal>

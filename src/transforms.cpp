@@ -247,7 +247,7 @@ namespace resophonic {
 	INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, false_, true_);		\
 	INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, true_, false_);		\
 	INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, true_, true_);
-
+    
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus);
     INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::multiplies);
     INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus_assign);
@@ -277,6 +277,7 @@ namespace resophonic {
     INSTANTIATE_UNARYFUNCTION_OP_IMPL(OP , false_);		\
 	INSTANTIATE_UNARYFUNCTION_OP_IMPL(OP, true_);
 
+    INSTANTIATE_UNARYFUNCTION_OP(tag::sin);
     INSTANTIATE_UNARYFUNCTION_OP(tag::exp);
     INSTANTIATE_UNARYFUNCTION_OP(tag::exp2);
     INSTANTIATE_UNARYFUNCTION_OP(tag::log10);

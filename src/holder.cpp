@@ -3,6 +3,7 @@
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/exception.hpp>
+#include <resophonic/kamasu/testing.hpp>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
@@ -99,6 +100,9 @@ namespace resophonic {
       KAMASU_SAFE_CALL( cudaMemcpy( data_, rhs.data_, 
 				    sizeof(T) * size_,
 				    cudaMemcpyDeviceToDevice) );
+
+      RESOPHONIC_KAMASU_WHITEBOX(testing::n_clones++);
+
       log_debug("*** CLONED RHS %u bytes @%p***",  size_ % data_);
     }
 

@@ -19,6 +19,9 @@
  *  
  */
 
+#ifndef RESOPHONIC_KAMASU_OPMAP_HPP_INCLUDED
+#define RESOPHONIC_KAMASU_OPMAP_HPP_INCLUDED
+
 #include <boost/proto/proto.hpp>
 #include "kernel.h"
 
@@ -43,3 +46,5 @@ namespace resophonic {
 
   }
 }
+
+#endif

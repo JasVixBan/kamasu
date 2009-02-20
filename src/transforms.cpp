@@ -109,8 +109,6 @@ namespace resophonic {
       };
     }
 
-#include "generated/elementwise_array_scalar.h"
-
     template <typename Op, typename LhsIsRVal, typename RhsIsRVal>
     typename ArrayArrayOp::result_type
     ArrayArrayOp::operator()(Op,

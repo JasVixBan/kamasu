@@ -21,6 +21,8 @@ array_scalar_ops = ['boost::proto::tag::' + op
 
 rvals = ['boost::mpl::true_', 'boost::mpl::false_']
 
+types = ['float'] # add 'double' here
+
 KAMASU_MAX_ARRAY_DIM = 6
 
 one_to_n = range(1,KAMASU_MAX_ARRAY_DIM)

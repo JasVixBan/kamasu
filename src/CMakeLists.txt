@@ -20,10 +20,12 @@ set(GENERATED_SRC
   unary_array_op.cu
 
   UnaryFunctionDispatch.cpp
+  ArrayScalarOp.cpp
 )
 
 set(GENERATED_PRIVATE_HEADERS 
   unary_array_op.h
+  elementwise_array_scalar.h
   )
 
 set(GENERATED_PUBLIC_HEADERS 

@@ -1,19 +1,10 @@
+#include <resophonic/kamasu/config.hpp>
+#include "kernel.h"
 
-template <>
-ArrayScalarOp::result_type
-ArrayScalarOp::operator()(/*OP*/, 
-			  const rk::array_impl</*T*/, /*RVAL*/>& v, 
-			  const /*T*/& scalar)
-{
-  rk::array_impl</*T*/, boost::mpl::true_> rv(v);
+void kamasu_elementwise_array_scalar_/*N*/(Op op,
+					   /*T*/* data,
+					   std::size_t linear_size,
+					   const std::size_t* factors,
+					   const int* strides,
+					   /*T*/ scalar);
 
-  switch (rv.nd) {
-    /*'\n'.join(['case %u:  kamasu_elementwise_array_scalar_%d(op_map<%s>::value, rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;' % (this_n, this_n, OP) for this_n in one_to_n])*/
-
-  default:
-    throw std::runtime_error("kamasu internal error");
-  }
-
-      
-  return rv;
-}

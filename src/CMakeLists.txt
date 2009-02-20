@@ -14,15 +14,27 @@ macro(generate X WHERETO)
     )
 endmacro(generate X)
 
-set(GENERATED_SRC 
+set(GENERATED_SRC
   elementwise_array_scalar.cu 
   elementwise_array_array.cu
   unary_array_op.cu
 )
 
-foreach(X ${GENERATED_SRC})
+set(GENERATED_PRIVATE_HEADERS 
+  unary_array_op.h
+  )
+
+set(GENERATED_PUBLIC_HEADERS 
+  unary_array_grammar.hpp
+  )
+
+foreach(X ${GENERATED_SRC} ${GENERATED_PRIVATE_HEADERS})
   generate(${X} src)
-endforeach(X ${GENERATED_SRC})
+endforeach()
+
+foreach(X ${GENERATED_PUBLIC_HEADERS})
+  generate(${X} include/resophonic/kamasu/generated)
+endforeach()
 
 cuda_add_library(resophonic_barracuda SHARED
 

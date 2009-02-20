@@ -2,5 +2,7 @@
 ._*
 .*
 \#*\#
-
+src/elementwise_array_scalar.cu
+src/elementwise_array_array.cu
+src/unary_array_op.cu
 

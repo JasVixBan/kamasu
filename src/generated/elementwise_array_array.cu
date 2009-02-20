@@ -4,6 +4,9 @@
 //
 //
 
+#include <resophonic/kamasu/config.hpp>
+#include "kernel.h"
+
 __global__ void
 kamasu_elementwise_array_array_knl_1(Op op,
 					 std::size_t linear_size,
@@ -52,6 +55,9 @@ kamasu_elementwise_array_array_1(Op op,
      strides_l[0],
      strides_r[0]);
 }
+
+#include <resophonic/kamasu/config.hpp>
+#include "kernel.h"
 
 __global__ void
 kamasu_elementwise_array_array_knl_2(Op op,
@@ -102,6 +108,9 @@ kamasu_elementwise_array_array_2(Op op,
      strides_r[0],strides_r[1]);
 }
 
+#include <resophonic/kamasu/config.hpp>
+#include "kernel.h"
+
 __global__ void
 kamasu_elementwise_array_array_knl_3(Op op,
 					 std::size_t linear_size,
@@ -151,6 +160,9 @@ kamasu_elementwise_array_array_3(Op op,
      strides_r[0],strides_r[1],strides_r[2]);
 }
 
+#include <resophonic/kamasu/config.hpp>
+#include "kernel.h"
+
 __global__ void
 kamasu_elementwise_array_array_knl_4(Op op,
 					 std::size_t linear_size,
@@ -199,6 +211,9 @@ kamasu_elementwise_array_array_4(Op op,
      strides_l[0],strides_l[1],strides_l[2],strides_l[3],
      strides_r[0],strides_r[1],strides_r[2],strides_r[3]);
 }
+
+#include <resophonic/kamasu/config.hpp>
+#include "kernel.h"
 
 __global__ void
 kamasu_elementwise_array_array_knl_5(Op op,

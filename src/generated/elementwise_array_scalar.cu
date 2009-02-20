@@ -4,6 +4,10 @@
 //
 //
 
+#include <resophonic/kamasu/config.hpp>
+#include <kernel.h>
+
+// bah bah bah
 __global__ void
 kamasu_elementwise_array_scalar_1_knl
 (Op op,
@@ -51,6 +55,10 @@ kamasu_elementwise_array_scalar_1(Op op,
 }
 
 
+#include <resophonic/kamasu/config.hpp>
+#include <kernel.h>
+
+// bah bah bah
 __global__ void
 kamasu_elementwise_array_scalar_2_knl
 (Op op,
@@ -98,6 +106,10 @@ kamasu_elementwise_array_scalar_2(Op op,
 }
 
 
+#include <resophonic/kamasu/config.hpp>
+#include <kernel.h>
+
+// bah bah bah
 __global__ void
 kamasu_elementwise_array_scalar_3_knl
 (Op op,
@@ -145,6 +157,10 @@ kamasu_elementwise_array_scalar_3(Op op,
 }
 
 
+#include <resophonic/kamasu/config.hpp>
+#include <kernel.h>
+
+// bah bah bah
 __global__ void
 kamasu_elementwise_array_scalar_4_knl
 (Op op,
@@ -192,6 +208,10 @@ kamasu_elementwise_array_scalar_4(Op op,
 }
 
 
+#include <resophonic/kamasu/config.hpp>
+#include <kernel.h>
+
+// bah bah bah
 __global__ void
 kamasu_elementwise_array_scalar_5_knl
 (Op op,

@@ -10,7 +10,7 @@
 #include <cublas.h>
 #include <cutil.h>
 
-#include "unary_array_op.h"
+#include "generated/unary_array_op.h"
 
 namespace resophonic {
   namespace kamasu {
@@ -140,9 +140,6 @@ namespace resophonic {
     //INSTANTIATE_ARRAYARRAY_OP(tag::dot);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::divides);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);
-
-
-#include "generated/UnaryFunctionDispatch.h"
 
   }
 }

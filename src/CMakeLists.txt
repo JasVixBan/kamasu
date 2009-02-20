@@ -3,14 +3,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 cuda_include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 macro(generate X WHERETO)
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${X}
+  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/${WHERETO}/${X}
     DEPENDS ../templates/${X} ../templates/${X}.py
     COMMAND 
     ${CMAKE_SOURCE_DIR}/templates/gen.py 
     ${CMAKE_SOURCE_DIR}/templates/${X}.py 
     ${CMAKE_SOURCE_DIR}/templates/${X}
     ${CMAKE_SOURCE_DIR}/${WHERETO}/${X}
-    COMMENT "Generating ${X}"
+    COMMENT "Generating ${WHERETO}/${X}"
     )
 endmacro(generate X)
 
@@ -18,6 +18,8 @@ set(GENERATED_SRC
   elementwise_array_scalar.cu 
   elementwise_array_array.cu
   unary_array_op.cu
+
+  UnaryFunctionDispatch.cpp
 )
 
 set(GENERATED_PRIVATE_HEADERS 
@@ -29,7 +31,8 @@ set(GENERATED_PUBLIC_HEADERS
   )
 
 foreach(X ${GENERATED_SRC} ${GENERATED_PRIVATE_HEADERS})
-  generate(${X} src)
+  generate(${X} src/generated)
+  set(GENERATED_SRC_LIST ${GENERATED_SRC_LIST} generated/${X}) 
 endforeach()
 
 foreach(X ${GENERATED_PUBLIC_HEADERS})
@@ -55,7 +58,7 @@ cuda_add_library(resophonic_barracuda SHARED
   logging.cpp
   testing.cpp
 
-  ${GENERATED_SRC}
+  ${GENERATED_SRC_LIST}
   )
 
 target_link_libraries(resophonic_barracuda

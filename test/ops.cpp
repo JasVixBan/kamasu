@@ -384,19 +384,17 @@ TEST(plus_assign_slice)
     }
 }
 
-array<float> my_linspace(float start, float end, unsigned n_steps)
+TEST(plus_assign_fncall_result)
 {
-  array<float> a(n_steps);
-  for (unsigned n = 0; n < n_steps; n++)
+  array<float> a = rk::linspace<float>(0,9,10);
+  array<float> result(10);
+
+  std::cout << name_of(rk::sin(a)) << "\n";
+  //result = rk::sin(a * 3.0f);
+  result += rk::sin(a * 3.0f);
+  for (int i=0; i<10; i++)
     {
-      float value = start + ((end-start)/(n_steps-1.0)) * (float)n;
-      a(n) = value;
+      ENSURE_DISTANCE(result(i), ::sin(i * 3.0f), 0.0001);
+      std::cout << result(i) << " ... " << ::sin(i * 3.0f) << "\n";
     }
-  return a;
-}
-
-TEST(linspace_1)
-{
-
-
 }

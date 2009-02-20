@@ -76,9 +76,11 @@ namespace resophonic {
 
 	  log_trace("%s", "*** DISPATCH TO ARRAY-ARRAY KERNEL ***");
 
+	  log_trace("a.nd==%u", lhs.nd);
+
 	  switch (lhs.nd) {
-	    std::cout<< "a.nd==" << lhs.nd << "\n";
 #define DISPATCH_CASE(Z, N, DATA) case N:				\
+	    log_trace("firing with nd=%u", lhs.nd);\
              BOOST_PP_CAT(kamasu_elementwise_array_array_,N) \
 	      (op_map<bp::tag::plus>::value,				\
 	       lhs.linear_size,						\
@@ -263,6 +265,7 @@ namespace resophonic {
     {
       rk::array_impl<float, boost::mpl::true_> rv(v);
 
+      log_trace("dispatch: %s", __PRETTY_FUNCTION__); 
       detail::dispatch()(Op(), rv);
       
       return rv;

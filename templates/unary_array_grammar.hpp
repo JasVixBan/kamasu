@@ -9,7 +9,7 @@ namespace resophonic
     {
       /*'\n'.join(['struct %s {};' % fn for fn in functions])*/
     }
-    /*'\n'.join(['boost::proto::terminal<tag::%s>::type const %s = {{}};' % (fn, fn) for fn in functions])*/
+    /*'\n'.join(['Expression<boost::proto::terminal<tag::%s>::type> const %s = {{}};' % (fn, fn) for fn in functions])*/
     
   }
 }

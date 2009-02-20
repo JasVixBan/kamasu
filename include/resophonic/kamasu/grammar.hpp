@@ -6,8 +6,6 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 
-#include <resophonic/kamasu/unary_array_grammar.hpp>
-
 namespace resophonic 
 {
   namespace kamasu 
@@ -200,16 +198,18 @@ namespace resophonic
     template <typename T> struct Expression;
 
     struct Domain
-      : bp::domain<bp::generator<Expression>, Grammar>
+      : bp::domain<bp::pod_generator<Expression>, Grammar>
     { };
 
     template <typename Expr>
-    struct Expression : boost::proto::extends<Expr, Expression<Expr>, Domain>
+    struct Expression 
     {
-      explicit Expression(Expr const& expr = Expr())
-	: boost::proto::extends<Expr, Expression<Expr>, Domain>(expr)
-      { }
+      BOOST_PROTO_EXTENDS(Expr, Expression<Expr>, Domain);
     };
+
   }
 }
+
+#include <resophonic/kamasu/unary_array_grammar.hpp>
+
 #endif

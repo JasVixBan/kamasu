@@ -115,8 +115,6 @@ namespace resophonic {
       template <typename Expr>
       array& operator=(Expr const& expr)
       {
-	//log_trace("expr is %s") % name_of(boost::proto::as_expr<Domain>(expr));
-	
 	this->assign(expr);
 	return *this;
       }
@@ -128,16 +126,9 @@ namespace resophonic {
       void 
       operator+=(const Expr& expr)
       {
-	typedef typename proto::result_of::as_child<Expr const>::type as_child_t;
-	typedef typename proto::result_of::make_expr<proto::tag::plus_assign,
-	  array const &,
-	  as_child_t>::type expr_t;
-
-	typedef typename boost::result_of<Grammar(expr_t)>::type result_t;
-
-	result_t rhs_evaluated = Grammar()(proto::make_expr<proto::tag::plus_assign>(proto::as_child(*this), proto::as_child(expr)));
-	std::cout << "rhst is " << name_of(rhs_evaluated) << "\n";
-	// ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated);
+	typedef typename boost::result_of<Grammar(Expr const&)>::type result_t;
+	result_t rhs_evaluated = Grammar()(expr);
+	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated);
       }
 
     private:
@@ -148,17 +139,12 @@ namespace resophonic {
       void take(const std::vector<T>& rhs);
       void take(const array_impl<T, boost::mpl::true_>& rhs);
       void take(const array_impl<T, boost::mpl::false_>& rhs);
-      /*
-      void take(const array<T, boost::mpl::true_>& rhs);
-      void take(const array<T, boost::mpl::false_>& rhs);*/
 
       template <typename Expr>
       void assign(Expr const& expr)
       {
-	log_trace("%s", "START EVAL/TRANSFORM");
 	typename boost::result_of<Grammar(Expr const&)>::type thingy 
 	  = Grammar()(expr);
-	log_trace("%s", "END EVAL/TRANSFORM");
 	this->take(thingy);
       }
     };

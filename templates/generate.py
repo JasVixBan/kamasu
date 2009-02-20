@@ -15,8 +15,11 @@ functions = ['sqrt', 'rsqrt','cbrt',
              'ceil', 'floor', 'lrint', 'lround', 'llrint',
              'llround']
 
-array_scalar_ops = ['plus', 'minus', 'divides', 'multiplies']
-rvals = ['true_', 'false_']
+array_scalar_ops = ['boost::proto::tag::' + op
+                    for op in ['plus', 'minus', 'divides', 'multiplies']] \
+                    + ['resophonic::kamasu::tag::pow']
+
+rvals = ['boost::mpl::true_', 'boost::mpl::false_']
 
 KAMASU_MAX_ARRAY_DIM = 6
 
@@ -43,11 +46,11 @@ def forall(**kwargs):
 stuff = [
 
     { 'src' : 'templates/unary_array_transforms.h',
-      'dest' : 'src/unary_array_transforms.h.generated',
-      'next' : forall(OP=functions, KAMASU_MAX_ARRAY_DIM=[KAMASU_MAX_ARRAY_DIM])},
+      'dest' : 'src/generated/unary_array_transforms.h',
+      'next' : forall(one_to_n=[one_to_n], OP=functions)},
  
     { 'src' : 'templates/unary_array_op.cu',
-      'dest' : 'src/unary_array_op.cu.generated',
+      'dest' : 'src/generated/unary_array_op.cu',
       'next' : forall(OP=functions, N=one_to_n) },
 
     { 'src' : 'templates/unary_array_grammar.hpp',
@@ -55,20 +58,26 @@ stuff = [
       'next' : [{'functions' : functions}]},
 
     { 'src' : 'templates/unary_array_op.h',
-      'dest' : 'src/unary_array_op.h.generated',
+      'dest' : 'src/generated/unary_array_op.h',
       'next' : forall(OP=functions, N=one_to_n) },
 
     { 'src' : 'templates/elementwise_array_scalar.cu',
-      'dest' : 'src/elementwise_array_scalar.cu.generated',
+      'dest' : 'src/generated/elementwise_array_scalar.cu',
       'next' : forall(N=one_to_n) },
 
     { 'src' : 'templates/elementwise_array_scalar.h',
-      'dest' : 'src/elementwise_array_scalar.h.generated',
+      'dest' : 'src/generated/elementwise_array_scalar.h',
       'next' : forall(one_to_n=[one_to_n], OP=array_scalar_ops, RVAL=rvals, T=['float']) },
 
     { 'src' : 'templates/elementwise_array_array.cu',
-      'dest' : 'src/elementwise_array_array.cu.generated',
+      'dest' : 'src/generated/elementwise_array_array.cu',
       'next' : forall(N=one_to_n, enum=[enum]) },
+
+    { 'src' : 'templates/UnaryFunctionDispatch.h',
+      'dest' : 'src/generated/UnaryFunctionDispatch.h',
+      'next' : forall(one_to_n=[one_to_n], OP=functions, RVAL=rvals, T=['float']) },
+
+
     ]
 
 pattern = re.compile(r'\/\*(.*?)\*\/', re.DOTALL)

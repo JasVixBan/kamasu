@@ -5,6 +5,7 @@
 //
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::sqrt, const rk::array_impl<T, RVal>& a)		
@@ -28,6 +29,7 @@ case 5: kamasu_unary_array_sqrt_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -57,6 +59,7 @@ case 5: kamasu_unary_array_rsqrt_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::cbrt, const rk::array_impl<T, RVal>& a)		
@@ -80,6 +83,7 @@ case 5: kamasu_unary_array_cbrt_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -109,6 +113,7 @@ case 5: kamasu_unary_array_exp_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::exp2, const rk::array_impl<T, RVal>& a)		
@@ -132,6 +137,7 @@ case 5: kamasu_unary_array_exp2_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -161,6 +167,7 @@ case 5: kamasu_unary_array_exp10_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::expm1, const rk::array_impl<T, RVal>& a)		
@@ -184,6 +191,7 @@ case 5: kamasu_unary_array_expm1_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -213,6 +221,7 @@ case 5: kamasu_unary_array_log_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::log2, const rk::array_impl<T, RVal>& a)		
@@ -236,6 +245,7 @@ case 5: kamasu_unary_array_log2_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -265,6 +275,7 @@ case 5: kamasu_unary_array_log10_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::log1p, const rk::array_impl<T, RVal>& a)		
@@ -288,6 +299,7 @@ case 5: kamasu_unary_array_log1p_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -317,6 +329,7 @@ case 5: kamasu_unary_array_sin_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::cos, const rk::array_impl<T, RVal>& a)		
@@ -340,6 +353,7 @@ case 5: kamasu_unary_array_cos_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -369,6 +383,7 @@ case 5: kamasu_unary_array_tan_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::asin, const rk::array_impl<T, RVal>& a)		
@@ -392,6 +407,7 @@ case 5: kamasu_unary_array_asin_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -421,6 +437,7 @@ case 5: kamasu_unary_array_acos_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::atan, const rk::array_impl<T, RVal>& a)		
@@ -444,6 +461,7 @@ case 5: kamasu_unary_array_atan_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -473,6 +491,7 @@ case 5: kamasu_unary_array_sinh_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::cosh, const rk::array_impl<T, RVal>& a)		
@@ -496,6 +515,7 @@ case 5: kamasu_unary_array_cosh_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -525,6 +545,7 @@ case 5: kamasu_unary_array_tanh_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::asinh, const rk::array_impl<T, RVal>& a)		
@@ -548,6 +569,7 @@ case 5: kamasu_unary_array_asinh_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -577,6 +599,7 @@ case 5: kamasu_unary_array_acosh_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::atanh, const rk::array_impl<T, RVal>& a)		
@@ -600,6 +623,7 @@ case 5: kamasu_unary_array_atanh_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -629,6 +653,7 @@ case 5: kamasu_unary_array_erf_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::erfc, const rk::array_impl<T, RVal>& a)		
@@ -652,6 +677,7 @@ case 5: kamasu_unary_array_erfc_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -681,6 +707,7 @@ case 5: kamasu_unary_array_lgamma_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::tgamma, const rk::array_impl<T, RVal>& a)		
@@ -704,6 +731,7 @@ case 5: kamasu_unary_array_tgamma_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -733,6 +761,7 @@ case 5: kamasu_unary_array_logb_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::ilogb, const rk::array_impl<T, RVal>& a)		
@@ -756,6 +785,7 @@ case 5: kamasu_unary_array_ilogb_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -785,6 +815,7 @@ case 5: kamasu_unary_array_trunc_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::round, const rk::array_impl<T, RVal>& a)		
@@ -808,6 +839,7 @@ case 5: kamasu_unary_array_round_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -837,6 +869,7 @@ case 5: kamasu_unary_array_rint_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::nearbyint, const rk::array_impl<T, RVal>& a)		
@@ -860,6 +893,7 @@ case 5: kamasu_unary_array_nearbyint_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -889,6 +923,7 @@ case 5: kamasu_unary_array_ceil_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::floor, const rk::array_impl<T, RVal>& a)		
@@ -912,6 +947,7 @@ case 5: kamasu_unary_array_floor_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 
@@ -941,6 +977,7 @@ case 5: kamasu_unary_array_lrint_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::lround, const rk::array_impl<T, RVal>& a)		
@@ -967,6 +1004,7 @@ case 5: kamasu_unary_array_lround_5(a.data() + a.offset,
 
 
 
+
   template <typename T, typename RVal>					
   void									
   operator()(tag::llrint, const rk::array_impl<T, RVal>& a)		
@@ -990,6 +1028,7 @@ case 5: kamasu_unary_array_llrint_5(a.data() + a.offset,
       throw std::runtime_error("kamasu internal error");		
     }								
   }
+
 
 
 

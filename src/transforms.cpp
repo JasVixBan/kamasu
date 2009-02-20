@@ -116,80 +116,12 @@ namespace resophonic {
 	  RESOPHONIC_KAMASU_THROW(true, not_implemented());
 	}
 
-	template <typename Op, typename T, typename IsRVal>
-	void operator()(Op, 
-			const rk::array_impl<T, IsRVal>& a,
-			T scalar) 
-	{
-	  log_trace("%s", __PRETTY_FUNCTION__);
-	  switch (a.nd) {
-	    std::cout<< "a.nd==" << a.nd << "\n";
-#define DISPATCH_CASE(Z, N, DATA)					\
-	    case N:							\
-	      log_trace("Case %d", N); \
-	    BOOST_PP_CAT(kamasu_elementwise_array_scalar_,N)		\
-	    (op_map<Op>::value,						\
-	     a.data() + a.offset,					\
-	     a.linear_size,						\
-	     a.factors,							\
-	     a.strides,							\
-	     scalar);							\
-	    break;
-
-	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
-
-	  default:
-	    throw std::runtime_error("kamasu internal error");
-	  }
-	}
-
-#undef DISPATCH_CASE
-
-#include "unary_array_transforms.h.generated"
+#include "generated/unary_array_transforms.h"
 
       };
     }
 
-#include "elementwise_array_scalar.h.generated"
-
-    template <typename Op, typename IsRVal>
-    typename ArrayScalarOp::result_type
-    ArrayScalarOp::operator()(Op, 
-			      const rk::array_impl<float, IsRVal>& v, 
-			      const float& f)
-    {
-      log_trace("%s", "*** CREATE TEMPORARY ***");
-      rk::array_impl<float, boost::mpl::true_> rv(v);
-      log_trace("%s", "*** DONE CREATE TEMPORARY ***");
-      v.show();
-      rv.show();
-
-      BOOST_ASSERT(rv.nd > 0);
-
-      BOOST_ASSERT(v.linear_size == rv.linear_size);
-      
-      detail::dispatch()(Op(), rv, f);
-      
-      return rv;
-    }
-
-#define INST_ARRAYSCALAR(OP, TF)					\
-    template ArrayScalarOp::result_type					\
-    ArrayScalarOp::operator()(OP, const rk::array_impl<float, boost::mpl:: TF > &, \
-			      const float&);
-    
-    /*
-    INST_ARRAYSCALAR(boost::proto::tag::plus, true_);
-    INST_ARRAYSCALAR(boost::proto::tag::plus, false_);
-    INST_ARRAYSCALAR(boost::proto::tag::minus, true_);
-    INST_ARRAYSCALAR(boost::proto::tag::minus, false_);
-    INST_ARRAYSCALAR(boost::proto::tag::divides, true_);
-    INST_ARRAYSCALAR(boost::proto::tag::divides, false_);
-    INST_ARRAYSCALAR(boost::proto::tag::multiplies, true_);
-    INST_ARRAYSCALAR(boost::proto::tag::multiplies, false_);
-    */
-    INST_ARRAYSCALAR(resophonic::kamasu::tag::pow, true_);
-    INST_ARRAYSCALAR(resophonic::kamasu::tag::pow, false_);
+#include "generated/elementwise_array_scalar.h"
 
     template <typename Op, typename LhsIsRVal, typename RhsIsRVal>
     typename ArrayArrayOp::result_type
@@ -222,6 +154,9 @@ namespace resophonic {
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);
 
 
+#include "generated/UnaryFunctionDispatch.h"
+
+    /*
     template <typename Op, typename IsRVal>
     typename ArrayScalarOp::result_type
     UnaryFunctionDispatch::operator()(Op, 
@@ -248,6 +183,6 @@ namespace resophonic {
     INSTANTIATE_UNARYFUNCTION_OP(tag::exp);
     INSTANTIATE_UNARYFUNCTION_OP(tag::exp2);
     INSTANTIATE_UNARYFUNCTION_OP(tag::log10);
-
+    */
   }
 }

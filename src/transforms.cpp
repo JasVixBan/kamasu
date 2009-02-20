@@ -145,47 +145,12 @@ namespace resophonic {
 
 #undef DISPATCH_CASE
 
-	/*
-#define FN_NAME(NAME,TAG,N) NAME##_##TAG##_##N
-
-#define DISPATCH_CASE(Z, N, DATA)					\
-	case N:								\
-	    FN_NAME(kamasu_unary_array, DATA,N)\
-	    (a.data() + a.offset,					\
-	     a.linear_size,						\
-	     a.factors,							\
-	     a.strides);						\
-		break;
-
-
-#define UNARY_DISPATCHER(R, DATA, ELEM)					\
-	template <typename T, typename RVal>				\
-	void								\
-	operator()(tag::ELEM, const rk::array_impl<T, RVal>& a)		\
-	{								\
-	  log_trace("%s", __PRETTY_FUNCTION__);				\
-	  switch (a.nd) {						\
-	    std::cout<< "a.nd==" << a.nd << "\n";			\
-									\
-	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ELEM); \
-									\
-	  default:							\
-	    throw std::runtime_error("kamasu internal error");		\
-	  }								\
-	}
-
-#define UNARIES (exp)(exp2)(log10)
-
-	BOOST_PP_SEQ_FOR_EACH(UNARY_DISPATCHER, ~, UNARIES);
-
-
-#undef DISPATCH_CASE
-	*/
-
 #include "unary_array_transforms.h.generated"
 
       };
     }
+
+#include "elementwise_array_scalar.h.generated"
 
     template <typename Op, typename IsRVal>
     typename ArrayScalarOp::result_type
@@ -203,9 +168,6 @@ namespace resophonic {
 
       BOOST_ASSERT(v.linear_size == rv.linear_size);
       
-      //      int* eff = rv.impl_->strides.gpu_data();
-      //      BOOST_ASSERT(eff);
-
       detail::dispatch()(Op(), rv, f);
       
       return rv;
@@ -216,6 +178,7 @@ namespace resophonic {
     ArrayScalarOp::operator()(OP, const rk::array_impl<float, boost::mpl:: TF > &, \
 			      const float&);
     
+    /*
     INST_ARRAYSCALAR(boost::proto::tag::plus, true_);
     INST_ARRAYSCALAR(boost::proto::tag::plus, false_);
     INST_ARRAYSCALAR(boost::proto::tag::minus, true_);
@@ -224,6 +187,7 @@ namespace resophonic {
     INST_ARRAYSCALAR(boost::proto::tag::divides, false_);
     INST_ARRAYSCALAR(boost::proto::tag::multiplies, true_);
     INST_ARRAYSCALAR(boost::proto::tag::multiplies, false_);
+    */
     INST_ARRAYSCALAR(resophonic::kamasu::tag::pow, true_);
     INST_ARRAYSCALAR(resophonic::kamasu::tag::pow, false_);
 

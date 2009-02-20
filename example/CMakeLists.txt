@@ -1,3 +1,4 @@
+add_subdirectory(audio_synthesis)
 add_subdirectory(autocorrelation)
 add_subdirectory(dotproduct)
 add_subdirectory(fourier_analysis)

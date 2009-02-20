@@ -52,10 +52,6 @@ int main(int argc, char** argv)
 
   CUDA_SAFE_CALL( cudaMemcpy(gpu_indata, hostdata, sizeof(float) * nsamples, cudaMemcpyHostToDevice) );
 
-  // create plan
-  cufftHandle plan;
-  CUFFT_SAFE_CALL(cufftPlan1d(&plan, fftsize, CUFFT_R2C, 1));
-
   // write header to output file
 
   cout << "Writing to " << argv[2] << "\n";
@@ -85,8 +81,14 @@ int main(int argc, char** argv)
 	  std::cout << i << "      \r";
 	  std::cout.flush();
 	}
+      // create plan
+      cufftHandle plan;
+      CUFFT_SAFE_CALL(cufftPlan1d(&plan, fftsize, CUFFT_R2C, 1));
+
       CUFFT_SAFE_CALL( cufftExecR2C(plan, gpu_indata+i, gpu_outdata) );
 
+      CUFFT_SAFE_CALL( cufftDestroy(plan) );
+      
       /*
       CUDA_SAFE_CALL( cudaMemcpy(host_outdata+ nfreqs*j, gpu_outdata, 
 	sizeof(cufftComplex) * nfreqs, cudaMemcpyDeviceToHost) );

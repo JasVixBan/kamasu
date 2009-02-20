@@ -15,6 +15,9 @@ functions = ['sqrt', 'rsqrt','cbrt',
              'ceil', 'floor', 'lrint', 'lround', 'llrint',
              'llround']
 
+array_scalar_ops = ['plus', 'minus', 'divides', 'multiplies']
+rvals = ['true_', 'false_']
+
 KAMASU_MAX_ARRAY_DIM = 6
 
 one_to_n = range(1,KAMASU_MAX_ARRAY_DIM)
@@ -58,6 +61,10 @@ stuff = [
     { 'src' : 'templates/elementwise_array_scalar.cu',
       'dest' : 'src/elementwise_array_scalar.cu.generated',
       'next' : forall(N=one_to_n) },
+
+    { 'src' : 'templates/elementwise_array_scalar.h',
+      'dest' : 'src/elementwise_array_scalar.h.generated',
+      'next' : forall(one_to_n=[one_to_n], OP=array_scalar_ops, RVAL=rvals, T=['float']) },
 
     { 'src' : 'templates/elementwise_array_array.cu',
       'dest' : 'src/elementwise_array_array.cu.generated',

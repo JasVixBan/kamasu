@@ -1,0 +1,19 @@
+
+template <>
+ArrayScalarOp::result_type
+ArrayScalarOp::operator()(boost::proto::tag::/*OP*/, 
+			  const rk::array_impl</*T*/, boost::mpl::/*RVAL*/>& v, 
+			  const /*T*/& scalar)
+{
+  rk::array_impl</*T*/, boost::mpl::true_> rv(v);
+
+  switch (rv.nd) {
+    /*'\n'.join(['case %u:  kamasu_elementwise_array_scalar_%d(op_map<boost::proto::tag::%s>::value, rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;' % (this_n, this_n, OP) for this_n in one_to_n])*/
+
+  default:
+    throw std::runtime_error("kamasu internal error");
+  }
+
+      
+  return rv;
+}

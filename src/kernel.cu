@@ -7,5 +7,3 @@
 
 #include <cublas.h>
 
-#include "generated/elementwise_array_scalar.cu"
-#include "generated/elementwise_array_array.cu"

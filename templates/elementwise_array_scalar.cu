@@ -1,3 +1,7 @@
+#include <resophonic/kamasu/config.hpp>
+#include <kernel.h>
+
+// bah bah bah
 __global__ void
 kamasu_elementwise_array_scalar_/*N*/_knl
 (Op op,

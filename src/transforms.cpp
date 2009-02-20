@@ -104,18 +104,6 @@ namespace resophonic {
 	  return rk::array_impl<float, boost::mpl::true_>();
 	}
 
-	void operator()(bp::tag::divides, 
-			float* lhs, float * rhs, unsigned size)
-	{
-	  RESOPHONIC_KAMASU_THROW(true, not_implemented());
-	}
-
-	void operator()(bp::tag::minus, 
-			float* lhs, float * rhs, unsigned size)
-	{
-	  RESOPHONIC_KAMASU_THROW(true, not_implemented());
-	}
-
 #include "generated/unary_array_transforms.h"
 
       };
@@ -156,33 +144,5 @@ namespace resophonic {
 
 #include "generated/UnaryFunctionDispatch.h"
 
-    /*
-    template <typename Op, typename IsRVal>
-    typename ArrayScalarOp::result_type
-    UnaryFunctionDispatch::operator()(Op, 
-				      const rk::array_impl<float, IsRVal>& v) 
-    {
-      rk::array_impl<float, boost::mpl::true_> rv(v);
-
-      log_trace("dispatch: %s", __PRETTY_FUNCTION__); 
-      detail::dispatch()(Op(), rv);
-      
-      return rv;
-    }
-
-#define INSTANTIATE_UNARYFUNCTION_OP_IMPL(OP, RV) template		\
-    UnaryFunctionDispatch::result_type					\
-    UnaryFunctionDispatch::operator()(OP,				\
-			     const rk::array_impl<float, boost::mpl:: RV>&);
-
-#define INSTANTIATE_UNARYFUNCTION_OP(OP)			\
-    INSTANTIATE_UNARYFUNCTION_OP_IMPL(OP , false_);		\
-	INSTANTIATE_UNARYFUNCTION_OP_IMPL(OP, true_);
-
-    INSTANTIATE_UNARYFUNCTION_OP(tag::sin);
-    INSTANTIATE_UNARYFUNCTION_OP(tag::exp);
-    INSTANTIATE_UNARYFUNCTION_OP(tag::exp2);
-    INSTANTIATE_UNARYFUNCTION_OP(tag::log10);
-    */
   }
 }

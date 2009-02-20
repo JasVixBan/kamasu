@@ -1,3 +1,6 @@
+#include <resophonic/kamasu/config.hpp>
+#include "kernel.h"
+
 __global__ void
 kamasu_elementwise_array_array_knl_/*N*/(Op op,
 					 std::size_t linear_size,

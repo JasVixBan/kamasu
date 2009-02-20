@@ -54,7 +54,7 @@ stuff = [
       'next' : forall(OP=functions, N=one_to_n) },
 
     { 'src' : 'templates/unary_array_grammar.hpp',
-      'dest' : 'include/resophonic/kamasu/unary_array_grammar.hpp',
+      'dest' : 'include/resophonic/kamasu/generated/unary_array_grammar.hpp',
       'next' : [{'functions' : functions}]},
 
     { 'src' : 'templates/unary_array_op.h',

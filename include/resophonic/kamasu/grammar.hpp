@@ -210,6 +210,6 @@ namespace resophonic
   }
 }
 
-#include <resophonic/kamasu/unary_array_grammar.hpp>
+#include <resophonic/kamasu/generated/unary_array_grammar.hpp>
 
 #endif

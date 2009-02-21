@@ -10,8 +10,6 @@
 #include <cublas.h>
 #include <cutil.h>
 
-#include "generated/unary_array_op.h"
-
 namespace resophonic {
   namespace kamasu {
 
@@ -103,8 +101,6 @@ namespace resophonic {
 	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
 	  return rk::array_impl<float, boost::mpl::true_>();
 	}
-
-#include "generated/unary_array_transforms.h"
 
       };
     }

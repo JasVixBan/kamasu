@@ -6,6 +6,8 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 
+#include <resophonic/kamasu/generated/UnaryFunctionTags.hpp>
+
 namespace resophonic 
 {
   namespace kamasu 
@@ -13,11 +15,11 @@ namespace resophonic
     namespace bp = boost::proto;
     namespace rk = resophonic::kamasu;
 
-    namespace tag {
-
+    namespace tag 
+    {
       struct pow { };
-
     }
+
 
     bp::terminal<tag::pow>::type const pow = {{}};
 
@@ -42,15 +44,6 @@ namespace resophonic
       template <typename Op, typename IsRVal>
       result_type 
       operator()(Op, const rk::array_impl<float, IsRVal>& v, const float& f);
-    };
-
-    struct UnaryFunctionDispatch : bp::callable
-    {
-      typedef rk::array_impl<float, boost::mpl::true_> result_type;
-
-      template <typename Op, typename IsRVal>
-      result_type 
-      operator()(Op, const rk::array_impl<float, IsRVal>& v);
     };
 
     struct Scalar
@@ -125,11 +118,13 @@ namespace resophonic
       { };
       
     };
-    
-    struct UnaryFunctionCall
-      : bp::when<bp::function<bp::terminal<bp::_>, Array>,
-		 UnaryFunctionDispatch(bp::_value(bp::_child0), Array(bp::_child1))>
-    { };
+  }
+}
+
+#include <resophonic/kamasu/generated/UnaryFunctionCalls.hpp>
+
+namespace resophonic {
+  namespace kamasu {
 
     struct ArrayScalarOps : bp::switch_<ArrayScalarOpsCases> { };
 
@@ -179,11 +174,12 @@ namespace resophonic
       : StdVectorTerminal
     { };
 
+
     struct Array
       : bp::or_<ArrayScalarOps,
 		ArrayArrayOps,
-		UnaryFunctionCall,
-		RkArrayTerminal
+		RkArrayTerminal,
+		UnaryFunctionCalls
 		>
     { };
 
@@ -210,6 +206,6 @@ namespace resophonic
   }
 }
 
-#include <resophonic/kamasu/generated/unary_array_grammar.hpp>
+#include <resophonic/kamasu/generated/UnaryFunctionExpressions.hpp>
 
 #endif

@@ -29,7 +29,9 @@ set(GENERATED_PRIVATE_HEADERS
   )
 
 set(GENERATED_PUBLIC_HEADERS 
-  unary_array_grammar.hpp
+  UnaryFunctionTags.hpp
+  UnaryFunctionCalls.hpp
+  UnaryFunctionExpressions.hpp
   )
 
 foreach(X ${GENERATED_SRC} ${GENERATED_PRIVATE_HEADERS})
@@ -37,9 +39,15 @@ foreach(X ${GENERATED_SRC} ${GENERATED_PRIVATE_HEADERS})
   set(GENERATED_SRC_LIST ${GENERATED_SRC_LIST} generated/${X}) 
 endforeach()
 
+
 foreach(X ${GENERATED_PUBLIC_HEADERS})
   generate(${X} include/resophonic/kamasu/generated)
+  set(GENERATED_HEADERS_LIST ${GENERATED_HEADERS_LIST} ${CMAKE_SOURCE_DIR}/include/resophonic/kamasu/generated/${X}) 
 endforeach()
+
+add_custom_target(generated_public_headers
+  DEPENDS ${GENERATED_HEADERS_LIST}
+  )
 
 cuda_add_library(resophonic_barracuda SHARED
 
@@ -66,3 +74,4 @@ cuda_add_library(resophonic_barracuda SHARED
 target_link_libraries(resophonic_barracuda
   ${CUBLAS_TARGET_LINK})
   
+add_dependencies(resophonic_barracuda generated_public_headers) 

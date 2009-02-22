@@ -1,6 +1,8 @@
 include_directories(.)
 
 add_executable(test
+  elementwise.cpp
+  ops.cpp
   main.cpp
   conversion.cpp
   one.cpp
@@ -8,8 +10,6 @@ add_executable(test
   whitebox.cpp
   array.cpp
   3d.cpp
-  ops.cpp
-  elementwise.cpp
   testing_util.cpp
   )
 

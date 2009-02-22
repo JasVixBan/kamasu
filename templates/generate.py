@@ -55,11 +55,11 @@ stuff = [
 
     { 'src' : 'templates/unary_array_grammar.hpp',
       'dest' : 'include/resophonic/kamasu/generated/unary_array_grammar.hpp',
-      'next' : [{'functions' : functions}]},
+      'next' : },
 
     { 'src' : 'templates/unary_array_op.h',
       'dest' : 'src/generated/unary_array_op.h',
-      'next' : forall(OP=functions, N=one_to_n) },
+      'next' :  },
 
     { 'src' : 'templates/elementwise_array_scalar.cu',
       'dest' : 'src/generated/elementwise_array_scalar.cu',
@@ -75,7 +75,7 @@ stuff = [
 
     { 'src' : 'templates/UnaryFunctionDispatch.h',
       'dest' : 'src/generated/UnaryFunctionDispatch.h',
-      'next' : forall(one_to_n=[one_to_n], OP=functions, RVAL=rvals, T=['float']) },
+      'next' :  },
 
 
     ]

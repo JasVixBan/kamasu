@@ -126,6 +126,7 @@ namespace resophonic {
       void 
       operator+=(const Expr& expr)
       {
+	BOOST_MPL_ASSERT(( boost::proto::matches<Expr, Grammar> ));
 	typedef typename boost::result_of<Grammar(Expr const&)>::type result_t;
 	result_t rhs_evaluated = Grammar()(expr);
 	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated);
@@ -143,6 +144,9 @@ namespace resophonic {
       template <typename Expr>
       void assign(Expr const& expr)
       {
+	// if this mpl assert trips, there's something wrong with the grammar
+	// of your expression.
+	BOOST_MPL_ASSERT(( boost::proto::matches<Expr, Grammar> ));
 	typename boost::result_of<Grammar(Expr const&)>::type thingy 
 	  = Grammar()(expr);
 	this->take(thingy);

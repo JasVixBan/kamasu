@@ -4,8 +4,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(BOOST_ROOT 
-  "/home/troy/Projects/boost/trunk" 
-  CACHE PATH "where is boost")
+  "${CMAKE_SOURCE_DIR}/../boost" CACHE PATH "where is boost")
 
 add_definitions(-DBOOST_SP_USE_QUICK_ALLOCATOR)
 
@@ -19,7 +18,7 @@ endif ()
 #  This should contain common/inc/cutil.h, common/lib/libcutil.a, etc.
 #
 set(NVIDIA_CUDA_SDK_DIR 
-  "/home/troy/Projects/barracuda/NVIDIA_CUDA_SDK" 
+  "${CMAKE_CURRENT_SOURCE_DIR}/../NVIDIA_CUDA_SDK"
   CACHE PATH "where is dir 'NVIDIA_CUDA_SDK'")
 
 #
@@ -42,25 +41,25 @@ cuda_include_directories(${CMAKE_SOURCE_DIR}/include)
 #
 find_library(BOOST_SYSTEM 
   boost_system-mt-d
-  PATHS ${BOOST_ROOT}/build/lib
+  PATHS ${BOOST_ROOT}/lib
   NO_DEFAULT_PATH
   )
 
 find_library(BOOST_PYTHON 
   boost_python-mt-d
-  PATHS ${BOOST_ROOT}/build/lib
+  PATHS ${BOOST_ROOT}/lib
   NO_DEFAULT_PATH
   )
 
 find_library(BOOST_PROGRAM_OPTIONS
   boost_program_options-mt-d
-  PATHS ${BOOST_ROOT}/build/lib
+  PATHS ${BOOST_ROOT}/lib
   NO_DEFAULT_PATH
   )
 
 find_library(BOOST_FILESYSTEM
   boost_filesystem-mt-d
-  PATHS ${BOOST_ROOT}/build/lib
+  PATHS ${BOOST_ROOT}/lib
   NO_DEFAULT_PATH
   )
 

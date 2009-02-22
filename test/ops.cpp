@@ -384,17 +384,14 @@ TEST(plus_assign_slice)
     }
 }
 
-TEST(plus_assign_fncall_result)
+template <typename Expr>
+void checkexpr(Expr const &expr)
 {
-  array<float> a = rk::linspace<float>(0,9,10);
-  array<float> result(10);
+  BOOST_MPL_ASSERT((boost::proto::matches<Expr, resophonic::kamasu::UnaryFunctionCalls>));
+}
 
-  std::cout << name_of(rk::sin(a)) << "\n";
-  //result = rk::sin(a * 3.0f);
-  result += rk::sin(a * 3.0f);
-  for (int i=0; i<10; i++)
-    {
-      ENSURE_DISTANCE(result(i), ::sin(i * 3.0f), 0.0001);
-      std::cout << result(i) << " ... " << ::sin(i * 3.0f) << "\n";
-    }
+TEST(shits_and_giggles)
+{
+  array<float> a;
+  checkexpr(rk::sin(a));
 }

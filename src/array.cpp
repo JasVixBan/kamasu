@@ -28,8 +28,7 @@ namespace resophonic {
 
     template <typename T, typename RVal>
     array<T, RVal>::array() 
-      : /*base_t(*this),*/
-	self_(boost::proto::value(*this))
+      : self_(boost::proto::value(*this))
     {
 
     }

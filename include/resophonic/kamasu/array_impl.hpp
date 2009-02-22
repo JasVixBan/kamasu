@@ -31,12 +31,12 @@ namespace resophonic {
       boost::shared_ptr<holder<T> > data_;
 
       array_impl();
-      array_impl(const this_t&);
+      template <typename OtherRVal>
+      array_impl(const array_impl<T, OtherRVal>&);
 
-      explicit array_impl(const other_t&);
       ~array_impl();
 
-      void reset();
+      //      void reset();
       void copy_from(const array_impl<T, boost::mpl::false_>& rhs);
       void copy_from(const array_impl<T, boost::mpl::true_>& rhs);
       void copy_into(this_t& thing) const;

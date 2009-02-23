@@ -20,7 +20,7 @@
 %\definecolor{resophonicgreen}{cmyk}{0.55,0,0.77,0} % RESOPHONIC green
 
 %                                               % RGB           CMYK                PMS
-\definecolor{resophonicblue}{rgb}{0.15,0.25,0.35}       %   0  76 120   1    0  0    0.58   3025
+\definecolor{resophonicblue}{rgb}{0.12,0.20,0.30}       %   0  76 120   1    0  0    0.58   3025
 \definecolor{resophonicgreen}{rgb}{0.502,0.729,0.392}  % 128 186 100   0.55 0  0.77 0      360
 \definecolor{resophonicorange}{rgb}{0.918,0.698,0}     % 234 178   0
 \definecolor{yellalert}{rgb}{1.0,1.05,0.05}
@@ -144,14 +144,14 @@
 \newlength\logobarheight\setlength\logobarheight{\barheight}
 \newlength\logosep\setlength\logosep{0.5\logobarheight}
 
-\pgfdeclareimage[height=\logobarheight]{WU-logo}{wu}
-\pgfdeclareimage[height=0.6\logobarheight]{NWO-logo}{nwo}
-\pgfdeclareimage[height=\logobarheight]{Alterra-logo}{alterra}
+% \pgfdeclareimage[height=\logobarheight]{WU-logo}{wu}
+% \pgfdeclareimage[height=0.6\logobarheight]{NWO-logo}{nwo}
+% \pgfdeclareimage[height=\logobarheight]{Alterra-logo}{alterra}
 
 % these are availabe to users for constructing their logo
-\def\wulogo{\pgfuseimage{WU-logo}}
-\def\alterralogo{\pgfuseimage{Alterra-logo}}
-\def\nwologo{\hbox{\vbox to \logobarheight{\vfill\hbox{\pgfuseimage{NWO-logo}}\vfill}}}
+%\def\wulogo{\pgfuseimage{WU-logo}}
+%\def\alterralogo{\pgfuseimage{Alterra-logo}}
+%\def\nwologo{\hbox{\vbox to \logobarheight{\vfill\hbox{\pgfuseimage{NWO-logo}}\vfill}}}
 
 % Initially, have an empty logo bar
 \let\logobarlogo=\relax
@@ -232,6 +232,6 @@
 \setbeamertemplate{navigation symbols}{}
 
 % Use the Wageningen University logo by default
-\addlogo{\wulogo}
+% \addlogo{\wulogo}
 
 \endinput

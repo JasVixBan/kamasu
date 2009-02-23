@@ -8,8 +8,12 @@
 %  \setbeamertemplate{alerted text end}{end end end}
 }
 
-\logobartext{Boostcon 2009}
-% \usepackage{movie15}
+\def\footertext#1{\hbox{\vbox to \logobarheight{
+      \vfill\hbox{{\usebeamerfont{logobar}\usebeamercolor[fg]{logobar}#1}}\vfill}}}
+
+\addlogo{\footertext{Boostcon 2009}}
+\logobartext{Troy D.~Straszheim}
+
 \usepackage{multimedia}
 
 \usepackage[english]{babel}
@@ -19,6 +23,8 @@
 \usepackage{times}
 \usepackage[T1]{fontenc}
 
+% \addlogo{blah}
+% \def\logobarlogo{hi}
 
 \title[resophonic::kamasu]{\texttt{resophonic::kamasu}}
 
@@ -84,28 +90,28 @@ Aspen, CO}
   % You might wish to add the option [pausesections]
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}[fragile,plain]
   \frametitle{An Algorithm For Finding Primes Numbers.}
 \begin{semiverbatim}
 int main (void)
 \{
-\uncover<1->{\alert<1>{ \alert<4>{std::}vector<bool> is_prime (100, true);}}
-\uncover<1->{\alert<1>{ for (int i = 2; i < 100; i++)}}
-\uncover<2->{\alert<2>{    if (is_prime[i])}}
-\uncover<2->{\alert<0>{      \{}}
-\uncover<3->{\alert<3>{        \alert<4>{std::}cout << i << " ";}}
-\alert<3>{        for (int j = i; j < 100;}
-\uncover<3->{\alert<3>{             is_prime [j] = false, j+=i);}}
-\uncover<2->{\alert<0>{      \}}}
-\uncover<1->{\alert<0>{ return 0;}}
-\uncover<1->{\alert<0>{\}}}
+\alert<1>{ \alert<4>{std::}vector<bool> is_prime (100, true);}
+\alert<1>{ for (int i = 2; i < 100; i++)}
+\alert<2>{    if (is_prime[i])}
+\alert<0>{      \{}
+\alert<3>{        \alert<4>{std::}cout << i << " ";}
+\alert<3>{        for (int j = i; j < 100; i++)}
+\alert<3>{             is_prime [j] = false, j+=i);}
+\alert<0>{      \}}
+\alert<0>{ return 0;}
+\alert<0>{\}}
 \end{semiverbatim}
 % \setbeamercolor{red}{fg=white, bg=red}
-\begin{beamercolorbox}[dp=0.5cm]{} %{red}
-  \only<2>{blam blam blam?}
-  \only<3>{WHOOOOah this is pretty fizzuckin neat, doncha think?}
-  \only<4>{Note the use of \alert{\texttt{std::}}.}
-\end{beamercolorbox}
+%\begin{beamercolorbox}[dp=0.5cm]{} %{red}
+%  \only<2>{blam blam blam?}
+%  \only<3>{WHOOOOah this is pretty fizzuckin neat, doncha think?}
+%  \only<4>{Note the use of \alert{\texttt{std::}}.}
+%\end{beamercolorbox}
 \end{frame}
 
 \begin{frame}

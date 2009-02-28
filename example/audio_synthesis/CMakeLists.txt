@@ -1,0 +1,20 @@
+add_executable(synth-kamasu
+  kamasu.cpp
+  )
+target_link_libraries(synth-kamasu
+  resophonic_barracuda 
+  ${FOUND_CUDART}
+  ${BOOST_LIBRARIES}
+  ${CUDA_CUTIL_LIB}
+  )
+
+# 
+# add_executable(autocorrelation-cpu
+#   cpu.cpp
+#   )
+# target_link_libraries(autocorrelation-cpu
+#   ${BOOST_LIBRARIES}
+#   )
+
+
+

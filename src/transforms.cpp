@@ -22,7 +22,8 @@ namespace resophonic {
 	rk::array_impl<float, boost::mpl::true_>
 	operator()(bp::tag::multiplies,
 		   const rk::array_impl<float, LhsIsRVal>& lhs, 
-		   const rk::array_impl<float, RhsIsRVal>& rhs)
+		   const rk::array_impl<float, RhsIsRVal>& rhs,
+		   const stream_impl& si)
 	{
 	  BOOST_ASSERT(lhs.nd == 2);
 	  BOOST_ASSERT(rhs.nd == 2);
@@ -60,11 +61,16 @@ namespace resophonic {
 	  return rv;
 	}
 
+	// 
+	//    +=
+	//
+
 	template <typename LhsIsRVal, typename RhsIsRVal>
 	rk::array_impl<float, boost::mpl::true_>
 	operator()(bp::tag::plus_assign,
 		   const rk::array_impl<float, LhsIsRVal>& lhs, 
-		   const rk::array_impl<float, RhsIsRVal>& rhs)
+		   const rk::array_impl<float, RhsIsRVal>& rhs,
+		   const stream_impl& s)
 	{
 	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
 	  
@@ -87,7 +93,8 @@ namespace resophonic {
 	       lhs.factors,						\
 	       rhs.factors,						\
 	       lhs.strides,						\
-	       rhs.strides);						\
+	       rhs.strides,						\
+	       s.value);						\
 	    break;
 
 	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
@@ -102,25 +109,76 @@ namespace resophonic {
 	  return rk::array_impl<float, boost::mpl::true_>();
 	}
 
+	//
+	//  general elementwise case
+	//
+	template <typename Op, typename LhsIsRVal, typename RhsIsRVal>
+	rk::array_impl<float, boost::mpl::true_>
+	operator()(Op,
+		   const rk::array_impl<float, LhsIsRVal>& lhs, 
+		   const rk::array_impl<float, RhsIsRVal>& rhs,
+		   const stream_impl& s)
+	{
+	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
+	  
+	  const rk::array_impl<float, boost::mpl::true_> rv(lhs);
+
+	  for (int i=0; i<lhs.nd; i++)
+	    RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
+				    dimensions_dont_match());
+
+	  log_trace("%s", "*** DISPATCH TO ARRAY-ARRAY KERNEL ***");
+
+	  log_trace("a.nd==%u", rv.nd);
+
+	  switch (rv.nd) {
+#define DISPATCH_CASE(Z, N, DATA) case N:				\
+	    log_trace("firing with nd=%u", rv.nd);\
+	    BOOST_PP_CAT(kamasu_elementwise_array_array_,N)		\
+	      (op_map<Op>::value,					\
+	       rv.linear_size,						\
+	       rv.data() + rv.offset,					\
+	       rhs.data() + rhs.offset,					\
+	       rv.factors,						\
+	       rhs.factors,						\
+	       rv.strides,						\
+	       rhs.strides,						\
+	       s.value);						\
+	    break;
+
+	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
+
+	  default:
+	    throw std::runtime_error("kamasu internal error");
+	  }
+
+#undef DISPATCH_CASE
+	  
+	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
+	  return rv;
+	}
+
       };
     }
 
     template <typename Op, typename LhsIsRVal, typename RhsIsRVal>
     typename ArrayArrayOp::result_type
     ArrayArrayOp::operator()(Op,
-			       const rk::array_impl<float, LhsIsRVal>& lhs, 
-			       const rk::array_impl<float, RhsIsRVal>& rhs)
+			     const rk::array_impl<float, LhsIsRVal>& lhs, 
+			     const rk::array_impl<float, RhsIsRVal>& rhs,
+			     const stream_impl& s)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
       
-      return detail::dispatch()(Op(), lhs, rhs);
+      return detail::dispatch()(Op(), lhs, rhs, s);
     }
 
 #define INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, LRV, RRV) template		\
     ArrayArrayOp::result_type						\
     ArrayArrayOp::operator()(OP,					\
 			     const rk::array_impl<float, boost::mpl:: LRV>&, \
-			     const rk::array_impl<float, boost::mpl:: RRV>&);
+			     const rk::array_impl<float, boost::mpl:: RRV>&, \
+			     const stream_impl& si);
     
 #define INSTANTIATE_ARRAYARRAY_OP(OP)					\
     INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, false_, false_);			\
@@ -128,8 +186,10 @@ namespace resophonic {
 	INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, true_, false_);		\
 	INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, true_, true_);
     
-    //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus);
+    INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus);
+    INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);
     INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::multiplies);
+    INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::divides);
     INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus_assign);
     //INSTANTIATE_ARRAYARRAY_OP(tag::dot);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::divides);

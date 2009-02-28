@@ -6,5 +6,6 @@ void kamasu_elementwise_array_scalar_/*N*/(Op op,
 					   std::size_t linear_size,
 					   const std::size_t* factors,
 					   const int* strides,
-					   /*T*/ scalar);
+					   /*T*/ scalar,
+					   cudaStream_t stream);
 

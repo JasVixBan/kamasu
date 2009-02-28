@@ -10,11 +10,14 @@
 #include <resophonic/kamasu/grammar.hpp>
 #include <resophonic/kamasu/index_range.hpp>
 #include <resophonic/kamasu/dumper_context.hpp>
+#include <resophonic/kamasu/stream_impl.hpp>
 #include <boost/proto/proto.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/type_traits/is_pod.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/preprocessor.hpp>
+#include <cuda_runtime.h>
+
 
 namespace resophonic {
   namespace kamasu {
@@ -33,6 +36,9 @@ namespace resophonic {
       impl_t& self_;
 
       friend class array<T, typename boost::mpl::not_<RVal>::type>;
+
+      stream_impl stream_;
+      int state_;
 
     public:
     
@@ -116,6 +122,7 @@ namespace resophonic {
       array& operator=(Expr const& expr)
       {
 	this->assign(expr);
+	stream_.value = 0;
 	return *this;
       }
 
@@ -128,8 +135,20 @@ namespace resophonic {
       {
 	BOOST_MPL_ASSERT(( boost::proto::matches<Expr, Grammar> ));
 	typedef typename boost::result_of<Grammar(Expr const&)>::type result_t;
-	result_t rhs_evaluated = Grammar()(expr);
-	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated);
+	result_t rhs_evaluated = Grammar()(expr, state_, stream_);
+	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated, stream_);
+      }
+
+      array& on(const stream& s)
+      {
+	stream_.value = s.value;
+	return *this;
+      }
+
+      array& on()
+      {
+	stream_.value = 0;
+	return *this;
       }
 
     private:
@@ -147,12 +166,31 @@ namespace resophonic {
 	// if this mpl assert trips, there's something wrong with the grammar
 	// of your expression.
 	BOOST_MPL_ASSERT(( boost::proto::matches<Expr, Grammar> ));
+
+	log_trace("%s fn %s", "not what we want" % __PRETTY_FUNCTION__);
+
 	typename boost::result_of<Grammar(Expr const&)>::type thingy 
-	  = Grammar()(expr);
+	  = Grammar()(expr, state_, stream_);
 	this->take(thingy);
       }
     };
 
+    /*
+      struct on 
+    {
+      array<T, RVal>& a_;
+
+      template <typename T, typename RVal>
+      on(stream_impl& stream, array<T, RVal>& a)
+	: a_(a) {
+	a_.on(stream_impl);
+      }
+
+      ~on() {
+	a_.on();
+      }
+    };
+    */
   }  
 }
 

@@ -25,7 +25,8 @@ namespace resophonic {
 
       template <typename Op, typename IsRVal>
       result_type 
-      operator()(Op, const rk::array_impl<float, IsRVal>& v);
+      operator()(Op, const rk::array_impl<float, IsRVal>& v,
+		 const rk::stream_impl& si);
     };
 
     struct UnaryFunctionCases
@@ -37,7 +38,7 @@ namespace resophonic {
       /*'\n'.join(['''
 	template <int _> struct case_<tag::%s,_> 
 	: boost::proto::when<boost::proto::function<boost::proto::terminal<tag::%s>, Array>, 
-	UnaryFunctionDispatch(tag::%s(), Array(boost::proto::_child1))> { };
+	UnaryFunctionDispatch(tag::%s(), Array(boost::proto::_child1), boost::proto::_data)> { };
 	''' % (fn, fn, fn) for fn in functions])*/
     };
 

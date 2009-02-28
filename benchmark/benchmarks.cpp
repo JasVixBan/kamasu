@@ -46,7 +46,7 @@ void matrix_multiply(unsigned n)
 
   array<float> a(n,n), b(n,n), c;
 
-  c = a * b;
+  //  c = a * b;
 
 }
 
@@ -61,4 +61,32 @@ void ublas_multiply(unsigned n)
 TEST(matrix_multiply)
 {
   matrix_multiply(1024);
+}
+
+
+template <typename Expr>
+void fleh(Expr const& e)
+{
+  log_trace("fn is %s", __PRETTY_FUNCTION__);
+  //  BOOST_MPL_ASSERT(( boost::proto::matches<Expr, StreamedGrammar> ));
+}
+
+TEST(vector_ops_serial)
+{
+  unsigned n = 10;
+  array<float> a(n,n), b(n,n), c;
+
+  //  std::cout << name_of((stream(), a * b));
+  // std::cout << "it is:" << name_of((stream(), a * b)) << "\n";
+  //  fleh f;
+
+  // cudaStream_t s;
+  stream s;
+
+  fleh((s, a));
+
+  c = (s, a * b);
+
+  //  whatsit(stream(), a*b);
+  //  c = (stream(), a * b);
 }

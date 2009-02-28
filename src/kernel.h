@@ -40,14 +40,16 @@ enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW };
      float* data,							\
      std::size_t linear_size,						\
      const std::size_t* factors,					\
-     const int* strides);						\
+     const int* strides,						\
+     cudaStream_t s);							\
   void BOOST_PP_CAT(kamasu_elementwise_array_scalar_,N)			\
     (Op op,								\
      float* data,							\
      std::size_t linear_size,						\
      const std::size_t* factors,					\
      const int* strides,						\
-     float scalar);							\
+     float scalar,							\
+     cudaStream_t s);							\
   void BOOST_PP_CAT(kamasu_elementwise_array_array_,N)			\
     (Op op,								\
      std::size_t linear_size_l,						\
@@ -56,7 +58,8 @@ enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW };
      const std::size_t* factors_l,					\
      const std::size_t* factors_r,					\
      const int* strides_l,						\
-     const int* strides_r);						\
+     const int* strides_r,						\
+     cudaStream_t s);
 
 
 BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);

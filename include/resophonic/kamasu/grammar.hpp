@@ -7,6 +7,8 @@
 #include <boost/numeric/ublas/matrix.hpp>
 
 #include <resophonic/kamasu/generated/UnaryFunctionTags.hpp>
+#include <resophonic/kamasu/stream_impl.hpp>
+#include <cuda_runtime.h>
 
 namespace resophonic 
 {
@@ -19,7 +21,6 @@ namespace resophonic
     {
       struct pow { };
     }
-
 
     bp::terminal<tag::pow>::type const pow = {{}};
 
@@ -34,7 +35,8 @@ namespace resophonic
       result_type 
       operator()(Op, 
 		 const rk::array_impl<float, LhsIsRVal>&, 
-		 const rk::array_impl<float, RhsIsRVal>&);
+		 const rk::array_impl<float, RhsIsRVal>&,
+		 const stream_impl& si);
     };
 
     struct ArrayScalarOp : bp::callable
@@ -43,7 +45,9 @@ namespace resophonic
 
       template <typename Op, typename IsRVal>
       result_type 
-      operator()(Op, const rk::array_impl<float, IsRVal>& v, const float& f);
+      operator()(Op, const rk::array_impl<float, IsRVal>& v, const float& f,
+		 const stream_impl& si);
+
     };
 
     struct Scalar
@@ -55,6 +59,10 @@ namespace resophonic
 
     struct StdVectorTerminal 
       : bp::when<bp::terminal<std::vector<float> >, bp::_value>
+    { };
+
+    struct StreamTerminal 
+      : bp::when<bp::terminal<rk::stream_impl>, bp::_value>
     { };
 
     struct RkArrayTerminal 
@@ -81,40 +89,46 @@ namespace resophonic
       struct case_<bp::tag::multiplies, _>
       : bp::when<bp::multiplies<Array, Scalar>,
 		 ArrayScalarOp(bp::tag::multiplies(), 
-			       Array(bp::_left), Scalar(bp::_right))>
+			       Array(bp::_left), Scalar(bp::_right),
+			       bp::_data)>
       { };
 
       template <int _> 
       struct case_<bp::tag::plus, _>
       : bp::when<bp::plus<Array, Scalar>,
 		 ArrayScalarOp(bp::tag::plus(), 
-			       Array(bp::_left), Scalar(bp::_right))>
+			       Array(bp::_left), Scalar(bp::_right),
+			       bp::_data)>
       { };
 
       template <int _> 
       struct case_<bp::tag::minus, _>
       : bp::when<bp::minus<Array, Scalar>,
 		 ArrayScalarOp(bp::tag::minus(), 
-			       Array(bp::_left), Scalar(bp::_right))>
+			       Array(bp::_left), Scalar(bp::_right),
+			       bp::_data)>
       { };
 
       template <int _> 
       struct case_<bp::tag::divides, _>
       : bp::when<bp::divides<Array, Scalar>,
 		 ArrayScalarOp(bp::tag::divides(), 
-			       Array(bp::_left), Scalar(bp::_right))>
+			       Array(bp::_left), Scalar(bp::_right),
+			       bp::_data)>
       { };
 
       template <int _> 
       struct case_<bp::tag::plus_assign, _>
 	: bp::when<bp::plus_assign<Array, Scalar>,
-		   ArrayScalarOp(bp::tag::plus_assign(), Array(bp::_child0), Scalar(bp::_child1))>
+		   ArrayScalarOp(bp::tag::plus_assign(), Array(bp::_child0), 
+				 Scalar(bp::_child1), bp::_data)>
       { };
       
       template <int _> 
       struct case_<bp::tag::function, _>
 	: bp::when<bp::function<bp::terminal<tag::pow>, Array, Scalar>,
-		   ArrayScalarOp(tag::pow(), Array(bp::_child1), Scalar(bp::_child2))>
+		   ArrayScalarOp(tag::pow(), Array(bp::_child1), Scalar(bp::_child2),
+				 bp::_data)>
       { };
       
     };
@@ -137,35 +151,40 @@ namespace resophonic {
       struct case_<bp::tag::plus, _>
 	: bp::when<bp::plus<Array, Array>,
 		   ArrayArrayOp(bp::tag::plus(), 
-				Array(bp::_left), Array(bp::_right))>
+				Array(bp::_left), Array(bp::_right),
+				bp::_data)>
       { };
 
       template <int _>
       struct case_<bp::tag::plus_assign, _>
 	: bp::when<bp::plus<Array, Array>,
 		   ArrayArrayOp(bp::tag::plus_assign(), 
-				Array(bp::_left), Array(bp::_right))>
+				Array(bp::_left), Array(bp::_right),
+				bp::_data)>
       { };
 
       template <int _>
       struct case_<bp::tag::multiplies, _>
 	: bp::when<bp::multiplies<Array, Array>,
 		   ArrayArrayOp(bp::tag::multiplies(), 
-				Array(bp::_left), Array(bp::_right))>
+				Array(bp::_left), Array(bp::_right),
+				bp::_data)>
       { };
 
       template <int _>
       struct case_<bp::tag::divides, _>
 	: bp::when<bp::divides<Array, Array>,
 		   ArrayArrayOp(bp::tag::divides(), 
-				Array(bp::_left), Array(bp::_right))>
+				Array(bp::_left), Array(bp::_right),
+				bp::_data)>
       { };
 
       template <int _>
       struct case_<bp::tag::minus, _>
 	: bp::when<bp::minus<Array, Array>,
 		   ArrayArrayOp(bp::tag::minus(), 
-				Array(bp::_left), Array(bp::_right))>
+				Array(bp::_left), Array(bp::_right),
+				bp::_data)>
       { };
     };
     struct ArrayArrayOps : bp::switch_<ArrayArrayOpsCases> { };
@@ -173,7 +192,6 @@ namespace resophonic {
     struct Vector
       : StdVectorTerminal
     { };
-
 
     struct Array
       : bp::or_<ArrayScalarOps,
@@ -202,7 +220,7 @@ namespace resophonic {
     {
       BOOST_PROTO_EXTENDS(Expr, Expression<Expr>, Domain);
     };
-
+    
   }
 }
 

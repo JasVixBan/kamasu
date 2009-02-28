@@ -35,11 +35,12 @@ kamasu_elementwise_array_array_/*N*/(Op op,
 				     const std::size_t* factors_l,
 				     const std::size_t* factors_r,
 				     const int* strides_l,
-				     const int* strides_r)
+				     const int* strides_r,
+				     cudaStream_t stream)
 {
   bd_t bd = gridsize(linear_size);
   
-  kamasu_elementwise_array_array_knl_/*N*/<<<bd.first, bd.second>>>
+  kamasu_elementwise_array_array_knl_/*N*/<<<bd.first, bd.second, 0, stream>>>
     (op, 
      linear_size,
      data_l,

@@ -41,11 +41,12 @@ kamasu_elementwise_array_scalar_1(Op op,
 				      std::size_t linear_size,
 				      const std::size_t* factors, 
 				      const int* strides,
-				      float scalar)
+				      float scalar,
+				      cudaStream_t stream)
 {
   bd_t bd = gridsize(linear_size);
 
-  kamasu_elementwise_array_scalar_1_knl<<<bd.first, bd.second>>>
+  kamasu_elementwise_array_scalar_1_knl<<<bd.first, bd.second, 0, stream>>>
     (op, 
      data,
      linear_size,
@@ -92,11 +93,12 @@ kamasu_elementwise_array_scalar_2(Op op,
 				      std::size_t linear_size,
 				      const std::size_t* factors, 
 				      const int* strides,
-				      float scalar)
+				      float scalar,
+				      cudaStream_t stream)
 {
   bd_t bd = gridsize(linear_size);
 
-  kamasu_elementwise_array_scalar_2_knl<<<bd.first, bd.second>>>
+  kamasu_elementwise_array_scalar_2_knl<<<bd.first, bd.second, 0, stream>>>
     (op, 
      data,
      linear_size,
@@ -143,11 +145,12 @@ kamasu_elementwise_array_scalar_3(Op op,
 				      std::size_t linear_size,
 				      const std::size_t* factors, 
 				      const int* strides,
-				      float scalar)
+				      float scalar,
+				      cudaStream_t stream)
 {
   bd_t bd = gridsize(linear_size);
 
-  kamasu_elementwise_array_scalar_3_knl<<<bd.first, bd.second>>>
+  kamasu_elementwise_array_scalar_3_knl<<<bd.first, bd.second, 0, stream>>>
     (op, 
      data,
      linear_size,
@@ -194,11 +197,12 @@ kamasu_elementwise_array_scalar_4(Op op,
 				      std::size_t linear_size,
 				      const std::size_t* factors, 
 				      const int* strides,
-				      float scalar)
+				      float scalar,
+				      cudaStream_t stream)
 {
   bd_t bd = gridsize(linear_size);
 
-  kamasu_elementwise_array_scalar_4_knl<<<bd.first, bd.second>>>
+  kamasu_elementwise_array_scalar_4_knl<<<bd.first, bd.second, 0, stream>>>
     (op, 
      data,
      linear_size,
@@ -245,11 +249,12 @@ kamasu_elementwise_array_scalar_5(Op op,
 				      std::size_t linear_size,
 				      const std::size_t* factors, 
 				      const int* strides,
-				      float scalar)
+				      float scalar,
+				      cudaStream_t stream)
 {
   bd_t bd = gridsize(linear_size);
 
-  kamasu_elementwise_array_scalar_5_knl<<<bd.first, bd.second>>>
+  kamasu_elementwise_array_scalar_5_knl<<<bd.first, bd.second, 0, stream>>>
     (op, 
      data,
      linear_size,

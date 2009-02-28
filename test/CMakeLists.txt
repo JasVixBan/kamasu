@@ -19,15 +19,15 @@ target_link_libraries(test
   ${CUDA_CUTIL_LIB}
   )
 
-add_executable(benchmark
-  main.cpp
-  benchmarks.cpp
-  testing_util.cpp
-  )
-
-target_link_libraries(benchmark
-  resophonic_barracuda ${FOUND_CUDART}
-  ${BOOST_LIBRARIES}
-  ${CUDA_CUTIL_LIB}
-  )
+# add_executable(benchmark
+#   main.cpp
+#   benchmarks.cpp
+#   testing_util.cpp
+#   )
+# 
+# target_link_libraries(benchmark
+#   resophonic_barracuda ${FOUND_CUDART}
+#   ${BOOST_LIBRARIES}
+#   ${CUDA_CUTIL_LIB}
+#   )
 

@@ -6,7 +6,7 @@ add_executable(fft-kamasu
 
 
 target_link_libraries(fft-kamasu
-  resophonic_barracuda 
+  resophonic_kamasu 
   ${FOUND_CUDART}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}

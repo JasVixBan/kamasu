@@ -2,7 +2,7 @@ add_executable(autocorrelation-kamasu
   kamasu.cpp
   )
 target_link_libraries(autocorrelation-kamasu
-  resophonic_barracuda 
+  resophonic_kamasu
   ${FOUND_CUDART}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}

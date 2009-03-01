@@ -2,7 +2,7 @@ add_executable(dotproduct-kamasu
   kamasu.cpp
   )
 target_link_libraries(dotproduct-kamasu
-  resophonic_barracuda 
+  resophonic_kamasu
   ${FOUND_CUDART}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}

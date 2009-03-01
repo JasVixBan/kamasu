@@ -6,7 +6,7 @@ add_library(kamasu SHARED
   )
 
 target_link_libraries(kamasu
-  resophonic_barracuda
+  resophonic_kamasu
   ${BOOST_PYTHON}
   ${CUBLAS_TARGET_LINK})
   

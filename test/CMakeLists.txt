@@ -14,7 +14,7 @@ add_executable(test
   )
 
 target_link_libraries(test
-  resophonic_barracuda ${FOUND_CUDART}
+  resophonic_kamasu ${FOUND_CUDART}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}
   )

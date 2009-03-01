@@ -49,7 +49,7 @@ add_custom_target(generated_public_headers
   DEPENDS ${GENERATED_HEADERS_LIST}
   )
 
-cuda_add_library(resophonic_barracuda SHARED
+cuda_add_library(resophonic_kamasu SHARED
 
   linspace.cpp
 
@@ -68,8 +68,8 @@ cuda_add_library(resophonic_barracuda SHARED
   ${GENERATED_SRC_LIST}
   )
 
-target_link_libraries(resophonic_barracuda
+target_link_libraries(resophonic_kamasu
   ${CUBLAS_TARGET_LINK}
   ${RESOPHONIC_PFEILHECHT_LIB})
   
-add_dependencies(resophonic_barracuda generated_public_headers) 
+add_dependencies(resophonic_kamasu generated_public_headers) 

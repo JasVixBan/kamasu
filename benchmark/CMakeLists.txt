@@ -7,7 +7,7 @@ macro(add_bmark_impl NAME TYPE)
     COMPILE_FLAGS "-DNAME=${NAME} -DTYPE=${TYPE}"
     )
   target_link_libraries(${NAME}-${TYPE}
-    resophonic_barracuda ${FOUND_CUDART}
+    resophonic_kamasu ${FOUND_CUDART}
     ${BOOST_LIBRARIES}
     ${CUDA_CUTIL_LIB}
     )

@@ -134,7 +134,7 @@ namespace resophonic {
       operator+=(const Expr& expr)
       {
 	BOOST_MPL_ASSERT(( boost::proto::matches<Expr, Grammar> ));
-	typedef typename boost::result_of<Grammar(Expr const&)>::type result_t;
+	typedef typename boost::result_of<Grammar(Expr const&, int, stream_impl)>::type result_t;
 	result_t rhs_evaluated = Grammar()(expr, state_, stream_);
 	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated, stream_);
       }
@@ -169,7 +169,7 @@ namespace resophonic {
 
 	log_trace("%s fn %s", "not what we want" % __PRETTY_FUNCTION__);
 
-	typename boost::result_of<Grammar(Expr const&)>::type thingy 
+	typename boost::result_of<Grammar(Expr const&, int, stream_impl)>::type thingy 
 	  = Grammar()(expr, state_, stream_);
 	this->take(thingy);
       }

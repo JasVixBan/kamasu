@@ -14,7 +14,6 @@ using namespace resophonic::kamasu;
 
 TEST_GROUP();
 
-
 TEST(sin)
 {
   unsigned n = 1000;
@@ -176,4 +175,5 @@ TEST(wontcompile)
   array<float> a = make_1d(n);
   //  a = rk::erf(a*3.0f, 4.0f);
 }
+
 

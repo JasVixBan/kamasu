@@ -1,7 +1,7 @@
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/grammar.hpp>
 #include "opmap.hpp"
-#include "generated/elementwise_array_scalar.h"
+#include <resophonic/pfeilhecht.h>
 
 namespace resophonic {
   namespace kamasu {

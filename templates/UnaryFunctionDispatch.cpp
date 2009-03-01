@@ -2,7 +2,7 @@
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/grammar.hpp>
 
-#include "generated/unary_array_op.h"
+#include <resophonic/pfeilhecht.h>
 
 namespace resophonic {
   namespace kamasu {

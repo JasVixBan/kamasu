@@ -2,7 +2,7 @@
 ._*
 .*
 \#*\#
-src/generated/*
+src/generated/*.hpp
 include/resophonic/kamasu/generated/*
 
 

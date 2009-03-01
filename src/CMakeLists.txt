@@ -15,17 +15,17 @@ macro(generate X WHERETO)
 endmacro(generate X)
 
 set(GENERATED_SRC
-  elementwise_array_scalar.cu 
-  elementwise_array_array.cu
-  unary_array_op.cu
+#  elementwise_array_scalar.cu 
+#  elementwise_array_array.cu
+#  unary_array_op.cu
 
   UnaryFunctionDispatch.cpp
   ArrayScalarOp.cpp
 )
 
 set(GENERATED_PRIVATE_HEADERS 
-  unary_array_op.h
-  elementwise_array_scalar.h
+  #unary_array_op.h
+  #elementwise_array_scalar.h
   )
 
 set(GENERATED_PUBLIC_HEADERS 
@@ -51,9 +51,6 @@ add_custom_target(generated_public_headers
 
 cuda_add_library(resophonic_barracuda SHARED
 
-  kernel.cu
-
-  linspace.cu
   linspace.cpp
 
   holder.cpp
@@ -72,6 +69,7 @@ cuda_add_library(resophonic_barracuda SHARED
   )
 
 target_link_libraries(resophonic_barracuda
-  ${CUBLAS_TARGET_LINK})
+  ${CUBLAS_TARGET_LINK}
+  ${RESOPHONIC_PFEILHECHT_LIB})
   
 add_dependencies(resophonic_barracuda generated_public_headers) 

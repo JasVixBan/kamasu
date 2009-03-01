@@ -7,7 +7,7 @@
 #include "cutil.h"
 #include <cuda_runtime.h>
 #include <cassert>
-
+#include <string.h>
 #include <boost/bind.hpp>
 
 namespace resophonic 
@@ -41,9 +41,9 @@ namespace resophonic
 
       data_ = OtherRVal() ? rhs.data_ : rhs.data_->clone();
 
-      memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
+      ::memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      ::memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      ::memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
     }
 
     template array_impl<float, boost::mpl::true_>::array_impl(const array_impl<float, boost::mpl::true_>&);

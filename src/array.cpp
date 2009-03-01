@@ -21,7 +21,7 @@
 
 #include <boost/preprocessor/iteration/iterate.hpp>
 
-#include "kernel.h"
+#include <resophonic/pfeilhecht.h>
 
 namespace resophonic {
   namespace kamasu {
@@ -46,6 +46,9 @@ namespace resophonic {
     { 
       self().copy_from(rhs.self());
     }
+
+    //    template <typename T, typename RVal>
+    //    array<T, RVal>::array(
 
     template <typename T, typename RVal>
     array<T, RVal>::~array()

@@ -1,6 +1,6 @@
 #include <resophonic/kamasu/linspace.hpp>
 #include <resophonic/kamasu/array.hpp>
-#include "linspace.h"
+#include <resophonic/pfeilhecht.h>
 
 namespace resophonic {
   namespace kamasu {

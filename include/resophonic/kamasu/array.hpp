@@ -43,6 +43,7 @@ namespace resophonic {
     public:
     
       array& operator=(const array& rhs);
+      //      array& operator=(const array&& rhs);
       array& operator=(const other_t& rhs);
 
       array();

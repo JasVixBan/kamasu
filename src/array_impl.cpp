@@ -8,6 +8,7 @@
 #include <cuda_runtime.h>
 #include <cassert>
 #include <string.h>
+#include <cstring>
 #include <boost/bind.hpp>
 
 namespace resophonic 
@@ -31,19 +32,18 @@ namespace resophonic
 
     template <typename T, typename RVal>
     template <typename OtherRVal>
-    array_impl<T, RVal>::array_impl(const array_impl<T, OtherRVal>& rhs)
+    array_impl<T, RVal>::array_impl(const array_impl<T, OtherRVal>& rhs) :
+      offset(rhs.offset),
+      linear_size(rhs.linear_size),
+      nd(rhs.nd)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
 
-      nd = rhs.nd;
-      offset = rhs.offset;
-      linear_size = rhs.linear_size;
-
       data_ = OtherRVal() ? rhs.data_ : rhs.data_->clone();
 
-      ::memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      ::memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      ::memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
+      std::memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      std::memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
+      std::memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
     }
 
     template array_impl<float, boost::mpl::true_>::array_impl(const array_impl<float, boost::mpl::true_>&);

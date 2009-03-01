@@ -4,13 +4,16 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/not.hpp>
 #include <boost/shared_ptr.hpp>
-#include <resophonic/kamasu/holder.hpp>
+//#include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/exception.hpp>
 
 #include <vector>
 
 namespace resophonic {
   namespace kamasu {
+
+    template <typename T>
+    class holder;
 
     template <typename T, 
 	      typename RVal = boost::mpl::false_>

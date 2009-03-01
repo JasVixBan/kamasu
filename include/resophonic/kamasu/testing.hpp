@@ -7,7 +7,7 @@ namespace resophonic {
   namespace kamasu {
     namespace testing {
 
-      extern unsigned n_clones;
+      extern unsigned n_clones, host_to_device, device_to_host;
 
     }
   }

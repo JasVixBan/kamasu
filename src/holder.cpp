@@ -124,6 +124,7 @@ namespace resophonic {
       data_ = gpu_mallocn(size_ * sizeof(T));
       KAMASU_SAFE_CALL( cudaMemcpy( data_,  hdata, size_ * sizeof(T),
 				  cudaMemcpyHostToDevice) );
+      RESOPHONIC_KAMASU_WHITEBOX(testing::host_to_device++);
     }
 
     template <typename T>
@@ -134,6 +135,7 @@ namespace resophonic {
 	return;
       KAMASU_SAFE_CALL( cudaMemcpy( hdata, data_, size_ * sizeof(T),
 				  cudaMemcpyDeviceToHost) );
+      RESOPHONIC_KAMASU_WHITEBOX(testing::device_to_host++);
     }
 
     template <typename T>

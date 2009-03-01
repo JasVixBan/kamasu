@@ -61,7 +61,8 @@ namespace resophonic {
       T* devmem;
       KAMASU_SAFE_CALL( cudaMalloc( (void**) &devmem, n * sizeof(T)));
       log_trace ("malloc %u = %x",  (n * sizeof(T)) % devmem);
-      cudaMemset(devmem, 0, n * sizeof(T));
+      // cudaMemset(devmem, 0, n * sizeof(T));
+      RESOPHONIC_KAMASU_WHITEBOX(testing::gpu_malloc++);
       return devmem;
     }
 
@@ -75,7 +76,7 @@ namespace resophonic {
       if (s == 0)
 	return;
       data_ = gpu_mallocn(s);
-      cudaMemset(data_, 0, s);
+      // cudaMemset(data_, 0, s);
       size_ = s;
     }
 

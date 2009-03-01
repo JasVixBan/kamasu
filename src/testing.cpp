@@ -7,6 +7,7 @@ namespace resophonic {
       unsigned n_clones;
       unsigned host_to_device;
       unsigned device_to_host;
+      unsigned gpu_malloc;
 
     }
   }

@@ -90,6 +90,9 @@ namespace resophonic {
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
 	return factors[index]; 
       }
+      
+      void assign(T value); 
+
     };
 
   }

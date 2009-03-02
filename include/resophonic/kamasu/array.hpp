@@ -122,8 +122,15 @@ namespace resophonic {
       template <typename Expr>
       array& operator=(Expr const& expr)
       {
-	this->assign(expr);
+	this->assign(boost::proto::as_expr<Domain>(expr));
 	stream_.value = 0;
+	return *this;
+      }
+
+      array& operator=(T value)
+      {
+	float* foo = 0;
+	self().assign(value);
 	return *this;
       }
 

@@ -2,6 +2,7 @@
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/dumper_context.hpp>
 #include <resophonic/kamasu/array_impl.hpp>
+#include <resophonic/cuda/assign.h>
 
 #include "pool.hpp"
 #include "cutil.h"
@@ -220,6 +221,14 @@ namespace resophonic
     array_impl<T, RVal>::data() const
     {
       return data_->data();
+    }
+
+    template<typename T, typename RVal>
+    void
+    array_impl<T, RVal>::assign(T value)
+    {
+      // only works on dense arrays.
+      kamasu_assign(data_->data(), value, linear_size, 1);
     }
 
     template<typename T, typename RVal>

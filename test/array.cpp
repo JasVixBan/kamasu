@@ -424,6 +424,18 @@ TEST(linspace)
     }
 }
 
+TEST(constant_assign)
+{
+  array<float> a(11,11,11);
+
+  a = 13.5f;
+
+  for (unsigned i=0; i<11; i++)
+    for (unsigned j=0; j<11; j++)
+      for (unsigned k=0; k<11; k++)
+	ENSURE_EQUAL(a(i,j,k), 13.5f); 
+}
+
 using resophonic::kamasu::_;
 
 TEST(1d_slice)

@@ -27,7 +27,7 @@ struct deepexpr_streamed
 
 	for (unsigned i=0; i<n; i++)
 	  {
-	    array<float> slice = a.slice(index_range(i,_));
+	    array<float, boost::mpl::true_> slice = a.slice(index_range(_,_), index_range(i));
 	    slice.on(s[i]) = rk::pow(slice, 2.0f);
 	  }
       }

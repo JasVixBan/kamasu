@@ -1,32 +1,31 @@
 #include <resophonic/kamasu.hpp>
 #include "benchmark.hpp"
 
-using resophonic::kamasu::array;
+#include <boost/numeric/ublas/matrix.hpp>
 
-struct deepexpr 
+using resophonic::kamasu::array;
+namespace ublas = boost::numeric::ublas;
+
+struct matrix_multiply 
 {
   struct kamasu : benchmark<kamasu>
   {
     unsigned n;
     kamasu(unsigned n_) : n(n_) { }
 
-    array<float> a, b, c, d, e;
+    array<float> a, b, c;
 
     void start() 
     { 
-      a = array<float>(n); 
-      b = array<float>(n); 
-      c = array<float>(n); 
-      d = array<float>(n); 
+      a = array<float>(n,n); 
+      b = array<float>(n,n); 
     }
     void stop() 
     { 
     }
     void main() 
     { 
-      e = a * 2.0f; 
-      e += (d * 2.0f);
-      e += (b * 2.0f) / (c * 2.0f);
+      c = a * b;
     }
   };
 
@@ -35,23 +34,19 @@ struct deepexpr
     unsigned n;
     cpu(unsigned n_) : n(n_) { }
 
-    std::vector<float> a, b, c, d, e;
+    ublas::matrix<float> a, b, c;
 
     void start() 
     { 
-      a.resize(n);
-      b.resize(n);
-      c.resize(n);
-      d.resize(n);
-      e.resize(n);
+      a = ublas::matrix<float>(n,n);
+      b = ublas::matrix<float>(n,n);
     }
     void stop() 
     { 
     }
     void main() 
     { 
-      for (unsigned i=0; i<n; i++)
-	e[i] = (a[i] * 2.0f) + (b[i] * 2.0f) / (c[i] * 2.0f) + (d[i] * 2.0f);
+      c = prod(a,b);
     }
   };
 };

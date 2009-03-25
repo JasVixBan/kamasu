@@ -12,6 +12,7 @@
 \newif\ifpdf
 \ifx\pdfoutput\undefined\pdffalse\else\pdftrue\fi
 
+
 %-------------------------------------------------------------------------------
 %                                                                    color stuff
 
@@ -47,6 +48,8 @@
 }
 
 \def\setbluesheetcolors{
+\setbeamerfont*{note page}{size=\tiny}
+\setbeamercolor*{note page}{fg=resophonicblue}
 \setbeamercolor*{normal text}{fg=white,bg=resophonicblue}
 \setbeamercolor*{alerted text}{fg=yellalert}
 \setbeamercolor*{structure}{fg=white}
@@ -135,12 +138,7 @@
 %                                                                    frame title
 
 \setbeamertemplate{frametitle}{%
-  \vbox to \barheight{\vfill
-    \underline{
-      \insertframetitle
-    }
-  }
-}
+  \vbox to \barheight{\vfill\underline{\insertframetitle}}}
 
 %-------------------------------------------------------------------------------
 %                                                                       logo bar
@@ -209,15 +207,34 @@
   \end{pgfpicture}
 }
 
+\newcommand{\myinsertslideintonotes}[1]{{%
+  \begin{pgfpicture}{0cm}{0cm}{#1\paperwidth}{#1\paperheight}
+    \begin{pgflowlevelscope}{\pgftransformscale{#1}}%
+      \pgfpathrectangle{\pgfpointorigin}{\pgfpoint{\paperwidth}{\paperheight}}
+      \pgfusepath{fill}
+      {\pgftransformshift{\pgfpoint{\beamer@origlmargin}{\footheight}}\pgftext[left,bottom]{\copy\beamer@frameboxcopy}}
+    \end{pgflowlevelscope}
+  \end{pgfpicture}%
+  }}
+
+
 %-------------------------------------------------------------------------------
 %                                                           blue vs white sheets
 
 \def\bluesheets{
-%\setbeamertemplate{background}{\bluesheetbackground}
-\setbeamertemplate{footline}{\bluesheetfootline}
-\setbluesheetcolors
-\normalcolorhack
-\gdef\debug{[bluesheets set]]}
+  %\setbeamertemplate{background}{\bluesheetbackground}
+  \setbeamertemplate{footline}{\bluesheetfootline}
+  \setbluesheetcolors
+  \normalcolorhack
+  \gdef\debug{[bluesheets set]]}
+
+\setbeamertemplate{note page}{
+  \setbluesheetcolors 
+  \myinsertslideintonotes{0.5}
+
+  \insertnote
+}
+
 }
 
 \def\whitesheets{
@@ -237,10 +254,5 @@
 
 % Use the Wageningen University logo by default
 % \addlogo{\wulogo}
-
-\setbeamertemplate{note page}[plain]
-
-
-% \setbeamercolor*{note page}{fg=resophonicblue}
 
 \endinput

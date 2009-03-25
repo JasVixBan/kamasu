@@ -1,4 +1,9 @@
 \documentclass{beamer}
+\usepackage{pgfpages}
+\usepackage{wrapfig}
+
+\setbeameroption{show notes}
+\setbeameroption{show notes on second screen=bottom}
 
 \mode<presentation>
 {
@@ -10,6 +15,9 @@
 
 \def\footertext#1{\hbox{\vbox to \logobarheight{
       \vfill\hbox{{\usebeamerfont{logobar}\usebeamercolor[fg]{logobar}#1}}\vfill}}}
+
+% \def\rnote<#1>#2{\note<#1>{\whitesheets #2}}
+% \newcommand{\rnote}[2]{ \note#1{#2}}
 
 \addlogo{\footertext{Boostcon 2009}}
 \logobartext{Troy D.~Straszheim}
@@ -28,7 +36,7 @@
 
 \title[resophonic::kamasu]{\texttt{resophonic::kamasu}}
 
-\subtitle{Computing on the GPU with boost::proto}
+\subtitle{Computing on the GPU with CUDA and boost::proto}
 
 \author{Troy D. Straszheim}
 
@@ -77,231 +85,87 @@ Aspen, CO}
 
 %\beamerdefaultoverlayspecification{<+->}
 
-
 \begin{document}
 
 
 \begin{frame}
-  \titlepage
-\end{frame}
+   \note{honored to be here,
 
+    First read modern c++ design in about 2002 or 3, wrote everything
+    with policy classes for awhile, still get a thrill out of it
+
+    love this kind of thing as it gives me an opportunity to look in
+    to the minds of people that are smarter than I am, and not in
+    real-time, and in ascii, so there's little danger that I'll need
+    eyebleach
+
+    last year at boostcon, hartmut was encouraging
+
+    i thought great, opportunity to learn proto, look into eric
+    niebler's mind
+
+    CUDA was getting buzz
+
+    opportunity to do both, and for the next hour or so I'm going to
+    tell you what happened.  these are the proceeds thus far.
+
+    haven't really discussed what I'm doing with anybody yet, so I
+    expect you to see lots of things I'm overlooking, looking forward
+    to what happens after this talk, lots of time for questions and
+    discussion.
+
+    Not a finished product.
+}
+   \titlepage
+\end{frame}
+%   }
+% 
 \begin{frame}{Outline}
   \tableofcontents
   % You might wish to add the option [pausesections]
 \end{frame}
 
-\begin{frame}[fragile,plain]
-  \frametitle{An Algorithm For Finding Primes Numbers.}
-\begin{semiverbatim}
-int main (void)
-\{
-\alert<1>{ \alert<4>{std::}vector<bool> is_prime (100, true);}
-\alert<1>{ for (int i = 2; i < 100; i++)}
-\alert<2>{    if (is_prime[i])}
-\alert<0>{      \{}
-\alert<3>{        \alert<4>{std::}cout << i << " ";}
-\alert<3>{        for (int j = i; j < 100; i++)}
-\alert<3>{             is_prime [j] = false, j+=i);}
-\alert<0>{      \}}
-\alert<0>{ return 0;}
-\alert<0>{\}}
-\end{semiverbatim}
-% \setbeamercolor{red}{fg=white, bg=red}
-%\begin{beamercolorbox}[dp=0.5cm]{} %{red}
-%  \only<2>{blam blam blam?}
-%  \only<3>{WHOOOOah this is pretty fizzuckin neat, doncha think?}
-%  \only<4>{Note the use of \alert{\texttt{std::}}.}
-%\end{beamercolorbox}
+\section{CUDA}
+\subsection{lots of processors}
+\begin{frame}{hi}
+hi
+\end{frame}
+\begin{frame}{hi}
+hi
+\end{frame}
+\begin{frame}{hi}
+hi
 \end{frame}
 
-\begin{frame}
-  \begin{itemize}
-  \item<+-| alert@+> foo
-  \item<+-| alert@+> bar 
-  \item<+-| alert@+> baz 
-  \item<+-| alert@+> quux
-  \end{itemize}
+\section{boost::proto}
+\subsection{transforms}
+\begin{frame}{hi}
+hi
 \end{frame}
 
-\begin{frame}
-
-hee
-
-% \includemovie[
-%     poster,
-%     text=(AlienSong.mpg),
-%     mouse,
-%     repeat
-%  ]{
-%     .5\linewidth
-%  }{
-%     .375\linewidth
-% }{AlienSong.mpg}
-
-\movie{movie here}{AlienSong.mpg}
-
-\end{frame}
-% Structuring a talk is a difficult task and the following structure
-% may not be suitable. Here are some rules that apply for this
-% solution: 
-
-% - Exactly two or three sections (other than the summary).
-% - At *most* three subsections per section.
-% - Talk about 30s to 2min per frame. So there should be between about
-%   15 and 30 frames, all told.
-
-% - A conference audience is likely to know very little of what you
-%   are going to talk about. So *simplify*!
-% - In a 20min talk, getting the main ideas across is hard
-%   enough. Leave out details, even if it means being less precise than
-%   you think necessary.
-% - If you omit details that are vital to the proof/implementation,
-%   just say so once. Everybody will be happy with that.
-
-\section{Motivation}
-
-\subsection{The Basic Problem That We Studied}
-
-\begin{frame}{Make Titles Informative. Use Uppercase Letters.}{Subtitles are optional.}
-  % - A title should summarize the slide in an understandable fashion
-  %   for anyone how does not follow everything on the slide itself.
-
-  \begin{itemize}
-  \item
-    Use \texttt{itemize} a lot.
-  \item
-    Use very short sentences or short phrases.
-  \end{itemize}
+\begin{frame}{hi}
+hi
 \end{frame}
 
-\begin{frame}{Make Titles Informative.}
+\begin{frame}{hi}
+hi
+\end{frame}
 
-  You can create overlays\dots
-  \begin{itemize}
-  \item using the \texttt{pause} command:
-    \begin{itemize}
-    \item
-      First item.
-      \pause
-    \item    
-      Second item.
-    \end{itemize}
-  \item
-    using overlay specifications:
-    \begin{itemize}
-    \item<3->
-      First item.
-    \item<4->
-      Second item.
-    \end{itemize}
-  \item
-    using the general \texttt{uncover} command:
-    \begin{itemize}
-      \uncover<5->{\item
-        First item.}
-      \uncover<6->{\item
-        Second item.}
-    \end{itemize}
-  \end{itemize}
+\section{resophonic::kamasu}
+\subsection{benchmarks}
+\begin{frame}{hi}
+hi
+\end{frame}
+
+\begin{frame}{hi}
+hi
+\end{frame}
+
+\begin{frame}{hi}
+hi
 \end{frame}
 
 
-\subsection{Previous Work}
-
-\begin{frame}{Make Titles Informative.}
-\end{frame}
-
-\begin{frame}{Make Titles Informative.}
-\end{frame}
-
-
-
-\section{Our Results/Contribution}
-
-\subsection{Main Results}
-
-\begin{frame}{Make Titles Informative.}
-\end{frame}
-
-\begin{frame}{Make Titles Informative.}
-\end{frame}
-
-\begin{frame}{Make Titles Informative.}
-\end{frame}
-
-
-\subsection{Basic Ideas for Proofs/Implementation}
-
-\begin{frame}{Make Titles Informative.}
-\end{frame}
-
-\begin{frame}{Make Titles Informative.}
-\end{frame}
-
-\begin{frame}{Make Titles Informative.}
-\end{frame}
-
-
-
-\section*{Summary}
-
-\begin{frame}{Summary}
-
-  % Keep the summary *very short*.
-  \begin{itemize}
-  \item
-    The \alert{first main message} of your talk in one or two lines.
-  \item
-    The \alert{second main message} of your talk in one or two lines.
-  \item
-    Perhaps a \alert{third message}, but not more than that.
-  \end{itemize}
-  
-  % The following outlook is optional.
-  \vskip0pt plus.5fill
-  \begin{itemize}
-  \item
-    Outlook
-    \begin{itemize}
-    \item
-      Something you haven't solved.
-    \item
-      Something else you haven't solved.
-    \end{itemize}
-  \end{itemize}
-\end{frame}
-
-
-
-% All of the following is optional and typically not needed. 
-\appendix
-\section<presentation>*{\appendixname}
-\subsection<presentation>*{For Further Reading}
-
-\begin{frame}[allowframebreaks]
-  \frametitle<presentation>{For Further Reading}
-    
-  \begin{thebibliography}{10}
-    
-  \beamertemplatebookbibitems
-  % Start with overview books.
-
-  \bibitem{Author1990}
-    A.~Author.
-    \newblock {\em Handbook of Everything}.
-    \newblock Some Press, 1990.
- 
-    
-  \beamertemplatearticlebibitems
-  % Followed by interesting articles. Keep the list short. 
-
-  \bibitem{Someone2000}
-    S.~Someone.
-    \newblock On this and that.
-    \newblock {\em Journal of This and That}, 2(1):50--100,
-    2000.
-  \end{thebibliography}
-\end{frame}
 
 \end{document}
 

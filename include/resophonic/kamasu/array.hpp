@@ -170,10 +170,6 @@ namespace resophonic {
       impl_t& self() { return self_; }
       const impl_t& self() const { return self_; }
 
-      void take(const std::vector<T>& rhs);
-      void take(const array_impl<T, boost::mpl::true_>& rhs);
-      void take(const array_impl<T, boost::mpl::false_>& rhs);
-
       template <typename Expr>
       void assign(Expr const& expr)
       {
@@ -185,26 +181,10 @@ namespace resophonic {
 
 	typename boost::result_of<Grammar(Expr const&, const state_t&, data_t&)>::type thingy 
 	  = Grammar()(expr, state_t(), data_);
-	this->take(thingy);
+	this->self_.copy_from(thingy);
       }
     };
 
-    /*
-      struct on 
-    {
-      array<T, RVal>& a_;
-
-      template <typename T, typename RVal>
-      on(stream_impl& stream, array<T, RVal>& a)
-	: a_(a) {
-	a_.on(stream_impl);
-      }
-
-      ~on() {
-	a_.on();
-      }
-    };
-    */
   }  
 }
 

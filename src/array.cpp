@@ -30,7 +30,6 @@ namespace resophonic {
     array<T, RVal>::array() 
       : self_(boost::proto::value(*this))
     {
-
     }
 
     template <typename T, typename RVal>
@@ -47,38 +46,10 @@ namespace resophonic {
       self().copy_from(rhs.self());
     }
 
-    //    template <typename T, typename RVal>
-    //    array<T, RVal>::array(
-
     template <typename T, typename RVal>
     array<T, RVal>::~array()
     {
       
-    }
-
-    template <typename T, typename RVal>
-    void 
-    array<T, RVal>::take(const array_impl<T, boost::mpl::true_>& rhs)
-    {
-      log_trace("%s",  "TAKING");
-#ifdef RESOPHONIC_KAMASU_DEBUG
-      rhs.show();
-#endif
-      BOOST_ASSERT(rhs.nd);
-      BOOST_ASSERT(rhs.linear_size);
-      self_.copy_from(rhs);
-    }
-
-    template <typename T, typename RVal>
-    void 
-    array<T, RVal>::take(const array_impl<T, boost::mpl::false_>& rhs)
-    {
-      log_trace("%s",  __PRETTY_FUNCTION__);
-#ifdef RESOPHONIC_KAMASU_DEBUG
-      rhs.show();
-#endif
-      BOOST_ASSERT(rhs.nd);
-      self_.copy_from(rhs);
     }
 
     template <typename T, typename RVal>
@@ -119,7 +90,7 @@ namespace resophonic {
     array<T, RVal>::operator=(const array<T, RVal>& rhs) 
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
-      this->take(rhs.self_);
+      self_.copy_from(rhs.self_);
       return *this;
     };
 
@@ -128,7 +99,7 @@ namespace resophonic {
     array<T, RVal>::operator=(const other_t& rhs) 
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
-      this->take(rhs.self_);
+      self_.copy_from(rhs.self_);
       return *this;
     };
 

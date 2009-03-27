@@ -24,6 +24,7 @@
 
 #include <cxxabi.h>
 #include <string>
+#include <stdlib.h>
 
 namespace resophonic {
 

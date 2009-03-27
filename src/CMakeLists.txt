@@ -70,6 +70,7 @@ cuda_add_library(resophonic_kamasu SHARED
 
 target_link_libraries(resophonic_kamasu
   ${CUBLAS_TARGET_LINK}
-  ${RESOPHONIC_PFEILHECHT_LIB})
+  ${RESOPHONIC_PFEILHECHT_LIB}
+  )
   
 add_dependencies(resophonic_kamasu generated_public_headers) 

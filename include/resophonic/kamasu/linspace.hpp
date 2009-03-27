@@ -10,6 +10,11 @@ namespace resophonic {
     array<T, boost::mpl::true_>
     linspace(T start, T stop, std::size_t n_entries);
 
+
+    template <typename T, typename RVal>
+    T
+    sum(const array<T, RVal>& a);
+
   }
 }
 

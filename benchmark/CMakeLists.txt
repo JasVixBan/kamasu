@@ -23,6 +23,7 @@ add_bmark(deepexpr)
 add_bmark(deepexpr_streamed)
 add_bmark(sine)
 add_bmark(matrix_multiply)
+add_bmark(synthesis)
 
 
 

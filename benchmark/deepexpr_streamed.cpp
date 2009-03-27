@@ -23,12 +23,10 @@ struct deepexpr_streamed
     void main() 
     { 
       {
-	resophonic::kamasu::stream s[n];
-
 	for (unsigned i=0; i<n; i++)
 	  {
-	    array<float, boost::mpl::true_> slice = a.slice(index_range(_,_), index_range(i));
-	    slice.on(s[i]) = rk::pow(slice, 2.0f);
+	    array<float, boost::mpl::true_> slice = a.slice(index_range(i), index_range(_,_));
+	    slice = rk::pow(slice, 2.0f);
 	  }
       }
     }

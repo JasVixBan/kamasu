@@ -177,3 +177,10 @@ TEST(wontcompile)
 }
 
 
+TEST(blah)
+{
+  array<float> a;
+
+  a = blah(a);
+
+}

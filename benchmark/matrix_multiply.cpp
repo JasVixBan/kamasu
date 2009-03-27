@@ -10,8 +10,8 @@ struct matrix_multiply
 {
   struct kamasu : benchmark<kamasu>
   {
-    unsigned n;
-    kamasu(unsigned n_) : n(n_) { }
+    unsigned n, x;
+    kamasu(unsigned n_, unsigned x_) : n(n_), x(x_) { }
 
     array<float> a, b, c;
 
@@ -25,14 +25,15 @@ struct matrix_multiply
     }
     void main() 
     { 
-      c = a * b;
+      for (int i = 0; i<x; i++)
+	c = a * b;
     }
   };
 
   struct cpu : benchmark<cpu>
   {
-    unsigned n;
-    cpu(unsigned n_) : n(n_) { }
+    unsigned n, x;
+    cpu(unsigned n_, unsigned x_) : n(n_), x(x_) { }
 
     ublas::matrix<float> a, b, c;
 
@@ -46,11 +47,11 @@ struct matrix_multiply
     }
     void main() 
     { 
-      c = prod(a,b);
+      for (unsigned i=0; i<x; i++)
+	c = prod(a,b);
     }
   };
 };
 
-MAIN(1);
-
+MAIN(2);
 

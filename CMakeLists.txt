@@ -95,6 +95,25 @@ find_library(CUFFT_LIBRARY
   NO_DEFAULT_PATH
   )
 
+find_library(CUDPP_LIBRARY
+  cudpp64
+  PATHS ${CMAKE_SOURCE_DIR}/../cudpp_1.0a/lib
+  NO_DEFAULT_PATH
+  )
+
+find_file(CUDPP_INCLUDE_FILE
+  cudpp.h
+  PATHS ${CMAKE_SOURCE_DIR}/../cudpp_1.0a/cudpp/include
+  NO_DEFAULT_PATH
+  )
+
+get_filename_component(CUDPP_INCLUDE_DIR
+  ${CUDPP_INCLUDE_FILE}
+  PATH
+  )
+
+include_directories(${CUDPP_INCLUDE_DIR})
+
 # contains cutil.h
 include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc)
 cuda_include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc

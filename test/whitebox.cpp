@@ -91,5 +91,32 @@ TEST(assign_from_expression_2)
   ENSURE_EQUAL(testing::n_clones, 2);
 }
  
+TEST(slice_doesnt_copy)
+{
+  testing::n_clones = 0;
+  testing::gpu_malloc = 0;
+  array<float> a(2,2);
+  
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::gpu_malloc, 1);
+
+  array<float> b = a.slice(index_range(_,_), index_range(0));
+
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::gpu_malloc, 1);
+}
+ 
+TEST(forward_a_temp)
+{
+  testing::n_clones = 0;
+  testing::gpu_malloc = 0;
+  array<float> a(2), b(2);
+  
+  a = resophonic::kamasu::pow(b, 2.0f);
+
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::gpu_malloc, 2);
+}
+ 
 
 #endif

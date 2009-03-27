@@ -166,11 +166,12 @@ namespace resophonic {
     ArrayArrayOp::operator()(Op,
 			     const rk::array_impl<float, LhsIsRVal>& lhs, 
 			     const rk::array_impl<float, RhsIsRVal>& rhs,
-			     const stream_impl& s)
+			     const state_t&,
+			     data_t& data)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
       
-      return detail::dispatch()(Op(), lhs, rhs, s);
+      return detail::dispatch()(Op(), lhs, rhs, data.si);
     }
 
 #define INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, LRV, RRV) template		\
@@ -178,7 +179,7 @@ namespace resophonic {
     ArrayArrayOp::operator()(OP,					\
 			     const rk::array_impl<float, boost::mpl:: LRV>&, \
 			     const rk::array_impl<float, boost::mpl:: RRV>&, \
-			     const stream_impl& si);
+			     const state_t&, data_t&);
     
 #define INSTANTIATE_ARRAYARRAY_OP(OP)					\
     INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, false_, false_);			\

@@ -29,6 +29,7 @@ set(GENERATED_PRIVATE_HEADERS
   )
 
 set(GENERATED_PUBLIC_HEADERS 
+  UnaryFunctions.hpp
   UnaryFunctionTags.hpp
   UnaryFunctionCalls.hpp
   UnaryFunctionExpressions.hpp

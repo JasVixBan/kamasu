@@ -179,13 +179,14 @@ register_array(const char* name)
 {
   typedef ks::array<float, RVal> array_t;
 
-  /*
-    class_<array_t>(name)
-    .def("n_dims", &array_t::n_dims)
-    .def("dim", &array_t::dim)
-    .def("stride", &array_t::stride)
+  class_<array_t>(name)
+    .def("n_dims", &array_t::nd)
+    .def("dim", (std::size_t(array_t::*)(std::size_t) const)&array_t::dim)
+    .def("stride", (int(array_t::*)(std::size_t) const)&array_t::stride)
     .def("linear_size", &array_t::linear_size)
-    KS_REPEAT(INIT_DEF, ~)
+    
+    
+    BOOST_PP_REPEAT(KAMASU_MAX_ARRAY_DIM, INIT_DEF, ~)
 
     .def("__getitem__", &get_slice<array_t, float>)
     .def("__getitem__", &get_item<array_t,float>)
@@ -195,7 +196,6 @@ register_array(const char* name)
     .def("__setitem__", &setitem_impl_1<array_t,float>)
     .def("__mul__", &op_mul<array_t,float>)
     ;
-  */
 }
 
 BOOST_PYTHON_MODULE(kamasu)
@@ -218,6 +218,7 @@ BOOST_PYTHON_MODULE(kamasu)
     ;
   */
   register_array<boost::mpl::false_>("array");
+  register_array<boost::mpl::true_>("tmp_array");
   //  register_array<boost::mpl::true_>("array_rvalue");
 }
 

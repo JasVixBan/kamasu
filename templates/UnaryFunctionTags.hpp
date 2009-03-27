@@ -5,11 +5,7 @@ namespace resophonic
 {
   namespace kamasu 
   {
-    namespace tag 
-    {
-      /*'\n'.join(['struct %s {};' % fn for fn in functions])*/
-    }
-
+    /*'\n'.join(['''struct %s_tag { };''' % fn for fn in functions])*/
   }
 }
 

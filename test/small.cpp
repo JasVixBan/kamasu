@@ -12,11 +12,9 @@ struct nameable {
   }
 };
 
-struct pow_tag : nameable<pow_tag>
-{ };
+struct pow_tag : nameable<pow_tag> { };
 
-struct dot_tag : nameable<dot_tag>
-{ };
+struct dot_tag : nameable<dot_tag> { };
 
 
 struct UnaryFnCall : bp::callable
@@ -28,7 +26,8 @@ struct UnaryFnCall : bp::callable
   operator()(Tag, const T& t, float& state)
   {
     std::cout << __PRETTY_FUNCTION__ << " state=" << state << "\n";
-    return 777.777;
+    state += 100;
+    return state;
   }
 
 };
@@ -42,10 +41,10 @@ struct BinaryFnCall : bp::callable
   operator()(Tag, const T& t, const U& u, float& state)
   {
     std::cout << __PRETTY_FUNCTION__ << " state=" << state << "\n";
-    return  666.666;
+    state += 10;
+    return state;
   }
 };
-
 
 struct Grammar;
 
@@ -125,12 +124,12 @@ matchit(Expr const& expr)
   bp::display_expr(expr, std::cout);
   BOOST_MPL_ASSERT(( bp::matches<Expr, Grammar> ));
 
-  float state = 111, data = 222;
+  float state = 0, data = 0;
 
   typename boost::result_of<Grammar(Expr const&, float&, float&)>::type 
     thingy = Grammar()(expr, state, data);
 
-  std::cout << "RESULT:" << thingy;
+  std::cout << "RESULT:" << data;
 
 }
 

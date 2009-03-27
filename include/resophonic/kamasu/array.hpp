@@ -37,7 +37,7 @@ namespace resophonic {
 
       friend class array<T, typename boost::mpl::not_<RVal>::type>;
 
-      stream_impl stream_;
+      data_t data_;
       int state_;
 
     public:
@@ -79,28 +79,34 @@ namespace resophonic {
 
       std::size_t nd() const { return self().nd; }
 
-      std::size_t& dim(std::size_t index) 
+
+      std::size_t& dim(std::size_t index)
       { 
 	return self().dim(index); 
       }
+
       std::size_t dim(std::size_t index) const 
       { 
 	return self().dim(index); 
       }
 
+
       int& stride(std::size_t index)
       { 
 	return self().stride(index); 
       }
+
       int stride(std::size_t index) const 
       { 
 	return self().stride(index); 
       }
 
+
       std::size_t& factor(std::size_t index)
       { 
 	return self().factor(index); 
       }
+
       std::size_t factor(std::size_t index) const 
       { 
 	return self().factor(index); 
@@ -123,7 +129,7 @@ namespace resophonic {
       array& operator=(Expr const& expr)
       {
 	this->assign(boost::proto::as_expr<Domain>(expr));
-	stream_.value = 0;
+	data_.si.value = 0;
 	return *this;
       }
 
@@ -142,20 +148,20 @@ namespace resophonic {
       operator+=(const Expr& expr)
       {
 	BOOST_MPL_ASSERT(( boost::proto::matches<Expr, Grammar> ));
-	typedef typename boost::result_of<Grammar(Expr const&, int, stream_impl)>::type result_t;
-	result_t rhs_evaluated = Grammar()(expr, state_, stream_);
-	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated, stream_);
+	typedef typename boost::result_of<Grammar(Expr const&, const state_t&, data_t&)>::type result_t;
+	result_t rhs_evaluated = Grammar()(expr, state_t(), data_);
+	ArrayArrayOp()(boost::proto::tag::plus_assign(), self(), rhs_evaluated, state_t(), data_);
       }
 
       array& on(const stream& s)
       {
-	stream_.value = s.value;
+	data_.si.value = s.value;
 	return *this;
       }
 
       array& on()
       {
-	stream_.value = 0;
+	data_.si.value = 0;
 	return *this;
       }
 
@@ -177,8 +183,8 @@ namespace resophonic {
 
 	log_trace("%s fn %s", "not what we want" % __PRETTY_FUNCTION__);
 
-	typename boost::result_of<Grammar(Expr const&, int, stream_impl)>::type thingy 
-	  = Grammar()(expr, state_, stream_);
+	typename boost::result_of<Grammar(Expr const&, const state_t&, data_t&)>::type thingy 
+	  = Grammar()(expr, state_t(), data_);
 	this->take(thingy);
       }
     };

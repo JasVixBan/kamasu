@@ -23,6 +23,11 @@ add_executable(small
   small.cpp
   )
 
+add_executable(usecase
+  usecase.cpp
+  )
+target_link_libraries(usecase resophonic_kamasu)
+
 # add_executable(benchmark
 #   main.cpp
 #   benchmarks.cpp

@@ -9,6 +9,6 @@ def dims_impl(n,dim):
 
 def test():
     for dim in [2,3,4]:
-        for i in range(1,13):
+        for i in range(1,6):
             yield dims_impl, i, dim
     

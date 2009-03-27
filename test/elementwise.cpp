@@ -176,11 +176,3 @@ TEST(wontcompile)
   //  a = rk::erf(a*3.0f, 4.0f);
 }
 
-
-TEST(blah)
-{
-  array<float> a;
-
-  a = blah(a);
-
-}

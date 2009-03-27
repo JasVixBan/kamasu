@@ -2,6 +2,8 @@
 #define RESOPHONIC_KAMASU_GRAMMAR_HPP_INCLUDED
 
 #include <resophonic/kamasu/array_impl.hpp>
+#include <resophonic/kamasu/state.hpp>
+#include <resophonic/kamasu/data.hpp>
 #include <boost/proto/proto.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -36,7 +38,8 @@ namespace resophonic
       operator()(Op, 
 		 const rk::array_impl<float, LhsIsRVal>&, 
 		 const rk::array_impl<float, RhsIsRVal>&,
-		 const stream_impl& si);
+		 const state_t&,
+		 data_t&);
     };
 
     struct ArrayScalarOp : bp::callable
@@ -46,8 +49,8 @@ namespace resophonic
       template <typename Op, typename IsRVal>
       result_type 
       operator()(Op, const rk::array_impl<float, IsRVal>& v, const float& f,
-		 const stream_impl& si);
-
+		 const state_t&,
+		 data_t&);
     };
 
     struct Scalar
@@ -89,32 +92,32 @@ namespace resophonic
       struct case_<bp::tag::multiplies, _>
       : bp::when<bp::multiplies<Array, Scalar>,
 		 ArrayScalarOp(bp::tag::multiplies(), 
-			       Array(bp::_left), Scalar(bp::_right),
-			       bp::_data)>
+			       Array(bp::_left, bp::_state, bp::_data), Scalar(bp::_right),
+			       bp::_state, bp::_data)>
       { };
 
       template <int _> 
       struct case_<bp::tag::plus, _>
       : bp::when<bp::plus<Array, Scalar>,
 		 ArrayScalarOp(bp::tag::plus(), 
-			       Array(bp::_left), Scalar(bp::_right),
-			       bp::_data)>
+			       Array(bp::_left, bp::_state, bp::_data), Scalar(bp::_right),
+			       bp::_state, bp::_data)>
       { };
 
       template <int _> 
       struct case_<bp::tag::minus, _>
       : bp::when<bp::minus<Array, Scalar>,
 		 ArrayScalarOp(bp::tag::minus(), 
-			       Array(bp::_left), Scalar(bp::_right),
-			       bp::_data)>
+			       Array(bp::_left, bp::_state, bp::_data), Scalar(bp::_right),
+			       bp::_state, bp::_data)>
       { };
 
       template <int _> 
       struct case_<bp::tag::divides, _>
       : bp::when<bp::divides<Array, Scalar>,
 		 ArrayScalarOp(bp::tag::divides(), 
-			       Array(bp::_left), Scalar(bp::_right),
-			       bp::_data)>
+			       Array(bp::_left, bp::_state, bp::_data), Scalar(bp::_right),
+			       bp::_state, bp::_data)>
       { };
 
       template <int _> 
@@ -127,8 +130,9 @@ namespace resophonic
       template <int _> 
       struct case_<bp::tag::function, _>
 	: bp::when<bp::function<bp::terminal<tag::pow>, Array, Scalar>,
-		   ArrayScalarOp(tag::pow(), Array(bp::_child1), Scalar(bp::_child2),
-				 bp::_data)>
+		   ArrayScalarOp(tag::pow(), Array(bp::_child1, bp::_state, bp::_data), 
+				 Scalar(bp::_child2),
+				 bp::_state, bp::_data)>
       { };
       
     };
@@ -151,40 +155,40 @@ namespace resophonic {
       struct case_<bp::tag::plus, _>
 	: bp::when<bp::plus<Array, Array>,
 		   ArrayArrayOp(bp::tag::plus(), 
-				Array(bp::_left), Array(bp::_right),
-				bp::_data)>
+				Array(bp::_left, bp::_state, bp::_data), Array(bp::_right, bp::_state, bp::_data),
+				bp::_state, bp::_data)>
       { };
 
       template <int _>
       struct case_<bp::tag::plus_assign, _>
 	: bp::when<bp::plus<Array, Array>,
 		   ArrayArrayOp(bp::tag::plus_assign(), 
-				Array(bp::_left), Array(bp::_right),
-				bp::_data)>
+				Array(bp::_left, bp::_state, bp::_data), Array(bp::_right, bp::_state, bp::_data),
+				bp::_state, bp::_data)>
       { };
 
       template <int _>
       struct case_<bp::tag::multiplies, _>
 	: bp::when<bp::multiplies<Array, Array>,
 		   ArrayArrayOp(bp::tag::multiplies(), 
-				Array(bp::_left), Array(bp::_right),
-				bp::_data)>
+				Array(bp::_left, bp::_state, bp::_data), Array(bp::_right, bp::_state, bp::_data),
+				bp::_state, bp::_data)>
       { };
 
       template <int _>
       struct case_<bp::tag::divides, _>
 	: bp::when<bp::divides<Array, Array>,
 		   ArrayArrayOp(bp::tag::divides(), 
-				Array(bp::_left), Array(bp::_right),
-				bp::_data)>
+				Array(bp::_left, bp::_state, bp::_data), Array(bp::_right, bp::_state, bp::_data),
+				bp::_state, bp::_data)>
       { };
 
       template <int _>
       struct case_<bp::tag::minus, _>
 	: bp::when<bp::minus<Array, Array>,
 		   ArrayArrayOp(bp::tag::minus(), 
-				Array(bp::_left), Array(bp::_right),
-				bp::_data)>
+				Array(bp::_left, bp::_state, bp::_data), Array(bp::_right, bp::_state, bp::_data),
+				bp::_state, bp::_data)>
       { };
     };
     struct ArrayArrayOps : bp::switch_<ArrayArrayOpsCases> { };
@@ -224,6 +228,6 @@ namespace resophonic {
   }
 }
 
-#include <resophonic/kamasu/generated/UnaryFunctionExpressions.hpp>
+#include <resophonic/kamasu/generated/UnaryFunctions.hpp>
 
 #endif

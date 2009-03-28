@@ -173,11 +173,10 @@ namespace {
 #define SIZE_T(Z, N, DATA) std::size_t
 #define INIT_DEF(Z, N, DATA) .def(init<BOOST_PP_ENUM(N, SIZE_T, ~)>())
   
-template <typename RVal>
 void
 register_array(const char* name)
 {
-  typedef ks::array<float, RVal> array_t;
+  typedef ks::array<float> array_t;
 
   class_<array_t>(name)
     .def("n_dims", &array_t::nd)
@@ -217,8 +216,7 @@ BOOST_PYTHON_MODULE(kamasu)
     .def("__setitem__", &setitem_impl_1<float>)
     ;
   */
-  register_array<boost::mpl::false_>("array");
-  register_array<boost::mpl::true_>("tmp_array");
+  register_array("array");
   //  register_array<boost::mpl::true_>("array_rvalue");
 }
 

@@ -1,8 +1,8 @@
 
 
-  template <typename T, typename RVal>					
+  template <typename T>					
   void									
-  operator()(tag::/*OP*/, const rk::array_impl<T, RVal>& a, cudaStream_t stream)		
+  operator()(tag::/*OP*/, const rk::array_impl<T>& a, cudaStream_t stream)		
   {									
     log_trace("%s", __PRETTY_FUNCTION__);				
     switch (a.nd) {					     

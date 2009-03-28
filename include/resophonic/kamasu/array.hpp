@@ -22,20 +22,14 @@
 namespace resophonic {
   namespace kamasu {
     
-    template <typename T,
-	      typename RVal>
+    template <typename T>
     class array 
-      : public Expression<typename boost::proto::terminal<array_impl<T, RVal> >::type>
+      : public Expression<typename boost::proto::terminal<array_impl<T> >::type>
     {
-      typedef array<T, boost::mpl::true_> rval_t;
-      typedef array<T, typename boost::mpl::not_<RVal>::type> other_t;
-
-      typedef array_impl<T, RVal> impl_t;
+      typedef array_impl<T> impl_t;
       typedef Expression<typename boost::proto::terminal<impl_t>::type> base_t;
 
       impl_t& self_;
-
-      friend class array<T, typename boost::mpl::not_<RVal>::type>;
 
       data_t data_;
       int state_;
@@ -43,13 +37,11 @@ namespace resophonic {
     public:
     
       array& operator=(const array& rhs);
-      //      array& operator=(const array&& rhs);
-      array& operator=(const other_t& rhs);
 
       array();
 
       array(const std::vector<std::size_t>& shape);
-      array(const array<T, boost::mpl::true_>& rhs);
+      array(const array<T>& rhs, bool rvalue = false);
 
       template <typename Expr>
       array(Expr const& expr, typename boost::disable_if<boost::is_pod<Expr> >::type* = 0) 
@@ -64,7 +56,7 @@ namespace resophonic {
       array(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg));			\
 	    T operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const; \
 	    rval<T> operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)); \
-	    array<T,boost::mpl::true_> slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const; \
+	    array<T> slice(BOOST_PP_ENUM_PARAMS(N, const index_range& Arg)) const; \
 	    std::size_t index_of(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const;
       
       BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, VARARG_DECL, ~);
@@ -72,13 +64,15 @@ namespace resophonic {
 #undef VARARG_DECL
 
       std::size_t index_of(const std::vector<size_t>& indexes) const;
-      rval_t slice(const std::vector<index_range>& ranges) const;
+      array slice(const std::vector<index_range>& ranges) const;
 
-
-      rval_t copy() const;
+      array copy() const;
 
       std::size_t nd() const { return self().nd; }
 
+      void rvalue(bool value);
+
+      bool rvalue();
 
       std::size_t& dim(std::size_t index)
       { 

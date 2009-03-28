@@ -10,11 +10,11 @@ namespace resophonic {
     template <>
     ArrayScalarOp::result_type
     UnaryFunctionDispatch::operator()(resophonic::kamasu::/*OP*/_tag, 
-				      const rk::array_impl</*T*/, /*RVAL*/>& v,
+				      const rk::array_impl</*T*/>& v,
 				      const state_t&,
 				      data_t& data)
     {
-      rk::array_impl</*T*/, boost::mpl::true_> rv(v);
+      rk::array_impl</*T*/> rv(v, true);
   
       log_trace("dispatch: %s", __PRETTY_FUNCTION__); 
 

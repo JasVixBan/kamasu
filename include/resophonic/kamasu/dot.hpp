@@ -14,7 +14,7 @@ namespace resophonic {
     float
     dot(LExpr const& lhs, RExpr const& rhs) {
 
-      array<float, boost::mpl::true_> lrv, rrv;
+      array<float> lrv, rrv;
 
       lrv = lhs; // force evaluation of lhs, rhs
       rrv = rhs;

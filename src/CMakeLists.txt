@@ -52,14 +52,14 @@ add_custom_target(generated_public_headers
 
 cuda_add_library(resophonic_kamasu SHARED
 
+  array.cpp
+  array_impl.cpp
+
   linspace.cpp
 
   holder.cpp
   rval.cpp
   make_vector.cpp
-
-  array.cpp
-  array_impl.cpp
 
   transforms.cpp
 

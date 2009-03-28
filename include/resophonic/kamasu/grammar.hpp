@@ -26,29 +26,28 @@ namespace resophonic
 
     bp::terminal<tag::pow>::type const pow = {{}};
 
-    template <typename T, typename RVal = boost::mpl::false_>
-    class array;
+    template <typename T> class array;
 
     struct ArrayArrayOp : bp::callable
     {
-      typedef rk::array_impl<float, boost::mpl::true_> result_type;
+      typedef rk::array_impl<float> result_type;
 
-      template <typename Op, typename LhsIsRVal, typename RhsIsRVal>
+      template <typename Op>
       result_type 
       operator()(Op, 
-		 const rk::array_impl<float, LhsIsRVal>&, 
-		 const rk::array_impl<float, RhsIsRVal>&,
+		 const rk::array_impl<float>&, 
+		 const rk::array_impl<float>&,
 		 const state_t&,
 		 data_t&);
     };
 
     struct ArrayScalarOp : bp::callable
     {
-      typedef rk::array_impl<float, boost::mpl::true_> result_type;
+      typedef rk::array_impl<float> result_type;
 
-      template <typename Op, typename IsRVal>
+      template <typename Op>
       result_type 
-      operator()(Op, const rk::array_impl<float, IsRVal>& v, const float& f,
+      operator()(Op, const rk::array_impl<float>& v, const float& f,
 		 const state_t&,
 		 data_t&);
     };
@@ -69,7 +68,7 @@ namespace resophonic
     { };
 
     struct RkArrayTerminal 
-      : bp::when<bp::terminal<rk::array_impl<float,bp::_> >, bp::_value>
+      : bp::when<bp::terminal<rk::array_impl<float> >, bp::_value>
     { };
 
     struct BuMatrixTerminal 

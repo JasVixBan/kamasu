@@ -7,13 +7,13 @@ namespace resophonic {
   namespace kamasu {
 
     template <typename T>
-    array<T, boost::mpl::true_>
+    array<T>
     linspace(T start, T stop, std::size_t n_entries);
 
 
-    template <typename T, typename RVal>
+    template <typename T>
     T
-    sum(const array<T, RVal>& a);
+    sum(const array<T>& a);
 
   }
 }

@@ -6,14 +6,14 @@
 namespace resophonic {
   namespace kamasu {
 
-    template <typename T, typename RVal>
+    template <typename T>
     class array;
 
 
     struct data_t
     {
       stream_impl si;
-      array<float, boost::mpl::true_> *tmp;
+      array<float> *tmp;
     };
   }
 }

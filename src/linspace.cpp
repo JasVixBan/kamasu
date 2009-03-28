@@ -7,10 +7,11 @@ namespace resophonic {
   namespace kamasu {
 
     template <typename T>
-    array<T, boost::mpl::true_>
+    array<T>
     linspace(T start, T stop, std::size_t n_entries)
     {
-      array<T, boost::mpl::true_> v(n_entries);
+      array<T> v(n_entries);
+      v.rvalue(true);
       kamasu_linspace(v.data(), n_entries, 
 		      v.stride(0),
 		      start,
@@ -18,7 +19,7 @@ namespace resophonic {
       return v;
     }
 
-    template array<float, boost::mpl::true_> linspace(float, float, std::size_t);
+    template array<float> linspace(float, float, std::size_t);
 
     /*
     template <typename T, typename RVal>

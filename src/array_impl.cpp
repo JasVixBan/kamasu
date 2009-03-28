@@ -17,44 +17,39 @@ namespace resophonic
   namespace kamasu 
   {
 
-    template<typename T, typename RVal>
+    template<typename T>
     void
-    array_impl<T, RVal>::alloc() 
+    array_impl<T>::alloc() 
     {
       data_ = boost::shared_ptr<holder<T> >(new (holder_pool::malloc()) holder<T>,
 					    (void (*)(void*))holder_pool::free);
     } 
 
-    template<typename T, typename RVal>
-    array_impl<T, RVal>::array_impl() 
+    template<typename T>
+    array_impl<T>::array_impl() 
       : linear_size(0),
 	offset(0)
     { }
 
-    template <typename T, typename RVal>
-    template <typename OtherRVal>
-    array_impl<T, RVal>::array_impl(const array_impl<T, OtherRVal>& rhs) :
+    template <typename T>
+    array_impl<T>::array_impl(const array_impl<T>& rhs, bool rvalue_) :
       offset(rhs.offset),
       linear_size(rhs.linear_size),
-      nd(rhs.nd)
+      nd(rhs.nd),
+      rvalue(rvalue_)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
 
-      data_ = OtherRVal() ? rhs.data_ : rhs.data_->clone();
+      data_ = rhs.rvalue ? rhs.data_ : rhs.data_->clone();
 
       std::memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
       std::memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
       std::memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
     }
 
-    template array_impl<float, boost::mpl::true_>::array_impl(const array_impl<float, boost::mpl::true_>&);
-    template array_impl<float, boost::mpl::true_>::array_impl(const array_impl<float, boost::mpl::false_>&);
-    template array_impl<float, boost::mpl::false_>::array_impl(const array_impl<float, boost::mpl::true_>&);
-    template array_impl<float, boost::mpl::false_>::array_impl(const array_impl<float, boost::mpl::false_>&);
-
-    template <typename T, typename RVal>
+    template <typename T>
     void
-    array_impl<T, RVal>::reshape(const std::vector<std::size_t>& shape, bool realloc)
+    array_impl<T>::reshape(const std::vector<std::size_t>& shape, bool realloc)
     {
       log_trace("%s", "reshape");
       offset = 0;
@@ -79,9 +74,9 @@ namespace resophonic
 	}
     }
 
-    template <typename T, typename RVal>
+    template <typename T>
     void
-    array_impl<T, RVal>::reshape(std::size_t shape, bool realloc)
+    array_impl<T>::reshape(std::size_t shape, bool realloc)
     {
       log_trace("%s", "reshape");
       offset = 0;
@@ -94,9 +89,9 @@ namespace resophonic
 	data_->resize(shape);
     }
 
-    template <typename T, typename RVal>
+    template <typename T>
     std::size_t
-    array_impl<T, RVal>::calculate_strides()
+    array_impl<T>::calculate_strides()
     {
       unsigned s = 1;
       stride(0) = s;
@@ -116,9 +111,9 @@ namespace resophonic
       return size;
     }
 
-    template <typename T, typename RVal>
+    template <typename T>
     void 
-    array_impl<T, RVal>::calculate_factors()
+    array_impl<T>::calculate_factors()
     {
       BOOST_ASSERT(nd > 0);
 
@@ -143,16 +138,16 @@ namespace resophonic
       log_trace("linear size is %u", linear_size); 
     }
 
-    template<typename T, typename RVal>
+    template<typename T>
     void 
-    array_impl<T, RVal>::copy_from(const array_impl<T, boost::mpl::true_>& rhs)
+    array_impl<T>::copy_from(const array_impl<T>& rhs, bool clone)
     {
 #if RESOPHONIC_KAMASU_DEBUG
       log_trace("%s",  __PRETTY_FUNCTION__);
       rhs.show();
 #endif
       nd = rhs.nd;
-      data_ = rhs.data_;
+      data_ = clone ? rhs.data_->clone() : rhs.data_;
       memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
       memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
       memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
@@ -160,85 +155,36 @@ namespace resophonic
       linear_size = rhs.linear_size;
     }
 
-    template<typename T, typename RVal>
-    void
-    array_impl<T, RVal>::copy_from(const array_impl<T, boost::mpl::false_>& rhs)
-    {
-#if RESOPHONIC_KAMASU_DEBUG
-      log_trace("%s",  __PRETTY_FUNCTION__);
-      rhs.show();
-#endif
-      nd = rhs.nd;
-      data_ = rhs.data_;
-      memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
-
-      offset = rhs.offset;
-      linear_size = rhs.linear_size;
-    }
-
-    template<typename T, typename RVal>
-    void
-    array_impl<T, RVal>::copy_into(this_t& rhs) const
-    {
-      log_trace("%s",  __PRETTY_FUNCTION__);
-      rhs.nd = nd;
-      rhs.data_ = data_->clone();
-      memcpy(rhs.dims, dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      memcpy(rhs.factors, factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      memcpy(rhs.strides, strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
-
-
-      rhs.offset = offset;
-      rhs.linear_size = linear_size;
-    }
-
-    template<typename T, typename RVal>
-    void
-    array_impl<T, RVal>::copy_into(other_t& rhs) const
-    {
-      log_trace("%s",  __PRETTY_FUNCTION__);
-      rhs.nd = nd;
-      rhs.data_ = data_->clone();
-      memcpy(rhs.dims, dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      memcpy(rhs.factors, factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
-      memcpy(rhs.strides, strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
-
-      rhs.offset = offset;
-      rhs.linear_size = linear_size;
-    }
-
-    template<typename T, typename RVal>
+    template<typename T>
     std::size_t
-    array_impl<T, RVal>::size() const
+    array_impl<T>::size() const
     {
       return data_->size();
     }
 
-    template<typename T, typename RVal>
+    template<typename T>
     T*
-    array_impl<T, RVal>::data() const
+    array_impl<T>::data() const
     {
       return data_->data();
     }
 
-    template<typename T, typename RVal>
+    template<typename T>
     void
-    array_impl<T, RVal>::assign(T value)
+    array_impl<T>::assign(T value)
     {
       // only works on dense arrays.
       kamasu_assign(data_->data(), value, linear_size, 1);
     }
 
-    template<typename T, typename RVal>
-    array_impl<T, RVal>::~array_impl()
+    template<typename T>
+    array_impl<T>::~array_impl()
     { 
     }
 
-    template <typename T, typename RVal>
+    template <typename T>
     void
-    array_impl<T, RVal>::show() const
+    array_impl<T>::show() const
     {
       log_trace("%s", "____ Array ____");
       log_trace("offset %u,  nd %u",  offset % nd);
@@ -252,9 +198,7 @@ namespace resophonic
       log_trace("last     %lu",  linear_size);
     }
 
-    template class array_impl<float, boost::mpl::false_>;
-    template class array_impl<float, boost::mpl::true_>;
-
+    template class array_impl<float>;
   }
 }
 

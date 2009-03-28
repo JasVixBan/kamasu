@@ -10,12 +10,12 @@ namespace resophonic {
 
     struct UnaryFunctionDispatch : bp::callable
     {
-      typedef rk::array_impl<float, boost::mpl::true_> result_type;
+      typedef rk::array_impl<float> result_type;
 
-      template <typename Op, typename IsRVal>
+      template <typename Op>
       result_type 
       operator()(Op, 
-		 const rk::array_impl<float, IsRVal>& v,
+		 const rk::array_impl<float>& v,
 		 const state_t&,
 		 data_t&);
     };

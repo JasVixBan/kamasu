@@ -18,11 +18,10 @@ namespace resophonic {
       struct dispatch
       {
 
-	template <typename LhsIsRVal, typename RhsIsRVal>
-	rk::array_impl<float, boost::mpl::true_>
+	rk::array_impl<float>
 	operator()(bp::tag::multiplies,
-		   const rk::array_impl<float, LhsIsRVal>& lhs, 
-		   const rk::array_impl<float, RhsIsRVal>& rhs,
+		   const rk::array_impl<float>& lhs, 
+		   const rk::array_impl<float>& rhs,
 		   const stream_impl& si)
 	{
 	  BOOST_ASSERT(lhs.nd == 2);
@@ -35,7 +34,7 @@ namespace resophonic {
 	  BOOST_ASSERT(lhs_cols == rhs_rows);
 
 	  std::vector<std::size_t> shp = make_vector(lhs_rows, rhs_cols);
-	  rk::array_impl<float, boost::mpl::true_> rv;
+	  rk::array_impl<float> rv;
 	  rv.reshape(shp);
 
 	  //   C = alpha * op(A) * op(B) + beta * C
@@ -65,11 +64,10 @@ namespace resophonic {
 	//    +=
 	//
 
-	template <typename LhsIsRVal, typename RhsIsRVal>
-	rk::array_impl<float, boost::mpl::true_>
+	rk::array_impl<float>
 	operator()(bp::tag::plus_assign,
-		   const rk::array_impl<float, LhsIsRVal>& lhs, 
-		   const rk::array_impl<float, RhsIsRVal>& rhs,
+		   const rk::array_impl<float>& lhs, 
+		   const rk::array_impl<float>& rhs,
 		   const stream_impl& s)
 	{
 	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
@@ -106,22 +104,22 @@ namespace resophonic {
 #undef DISPATCH_CASE
 	  
 	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
-	  return rk::array_impl<float, boost::mpl::true_>();
+	  return rk::array_impl<float>();
 	}
 
 	//
 	//  general elementwise case
 	//
-	template <typename Op, typename LhsIsRVal, typename RhsIsRVal>
-	rk::array_impl<float, boost::mpl::true_>
+	template <typename Op>
+	rk::array_impl<float>
 	operator()(Op,
-		   const rk::array_impl<float, LhsIsRVal>& lhs, 
-		   const rk::array_impl<float, RhsIsRVal>& rhs,
+		   const rk::array_impl<float>& lhs, 
+		   const rk::array_impl<float>& rhs,
 		   const stream_impl& s)
 	{
 	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
 	  
-	  const rk::array_impl<float, boost::mpl::true_> rv(lhs);
+	  const rk::array_impl<float> rv(lhs);
 
 	  for (int i=0; i<lhs.nd; i++)
 	    RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
@@ -161,11 +159,11 @@ namespace resophonic {
       };
     }
 
-    template <typename Op, typename LhsIsRVal, typename RhsIsRVal>
+    template <typename Op>
     typename ArrayArrayOp::result_type
     ArrayArrayOp::operator()(Op,
-			     const rk::array_impl<float, LhsIsRVal>& lhs, 
-			     const rk::array_impl<float, RhsIsRVal>& rhs,
+			     const rk::array_impl<float>& lhs, 
+			     const rk::array_impl<float>& rhs,
 			     const state_t&,
 			     data_t& data)
     {
@@ -174,18 +172,15 @@ namespace resophonic {
       return detail::dispatch()(Op(), lhs, rhs, data.si);
     }
 
-#define INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, LRV, RRV) template		\
+#define INSTANTIATE_ARRAYARRAY_OP_IMPL(OP) template			\
     ArrayArrayOp::result_type						\
     ArrayArrayOp::operator()(OP,					\
-			     const rk::array_impl<float, boost::mpl:: LRV>&, \
-			     const rk::array_impl<float, boost::mpl:: RRV>&, \
+			     const rk::array_impl<float>&,		\
+			     const rk::array_impl<float>&,		\
 			     const state_t&, data_t&);
     
-#define INSTANTIATE_ARRAYARRAY_OP(OP)					\
-    INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, false_, false_);			\
-	INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, false_, true_);		\
-	INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, true_, false_);		\
-	INSTANTIATE_ARRAYARRAY_OP_IMPL(OP, true_, true_);
+#define INSTANTIATE_ARRAYARRAY_OP(OP)		\
+    INSTANTIATE_ARRAYARRAY_OP_IMPL(OP)
     
     INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::plus);
     INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);

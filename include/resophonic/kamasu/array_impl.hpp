@@ -15,17 +15,15 @@ namespace resophonic {
     template <typename T>
     class holder;
 
-    template <typename T, 
-	      typename RVal = boost::mpl::false_>
+    template <typename T>
     struct array_impl 
     {
-      typedef array_impl<T, RVal> this_t;
-      typedef array_impl<T, typename boost::mpl::not_<RVal>::type> other_t;
-      
       typedef uint64_t offset_t;
       std::size_t dims[KAMASU_MAX_ARRAY_DIM];
       std::size_t factors[KAMASU_MAX_ARRAY_DIM];
       int strides[KAMASU_MAX_ARRAY_DIM];
+
+      bool rvalue;
 
       offset_t offset;
       std::size_t linear_size;
@@ -33,17 +31,13 @@ namespace resophonic {
 
       boost::shared_ptr<holder<T> > data_;
 
+      array_impl(const array_impl& rhs, bool rvalue = false);
       array_impl();
-      template <typename OtherRVal>
-      array_impl(const array_impl<T, OtherRVal>&);
 
       ~array_impl();
 
       //      void reset();
-      void copy_from(const array_impl<T, boost::mpl::false_>& rhs);
-      void copy_from(const array_impl<T, boost::mpl::true_>& rhs);
-      void copy_into(this_t& thing) const;
-      void copy_into(other_t& thing) const;
+      void copy_from(const array_impl<T>& rhs, bool clone = false);
 
       void swap(array_impl& rhs);
 

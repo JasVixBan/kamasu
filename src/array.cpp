@@ -26,86 +26,93 @@
 namespace resophonic {
   namespace kamasu {
 
-    template <typename T, typename RVal>
-    array<T, RVal>::array() 
+    template <typename T>
+    array<T>::array() 
       : self_(boost::proto::value(*this))
     {
     }
 
-    template <typename T, typename RVal>
-    array<T, RVal>::array(const std::vector<std::size_t>& shape) 
+    template <typename T>
+    array<T>::array(const std::vector<std::size_t>& shape) 
       : self_(boost::proto::value(*this))
     { 
       self_.reshape(shape);
     }
 
-    template <typename T, typename RVal>
-    array<T, RVal>::array(const array<T, boost::mpl::true_>& rhs) 
+    template <typename T>
+    array<T>::array(const array<T>& rhs, bool rvalue_) 
       : self_(boost::proto::value(*this))
     { 
       self().copy_from(rhs.self());
+      self().rvalue = rvalue_;
     }
 
-    template <typename T, typename RVal>
-    array<T, RVal>::~array()
+    template <typename T>
+    array<T>::~array()
     {
       
     }
 
-    template <typename T, typename RVal>
-    array<T, RVal>&
-    array<T, RVal>::operator<<(const boost::numeric::ublas::matrix<T,boost::numeric::ublas::column_major>& m)
+    template <typename T>
+    void
+    array<T>::rvalue(bool value)
+    {
+      self_.rvalue = value;
+    }
+
+    template <typename T>
+    bool
+    array<T>::rvalue()
+    {
+      return self_.rvalue;
+    }
+
+    template <typename T>
+    array<T>&
+    array<T>::operator<<(const boost::numeric::ublas::matrix<T,boost::numeric::ublas::column_major>& m)
     {
       std::vector<std::size_t> newshape = make_vector(m.size1(), m.size2());
       self_.reshape(newshape, true);
       self_.data_->host_to_device(&(m.data()[0]), m.size1() * m.size2());
     }
 
-    template <typename T, typename RVal>
+    template <typename T>
     void
-    array<T, RVal>::operator>>(boost::numeric::ublas::matrix<T,boost::numeric::ublas::column_major>& m)
+    array<T>::operator>>(boost::numeric::ublas::matrix<T,boost::numeric::ublas::column_major>& m)
     {
       m.resize(this->dim(0), this->dim(1));
       self_.data_->device_to_host(&(m.data()[0]));
     }
 
-    template <typename T, typename RVal>
+    template <typename T>
     void 
-    array<T, RVal>::show() const
+    array<T>::show() const
     {
       self_.show();
     }
 
-    template <typename T, typename RVal>
-    array<T, boost::mpl::true_>
-    array<T, RVal>::copy() const
+    template <typename T>
+    array<T>
+    array<T>::copy() const
     {
-      array<T, boost::mpl::true_> newarray;
-      self_.copy_into(newarray.self());
+      array<T> newarray;
+      newarray.self().copy_from(self_, true);
+
       return newarray;
     }
 
-    template <typename T, typename RVal>
-    array<T, RVal>& 
-    array<T, RVal>::operator=(const array<T, RVal>& rhs) 
+    template <typename T>
+    array<T>& 
+    array<T>::operator=(const array<T>& rhs) 
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
       self_.copy_from(rhs.self_);
       return *this;
     };
 
-    template <typename T, typename RVal>
-    array<T, RVal>& 
-    array<T, RVal>::operator=(const other_t& rhs) 
-    {
-      log_trace("%s",  __PRETTY_FUNCTION__);
-      self_.copy_from(rhs.self_);
-      return *this;
-    };
-
-    template <typename T, typename RVal>				
+    template <typename T>			
     std::size_t								
-    array<T, RVal>::index_of(const std::vector<std::size_t>& indexes) const
+    array<T>::index_of(const std::vector<std::size_t>& indexes) const
     {									
       std::size_t index = 0;
       for (unsigned i=0; i<indexes.size(); i++)
@@ -114,9 +121,9 @@ namespace resophonic {
       return index;
     }
 
-    template <typename T, typename RVal>				
-    array<T, boost::mpl::true_>							
-    array<T, RVal>::slice(const std::vector<index_range>& ranges) const
+    template <typename T>				
+    array<T>							
+    array<T>::slice(const std::vector<index_range>& ranges) const
     {									
       BOOST_ASSERT(ranges.size() == self_.nd);				
 
@@ -175,7 +182,7 @@ namespace resophonic {
 	      newshape.push_back(0);
 	    }
 	}
-      array<T, boost::mpl::true_> new_array;
+      array<T> new_array;
       new_array.self().reshape(newshape, false);
       new_array.self().data_ = self_.data_;
       new_array.self().offset = index_of(starts);
@@ -189,9 +196,9 @@ namespace resophonic {
       return new_array;	
     }
 
-    template <typename T, typename RVal>				
-    array<T, boost::mpl::true_>							
-    array<T, RVal>::slice(const index_range& ir) const
+    template <typename T>				
+    array<T>							
+    array<T>::slice(const index_range& ir) const
     {									
       RESOPHONIC_KAMASU_THROW(1 != self_.nd, dimensions_dont_match());				
 
@@ -232,7 +239,7 @@ namespace resophonic {
       unsigned newdim = std::abs(diff/ir.stride());		
       log_trace("newdim is %u",  newdim);
 
-      array<T, boost::mpl::true_> new_array;
+      array<T> new_array;
       new_array.self().reshape(newdim, false);
       RESOPHONIC_KAMASU_THROW(new_array.nd() != 1, std::runtime_error("internal error"));
       new_array.self().data_ = self_.data_;
@@ -258,8 +265,7 @@ namespace resophonic {
 #define BOOST_PP_FILENAME_1 "array.ipp"
 #include BOOST_PP_ITERATE()
 
-    template class array<float, boost::mpl::true_>;
-    template class array<float, boost::mpl::false_>;
+    template class array<float>;
   }
 }
 

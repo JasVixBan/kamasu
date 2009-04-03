@@ -114,7 +114,7 @@ TEST(forward_a_temp)
   
   a = sin(b);
 
-  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::n_clones, 1);
   ENSURE_EQUAL(testing::gpu_malloc, 2);
 }
  

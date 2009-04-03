@@ -67,8 +67,20 @@ namespace resophonic
       : bp::when<bp::terminal<rk::stream_impl>, bp::_value>
     { };
 
+    struct CopyLValue : bp::callable
+    {
+      typedef array_impl<float> result_type;
+
+      result_type
+      operator()(const array_impl<float>& a)
+      {
+	array_impl<float> c(a);
+	return std::move(c); // I don't think the move makes any difference
+      }
+    };
+
     struct RkArrayTerminal 
-      : bp::when<bp::terminal<rk::array_impl<float> >, bp::_value>
+      : bp::when<bp::terminal<rk::array_impl<float> >, CopyLValue(bp::_value)>
     { };
 
     struct BuMatrixTerminal 

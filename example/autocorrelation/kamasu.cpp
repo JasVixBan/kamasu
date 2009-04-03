@@ -28,11 +28,11 @@ rk::array<float> autocorrelate(rk::array<float>& signal)
 	  cout << outer * 100 / signal.dim(0) << "%   \r";
 	  cout.flush();
 	}
-      rk::array<float> lhs(signal.slice(rk::index_range(outer, outer+winlen)));
+      rk::array<float> lhs(signal(rk::index_range(outer, outer+winlen)));
       unsigned inner = 0;
       for (unsigned inner = 0; inner < winlen; inner++)
 	{
-	  rk::array<float> tmp(signal.slice(rk::index_range(outer+inner, outer+inner+winlen)));
+	  rk::array<float> tmp(signal(rk::index_range(outer+inner, outer+inner+winlen)));
 	  float periodic_autocorr = rk::dot(lhs, tmp);
 	  // cout << "[" << outer << "] " << periodic_autocorr << "           \r";
 	  corr_coeff[inner] = periodic_autocorr;

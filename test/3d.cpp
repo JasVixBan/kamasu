@@ -40,7 +40,7 @@ TEST(slice0)
   array<float> a = make_3d(n);
   for (unsigned slicedim = 0; slicedim < n; slicedim++)
     {
-      array<float> b = a.slice(index_range(_,_), index_range(_,_), index_range(slicedim));
+      array<float> b = a(index_range(_,_), index_range(_,_), index_range(slicedim));
   
       b.show();
 
@@ -60,7 +60,7 @@ TEST(slice0_reverse)
   array<float> a = make_3d(n);
   for (unsigned slicedim = 0; slicedim < n; slicedim++)
     {
-      array<float> b = a.slice(index_range(_,_,-1), index_range(_,_), index_range(slicedim));
+      array<float> b = a(index_range(_,_,-1), index_range(_,_), index_range(slicedim));
   
       b.show();
 
@@ -80,7 +80,7 @@ TEST(slice1)
   array<float> a = make_3d(n);
   for (unsigned slicedim = 0; slicedim < n; slicedim++)
     {
-      array<float> b = a.slice(index_range(_,_), index_range(slicedim), index_range(_,_));
+      array<float> b = a(index_range(_,_), index_range(slicedim), index_range(_,_));
   
       b.show();
 
@@ -100,7 +100,7 @@ TEST(slice1_reverse)
   array<float> a = make_3d(n);
   for (unsigned slicedim = 0; slicedim < n; slicedim++)
     {
-      array<float> b = a.slice(index_range(_,_), index_range(slicedim), index_range(_,_,-1));
+      array<float> b = a(index_range(_,_), index_range(slicedim), index_range(_,_,-1));
   
       b.show();
 
@@ -120,7 +120,7 @@ TEST(slice2)
   array<float> a = make_3d(n);
   for (unsigned slicedim = 0; slicedim < n; slicedim++)
     {
-      array<float> b = a.slice(index_range(slicedim), index_range(_,_), index_range(_,_));
+      array<float> b = a(index_range(slicedim), index_range(_,_), index_range(_,_));
   
       b.show();
 
@@ -140,7 +140,7 @@ TEST(slice2_reverse)
   array<float> a = make_3d(n);
   for (unsigned slicedim = 0; slicedim < n; slicedim++)
     {
-      array<float> b = a.slice(index_range(slicedim), index_range(_,_,-1), index_range(_,_));
+      array<float> b = a(index_range(slicedim), index_range(_,_,-1), index_range(_,_));
   
       b.show();
 
@@ -160,7 +160,7 @@ TEST(double_reverse)
   array<float> a = make_3d(n);
   for (unsigned slicedim = 0; slicedim < n; slicedim++)
     {
-      array<float> b = a.slice(index_range(slicedim), index_range(_,_,-1), index_range(_,_,-1));
+      array<float> b = a(index_range(slicedim), index_range(_,_,-1), index_range(_,_,-1));
   
       b.show();
 

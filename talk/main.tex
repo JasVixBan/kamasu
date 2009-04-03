@@ -411,6 +411,24 @@ array([\alert<6>{[  9.,   8.,   7.],
 
 }
 \end{semiverbatim}
+\note{the python bindings for kamasu support exactly this syntax, there is a 
+special function called when you use this slicing notation}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Kamasu arrays}
+\begin{semiverbatim}
+using resophonic::kamasu::_;
+
+array<float> a(m,n), c(m,n,o,p,q); 
+
+array<float> b = a(index_range(_,_), index_range(2));
+
+b = a(index_range(_,_,-1), index_range(_,_,-1));
+
+float f = b(0,0); // a(9,9)
+\end{semiverbatim}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

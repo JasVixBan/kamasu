@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 
   for (int n=0; n<N; n++)
     {
-      filtered += a.slice(rk::index_range(n,data_len-N+n)) * coeff[n];
+      filtered += a(rk::index_range(n,data_len-N+n)) * coeff[n];
     }
 
   std::cout << "mathtime: " << math.elapsed() << "\n";

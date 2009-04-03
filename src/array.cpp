@@ -183,7 +183,7 @@ namespace resophonic {
 
     template <typename T>				
     array<T>							
-    array<T>::slice(const index_range& ir) const
+    array<T>::operator()(const index_range& ir) const
     {									
       RESOPHONIC_KAMASU_THROW(1 != self_.nd, dimensions_dont_match());				
 

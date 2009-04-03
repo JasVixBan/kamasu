@@ -171,7 +171,7 @@ TEST(slice_2d_reduce)
   // slice to
 
   // 2 6 10 14 18
-  array<float> sliced = a.slice(index_range(1), index_range(0, 5));
+  array<float> sliced = a(index_range(1), index_range(0, 5));
 
   ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 5);
@@ -194,7 +194,7 @@ TEST(slice_2d)
     //    6  10  14
     //    7  11  15
 
-    array<float> sliced = a.slice(index_range(1,3), index_range(1,4));
+    array<float> sliced = a(index_range(1,3), index_range(1,4));
     ENSURE_EQUAL(sliced.nd(), 2);
     ENSURE_EQUAL(sliced.dim(0), 2);
     ENSURE_EQUAL(sliced.dim(1), 3);
@@ -210,7 +210,7 @@ TEST(slice_2d)
     // slice to
     // 5 6 7 8
 
-    array<float> sliced = a.slice(index_range(0,4), index_range(1));
+    array<float> sliced = a(index_range(0,4), index_range(1));
     ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
@@ -225,7 +225,7 @@ TEST(slice_2d)
     // slice to
     // 5 6 7 8
 
-    array<float> sliced = a.slice(index_range(_,_), index_range(1));
+    array<float> sliced = a(index_range(_,_), index_range(1));
     ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
@@ -240,7 +240,7 @@ TEST(slice_2d)
     // slice to
     // 8 7 6 5 
 
-    array<float> sliced = a.slice(index_range(_,_,-1), index_range(1));
+    array<float> sliced = a(index_range(_,_,-1), index_range(1));
     ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
@@ -254,7 +254,7 @@ TEST(slice_2d)
   {
     // slice to
     // 8 7 6 5
-    array<float> sliced = a.slice(index_range(3, -1, -1), index_range(1));
+    array<float> sliced = a(index_range(3, -1, -1), index_range(1));
     ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 4);
 
@@ -268,7 +268,7 @@ TEST(slice_2d)
   {
     // slice to
     // 4 8 12 16 20
-    array<float> sliced = a.slice(index_range(3), index_range(_,_));
+    array<float> sliced = a(index_range(3), index_range(_,_));
     ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 5);
 
@@ -283,7 +283,7 @@ TEST(slice_2d)
   {
     // slice to
     // 20 16 12 8 4
-    array<float> sliced = a.slice(index_range(3), index_range(_,_,-1));
+    array<float> sliced = a(index_range(3), index_range(_,_,-1));
     ENSURE_EQUAL(sliced.nd(), 1);
     ENSURE_EQUAL(sliced.dim(0), 5);
 
@@ -299,7 +299,7 @@ TEST(slice_2d)
     // slice to
     // 15 11 7
     // 14 10 6
-    array<float> sliced = a.slice(index_range(2, 0, -1), index_range(3, 0, -1));
+    array<float> sliced = a(index_range(2, 0, -1), index_range(3, 0, -1));
     ENSURE_EQUAL(sliced.nd(), 2);
     ENSURE_EQUAL(sliced.dim(0), 2);
     ENSURE_EQUAL(sliced.dim(1), 3);
@@ -318,7 +318,7 @@ TEST(slice_2d)
     // slice to
     // 1 9 17
     // 3 11 19
-    array<float> sliced = a.slice(index_range(0, 3, 2), index_range(0, 5, 2));
+    array<float> sliced = a(index_range(0, 3, 2), index_range(0, 5, 2));
     ENSURE_EQUAL(sliced.nd(), 2);
     ENSURE_EQUAL(sliced.dim(0), 2);
     ENSURE_EQUAL(sliced.dim(1), 3);
@@ -336,7 +336,7 @@ TEST(slice_2d)
     // slice to
     // 17 9 1
     // 19 11 3
-    array<float> sliced = a.slice(index_range(0, 3, 2), index_range(4, -1, -2));
+    array<float> sliced = a(index_range(0, 3, 2), index_range(4, -1, -2));
     ENSURE_EQUAL(sliced.nd(), 2);
     ENSURE_EQUAL(sliced.dim(0), 2);
     ENSURE_EQUAL(sliced.dim(1), 3);
@@ -370,7 +370,7 @@ TEST(slice_1d)
 
   {
     // identical array
-    array<float> sliced = a.slice(index_range(0,10));
+    array<float> sliced = a(index_range(0,10));
     ENSURE_EQUAL(sliced.linear_size(), 10);
     ENSURE_EQUAL(sliced(0), 0.0);
     ENSURE_EQUAL(sliced(9), 9.0);
@@ -378,7 +378,7 @@ TEST(slice_1d)
 
   {
     // from null index range
-    array<float> sliced = a.slice(index_range(9,-1,-1));
+    array<float> sliced = a(index_range(9,-1,-1));
     ENSURE_EQUAL(sliced.linear_size(), 10);
     ENSURE_EQUAL(sliced(0), 9.0);
     ENSURE_EQUAL(sliced(1), 8.0);
@@ -388,7 +388,7 @@ TEST(slice_1d)
 
   {
     // 0 2 4 6 8
-    array<float> sliced = a.slice(index_range(0,10, 2));
+    array<float> sliced = a(index_range(0,10, 2));
     ENSURE_EQUAL(sliced.linear_size(), 5);
     for (unsigned i=0; i<5; i++)
       ENSURE_EQUAL(sliced(i), i * 2.0); 
@@ -396,7 +396,7 @@ TEST(slice_1d)
 
   {
     // 9 7 5 3 1
-    array<float> sliced = a.slice(index_range(9,-1, -2));
+    array<float> sliced = a(index_range(9,-1, -2));
     ENSURE_EQUAL(sliced.linear_size(), 5);
     for (unsigned i=0; i<5; i++)
       ENSURE_EQUAL(sliced(i), 9.0 - i * 2.0); 
@@ -443,7 +443,7 @@ TEST(1d_slice)
   array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(0,10,1);
-  array<float> sliced = a.slice(ir);
+  array<float> sliced = a(ir);
   ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 10);
   ENSURE_EQUAL(sliced.linear_size(), 10);
@@ -456,7 +456,7 @@ TEST(1d_slice_rev)
   array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(9,-1,-1);
-  array<float> sliced = a.slice(ir);
+  array<float> sliced = a(ir);
   ENSURE_EQUAL(sliced.linear_size(), 10);
   for (unsigned i=0; i<10; i++)
     {
@@ -470,7 +470,7 @@ TEST(1d_slice_underscore)
   array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(_,_);
-  array<float> sliced = a.slice(ir);
+  array<float> sliced = a(ir);
   ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 10);
   ENSURE_EQUAL(sliced.linear_size(), 10);
@@ -483,7 +483,7 @@ TEST(1d_slice_from_left)
   array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(5,_);
-  array<float> sliced = a.slice(ir);
+  array<float> sliced = a(ir);
   ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 5);
   ENSURE_EQUAL(sliced.linear_size(), 5);
@@ -498,7 +498,7 @@ TEST(1d_slice_from_right)
   array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(_,5);
-  array<float> sliced = a.slice(ir);
+  array<float> sliced = a(ir);
   ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 5);
   ENSURE_EQUAL(sliced.linear_size(), 5);
@@ -513,7 +513,7 @@ TEST(1d_underscore_reverse)
   array<float> a = linspace<float>(0, 9, 10);
   
   index_range ir(_, _, -1);
-  array<float> sliced = a.slice(ir);
+  array<float> sliced = a(ir);
   ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 10);
   ENSURE_EQUAL(sliced.linear_size(), 10);
@@ -531,7 +531,7 @@ TEST(1d_underscore_reverse_2)
   
   // slice to 9 7 5 3 1
   index_range ir(_, _, -2);
-  array<float> sliced = a.slice(ir);
+  array<float> sliced = a(ir);
   ENSURE_EQUAL(sliced.nd(), 1);
   ENSURE_EQUAL(sliced.dim(0), 5);
   ENSURE_EQUAL(sliced.linear_size(), 5);
@@ -684,7 +684,7 @@ void test_slice_sizes(unsigned len, unsigned stride, unsigned sliced_dim)
  
   array<float> b;
 
-  b = a.slice(index_range(0, len, stride));
+  b = a(index_range(0, len, stride));
 
   ENSURE_EQUAL(a.dim(0), len);
   ENSURE_EQUAL(a.stride(0), 1);

@@ -100,7 +100,7 @@ TEST(slice_doesnt_copy)
   ENSURE_EQUAL(testing::n_clones, 0);
   ENSURE_EQUAL(testing::gpu_malloc, 1);
 
-  array<float> b = a.slice(index_range(_,_), index_range(0));
+  array<float> b = a(index_range(_,_), index_range(0));
 
   ENSURE_EQUAL(testing::n_clones, 0);
   ENSURE_EQUAL(testing::gpu_malloc, 1);

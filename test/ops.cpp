@@ -107,7 +107,7 @@ void test_stride(unsigned length, unsigned stride)
 {
   array<float> a = make_1d(length), b, c;
 
-  b = a.slice(index_range(0, length, stride));
+  b = a(index_range(0, length, stride));
 
   ENSURE_EQUAL(b.nd(), 1);
   ENSURE_EQUAL(b.stride(0), stride);
@@ -152,7 +152,7 @@ TEST(m2_stride)
   array<float> a = make_4x5(), b, c;
 
   // slice last row   [ 4 12 20 ]
-  b = a.slice(index_range(3), index_range(0, 5, 2));
+  b = a(index_range(3), index_range(0, 5, 2));
 
   ENSURE_EQUAL(b(0), 4.0f);
   ENSURE_EQUAL(b(1), 12.0f);
@@ -179,7 +179,7 @@ TEST(m2_2d_stride)
   // slice to
   // 1 9 17
   // 3 11 19
-  b = a.slice(index_range(0,4,2), index_range(0, 5, 2));
+  b = a(index_range(0,4,2), index_range(0, 5, 2));
 
   for (int i=0; i<b.dim(0); i++)
     for (int j=0; j<b.dim(1); j++)
@@ -368,7 +368,7 @@ TEST(plus_assign_slice)
   array<float> a = linspace<float>(0,99,100);
   array<float> a2 = linspace<float>(0,9,10);
 
-  array<float> b = a.slice(index_range(10,20));
+  array<float> b = a(index_range(10,20));
   b += a2;
 
   for (int i=0; i<99; i++)

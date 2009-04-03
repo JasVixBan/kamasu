@@ -41,7 +41,7 @@ namespace resophonic {
       array();
 
       array(const std::vector<std::size_t>& shape);
-      array(const array<T>& rhs, bool rvalue = false);
+      array(const array<T>& rhs);
 
       template <typename Expr>
       array(Expr const& expr, typename boost::disable_if<boost::is_pod<Expr> >::type* = 0) 

@@ -6,14 +6,10 @@
 namespace resophonic {
   namespace kamasu {
 
+    // forwards to pfeilhecht
     template <typename T>
     array<T>
     linspace(T start, T stop, std::size_t n_entries);
-
-
-    template <typename T>
-    T
-    sum(const array<T>& a);
 
   }
 }

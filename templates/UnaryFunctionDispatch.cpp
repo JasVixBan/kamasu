@@ -14,7 +14,7 @@ namespace resophonic {
 				      const state_t&,
 				      data_t& data)
     {
-      rk::array_impl</*T*/> rv(v, true);
+      rk::array_impl</*T*/> rv(v);
   
       log_trace("dispatch: %s", __PRETTY_FUNCTION__); 
 

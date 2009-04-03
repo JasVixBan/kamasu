@@ -11,12 +11,11 @@ namespace resophonic {
     linspace(T start, T stop, std::size_t n_entries)
     {
       array<T> v(n_entries);
-      v.rvalue(true);
       kamasu_linspace(v.data(), n_entries, 
 		      v.stride(0),
 		      start,
 		      stop);
-      return v;
+      return std::move(v);
     }
 
     template array<float> linspace(float, float, std::size_t);

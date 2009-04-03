@@ -32,15 +32,14 @@ namespace resophonic
     { }
 
     template <typename T>
-    array_impl<T>::array_impl(const array_impl<T>& rhs, bool rvalue_) :
+    array_impl<T>::array_impl(const array_impl<T>& rhs) :
       offset(rhs.offset),
       linear_size(rhs.linear_size),
-      nd(rhs.nd),
-      rvalue(rvalue_)
+      nd(rhs.nd)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
 
-      data_ = rhs.rvalue ? rhs.data_ : rhs.data_->clone();
+      data_ = rhs.data_->clone();
 
       std::memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
       std::memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));

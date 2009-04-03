@@ -40,31 +40,16 @@ namespace resophonic {
     }
 
     template <typename T>
-    array<T>::array(const array<T>& rhs, bool rvalue_) 
+    array<T>::array(const array<T>& rhs) 
       : self_(boost::proto::value(*this))
     { 
       self().copy_from(rhs.self());
-      self().rvalue = rvalue_;
     }
 
     template <typename T>
     array<T>::~array()
     {
       
-    }
-
-    template <typename T>
-    void
-    array<T>::rvalue(bool value)
-    {
-      self_.rvalue = value;
-    }
-
-    template <typename T>
-    bool
-    array<T>::rvalue()
-    {
-      return self_.rvalue;
     }
 
     template <typename T>

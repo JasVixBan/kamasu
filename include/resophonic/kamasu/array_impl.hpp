@@ -31,7 +31,7 @@ namespace resophonic {
 
       boost::shared_ptr<holder<T> > data_;
 
-      array_impl(const array_impl& rhs, bool rvalue = false);
+      array_impl(const array_impl& rhs);
       array_impl();
 
       ~array_impl();

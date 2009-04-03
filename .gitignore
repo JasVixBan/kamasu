@@ -1,8 +1,5 @@
 *.pyc
 ._*
-.*
 \#*\#
-src/generated/*.hpp
-include/resophonic/kamasu/generated/*
 
 

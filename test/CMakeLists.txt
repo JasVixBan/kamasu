@@ -28,6 +28,14 @@ add_executable(usecase
   )
 target_link_libraries(usecase resophonic_kamasu)
 
+add_executable(blah
+  blah.cpp
+  )
+
+add_executable(fleh
+  fleh.cpp
+  )
+
 # add_executable(benchmark
 #   main.cpp
 #   benchmarks.cpp

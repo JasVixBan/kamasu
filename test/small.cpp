@@ -1,82 +1,84 @@
+#include <boost/fusion/sequence.hpp>
+
 #include <boost/proto/proto.hpp>
 #include <boost/ref.hpp>
+#include <cassert>
 #include <resophonic/kamasu/name_of.hpp>
 
 namespace bp = boost::proto;
 using resophonic::name_of;
-template <typename T>
-struct nameable {
-  friend std::ostream& operator<<(std::ostream& os, T)
-  {
-    return os << name_of<T>();
+
+//
+// Tag for calls to exp() in our DSEL
+//
+struct exp_tag 
+{ 
+  friend std::ostream& operator<<(std::ostream& os, exp_tag) 
+  { 
+    return os << "exp_tag"; 
   }
 };
 
-struct pow_tag : nameable<pow_tag> { };
-
-struct dot_tag : nameable<dot_tag> { };
-
-
-struct UnaryFnCall : bp::callable
+//
+//  The terminal.  Assume this thing is very heavy.  Some construtors
+//  have assert(0) in them to verify they aren't called.
+//
+//
+struct array_impl 
 {
-  typedef float result_type;
-  
-  template <typename Tag, typename T>
-  result_type
-  operator()(Tag, const T& t, float& state)
-  {
-    std::cout << __PRETTY_FUNCTION__ << " state=" << state << "\n";
-    state += 100;
-    return state;
+  std::string name;
+
+  array_impl() 
+    : name("NONAME") 
+  { }
+
+  array_impl(const std::string& name_) 
+    : name(name_) 
+  { 
+    std::cout << "name=" << name << "\n";
   }
 
-};
+  //
+  //  constructors
+  //
 
-struct BinaryFnCall : bp::callable
-{
-  typedef float result_type;
-  
-  template <typename Tag, typename T, typename U>
-  result_type
-  operator()(Tag, const T& t, const U& u, float& state)
+  array_impl(array_impl& rhs) 
+    : name(rhs.name + "_copied")
+  { }
+
+  array_impl(const array_impl& rhs) 
+    : name(rhs.name+ "_copied")
+  { }
+
+  array_impl(array_impl&& rhs) 
+  { 
+    name.swap(rhs.name);
+    name += "_moved";
+  }
+
+  array_impl& operator=(array_impl&& rhs)
   {
-    std::cout << __PRETTY_FUNCTION__ << " state=" << state << "\n";
-    state += 10;
-    return state;
+    name.swap(rhs.name);
+    name += "_moved";
+    return *this;
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, 
+				  const array_impl&)
+  {
+    return os << "array_impl";
   }
 };
 
-struct Grammar;
-
-struct Cases
-{
-  template <typename Tag, int i=0>
-  struct case_ : bp::not_<bp::_> { };
-
-  template <int i>
-  struct case_<pow_tag, i>
-    : bp::when<bp::unary_expr<pow_tag, Grammar>, 
-	       UnaryFnCall(pow_tag(), 
-			   Grammar(bp::_child0, bp::_state, bp::_data), 
-			   bp::_data)>
-  { };
-
-  template <int i>
-  struct case_<dot_tag, i>
-    : bp::when<bp::binary_expr<dot_tag, Grammar, Grammar>,
-	       BinaryFnCall(dot_tag(), 
-			    Grammar(bp::_child0, bp::_state, bp::_data), 
-			    Grammar(bp::_child1, bp::_state, bp::_data),
-			    bp::_data)>
-  { };
-};
-
-struct Switch : bp::switch_<Cases> { };
+struct UnaryFnCall;
+struct array;
 
 struct Grammar :
-    bp::or_<bp::when<bp::terminal<float>, bp::_value>
-	    , Switch
-	    >
+  bp::or_<bp::when<bp::terminal<array_impl>, bp::_value>,
+	  bp::when<bp::unary_expr<exp_tag, Grammar>, 
+		   UnaryFnCall(exp_tag(), 
+			       Grammar(bp::_child0))> 
+	  >
 { };
 
 template <typename T>
@@ -92,57 +94,83 @@ struct Expression
   BOOST_PROTO_EXTENDS(Expr, Expression<Expr>, Domain);
 };
 
-
 template<class T>
 typename bp::result_of::make_expr<
-  pow_tag,
+  exp_tag,
   Domain,
-  T const &
+  const T&
   >::type
-pow (T const &t)
+exp (const T& t)
 {
-  return bp::make_expr<pow_tag, Domain>(boost::ref(t));
+  return bp::make_expr<exp_tag, Domain>(boost::ref(t));
 }
 
-template<class T, class U>
-typename bp::result_of::make_expr<
-  dot_tag,
-  Domain,
-  T const &,
-  U const &
-  >::type
-dot (T const& t, U const& u)
+//
+//  Our expression type that 
+//
+struct array : public Expression<bp::terminal<array_impl>::type>
 {
-  return bp::make_expr<dot_tag, Domain>(boost::ref(t), boost::ref(u));
-}
+  typedef array_impl impl_t;
 
-template <typename Expr>
-void 
-matchit(Expr const& expr)
+  impl_t& self() { return boost::proto::value(*this); }
+
+  array() { assert(0); }
+
+  array(const std::string& name)
+  {
+    self().name = name;
+  }
+
+  array(const array&) { assert(0); }
+
+  array(array&&) { assert(0); }
+  
+  template <typename Expr>
+  array& operator=(Expr const& expr)
+  {
+    bp::display_expr(expr, std::cout);
+    BOOST_MPL_ASSERT(( bp::matches<Expr, Grammar> ));
+
+    typedef typename boost::result_of<Grammar(Expr const&)>::type result_t;
+
+    std::cout << "result_t = " << name_of<result_t>() << "\n";
+
+    return *this;
+  }
+};
+
+//
+//  The transform for calls to exp.  You'd like to be able to see if
+//  this is getting called with a movable object.  
+//
+struct UnaryFnCall : bp::callable
 {
-  std::cout << "\n\n" << name_of(expr) << "\n\n";
-  bp::display_expr(expr, std::cout);
-  BOOST_MPL_ASSERT(( bp::matches<Expr, Grammar> ));
-
-  float state = 0, data = 0;
-
-  typename boost::result_of<Grammar(Expr const&, float&, float&)>::type 
-    thingy = Grammar()(expr, state, data);
-
-  std::cout << "RESULT:" << data;
-
-}
+  typedef array_impl result_type;
+  
+  template <typename Tag>
+  result_type
+  operator()(Tag, const array_impl& t)
+  {
+    std::cout << "transform a const ref\n";
+    array_impl tmp(t);
+    return tmp;
+  }
+};
 
 
 int main(int, char**)
 {
-  float f = 3.14;
+  array a("a"), b("b");
 
-  std::cout << "\n";
+  // Here, only one copy is made
+  a = exp(b);
+  std::cout << "a's name:" << a.self().name << "\n\n";
 
-  matchit(pow(3.1415f));
-  matchit(dot(3.1415f, 4.444f));
-  matchit(
-  	  pow(dot(3.1415f, 3.11f))
-  	  );
+  // Here, two copies are made
+  //  a = exp(exp(exp(b)));
+  //  std::cout << "a's name:" << a.self().name << "\n";
+
+
+
+
 }

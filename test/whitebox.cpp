@@ -76,11 +76,8 @@ TEST(assign_from_expression)
 {
   testing::n_clones = 0;
   array<float> b = linspace<float>(0,10,11);
-  ENSURE_EQUAL(b.rvalue(), false);
   ENSURE_EQUAL(testing::n_clones, 0);
   array<float> a = b * 2.0f;
-  ENSURE_EQUAL(a.rvalue(), false);
-  ENSURE_EQUAL(b.rvalue(), false);
   ENSURE_EQUAL(testing::n_clones, 1);
 }
 
@@ -115,17 +112,34 @@ TEST(forward_a_temp)
   testing::gpu_malloc = 0;
   array<float> a(2), b(2);
   
-  a = b * 2;
+  a = sin(b);
 
   ENSURE_EQUAL(testing::n_clones, 0);
   ENSURE_EQUAL(testing::gpu_malloc, 2);
 }
  
+TEST(rvalref_construct)
+{
+  testing::n_clones = 0;
+  testing::gpu_malloc = 0;
+
+  array<float> a(2);
+  array<float> b(std::move(a));
+
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::gpu_malloc, 1);
+  ENSURE_EQUAL(a.data(), b.data());
+}
+ 
 TEST(linspace_rvalueref)
 {
+  testing::n_clones = 0;
+  testing::gpu_malloc = 0;
+
   array<float> a = linspace(0.0f, 10.0f, 11.0f);
-
+  
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::gpu_malloc, 1);
 }
-
 
 #endif

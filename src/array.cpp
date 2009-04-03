@@ -78,12 +78,12 @@ namespace resophonic {
 
     template <typename T>
     array<T>
-    array<T>::copy() const
+    array<T>::clone() const
     {
       array<T> newarray;
-      newarray.self().copy_from(self_, true);
+      newarray.self() = self().clone();
 
-      return newarray;
+      return std::move(newarray);
     }
 
     template <typename T>

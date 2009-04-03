@@ -66,13 +66,9 @@ namespace resophonic {
       std::size_t index_of(const std::vector<size_t>& indexes) const;
       array slice(const std::vector<index_range>& ranges) const;
 
-      array copy() const;
+      array clone() const;
 
       std::size_t nd() const { return self().nd; }
-
-      void rvalue(bool value);
-
-      bool rvalue();
 
       std::size_t& dim(std::size_t index)
       { 

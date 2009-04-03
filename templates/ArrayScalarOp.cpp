@@ -22,7 +22,7 @@ namespace resophonic {
 	throw std::runtime_error("kamasu internal error");
       }
 
-      return std::move(rv);
+      return rv;
     }
   }
 

@@ -8,7 +8,7 @@ namespace resophonic {
   namespace kamasu {
   
     template <>
-    ArrayScalarOp::result_type
+    UnaryFunctionDispatch::result_type
     UnaryFunctionDispatch::operator()(resophonic::kamasu::/*OP*/_tag, 
 				      const rk::array_impl</*T*/>& v,
 				      const state_t&,

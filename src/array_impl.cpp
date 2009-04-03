@@ -39,11 +39,20 @@ namespace resophonic
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
 
-      data_ = rhs.data_->clone();
+      data_ = rhs.data_;
 
       std::memcpy(dims, rhs.dims, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
       std::memcpy(factors, rhs.factors, KAMASU_MAX_ARRAY_DIM * sizeof(std::size_t));
       std::memcpy(strides, rhs.strides, KAMASU_MAX_ARRAY_DIM * sizeof(int));
+    }
+
+    template <typename T>
+    array_impl<T>
+    array_impl<T>::clone() const
+    {
+      array_impl<T> newarray(*this);
+      newarray.data_ = data_->clone();
+      return std::move(newarray);
     }
 
     template <typename T>
@@ -165,7 +174,7 @@ namespace resophonic
     T*
     array_impl<T>::data() const
     {
-      return data_->data();
+      return data_ ? data_->data() : 0;
     }
 
     template<typename T>

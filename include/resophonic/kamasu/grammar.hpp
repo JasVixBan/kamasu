@@ -74,8 +74,7 @@ namespace resophonic
       result_type
       operator()(const array_impl<float>& a)
       {
-	array_impl<float> c(a);
-	return std::move(c); // I don't think the move makes any difference
+	return a.clone();
       }
     };
 

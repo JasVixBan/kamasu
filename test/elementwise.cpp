@@ -123,8 +123,12 @@ TEST(exp)
 {
   unsigned n = 10000;
   array<float> a = make_1d(n), b;
+  ENSURE_EQUAL(a.linear_size(), n);
+  ENSURE_EQUAL(b.linear_size(), 0);
 
   b = rk::exp(a);
+
+  ENSURE_NOT_EQUAL(a.data(), b.data());
 
   ENSURE_EQUAL(b.linear_size(), n);
   ENSURE_EQUAL(b.nd(), 1);

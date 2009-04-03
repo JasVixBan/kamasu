@@ -47,7 +47,7 @@ TEST_GROUP();
 	ENSURE_EQUAL(a(BOOST_PP_ENUM_PARAMS(N, var)), ++val);		\
       }									\
     ks::array<float> b;							\
-    b = a.copy();							\
+    b = a.clone();							\
     val = 0.5;								\
     BOOST_PP_REPEAT(N, LOOPVAR, DATA)					\
       {									\
@@ -92,7 +92,7 @@ NDIM_SHAPE_CONSTRUCTOR_TEST(~, 4, 10);
       }									\
     									\
     ks::array<float> b;							\
-    b = a.copy();							\
+    b = a.clone();							\
     val = 0.5;								\
     BOOST_PP_REPEAT(N, LOOPVAR, DATA)					\
       {									\
@@ -630,7 +630,7 @@ TEST(copy_semantics)
   ENSURE_EQUAL(a.nd(), 1);
   ENSURE_EQUAL(a.dim(0), 1);
   array<float> b;
-  b = a.copy();
+  b = a.clone();
   ENSURE(a.data() != b.data());
 
   ENSURE_EQUAL(b.linear_size(), 1);
@@ -654,7 +654,7 @@ TEST(copy_semantics_on_assign_2)
   ENSURE_EQUAL(a.dim(0), 2);
   ENSURE_EQUAL(a.dim(1), 2);
   array<float> b;
-  b = a.copy();
+  b = a.clone();
 
   ENSURE_EQUAL(b.linear_size(), 4);
   ENSURE_EQUAL(b.nd(), 2);

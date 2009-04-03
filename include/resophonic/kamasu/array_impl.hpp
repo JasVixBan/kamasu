@@ -36,6 +36,8 @@ namespace resophonic {
 
       ~array_impl();
 
+      array_impl clone() const;
+
       //      void reset();
       void copy_from(const array_impl<T>& rhs, bool clone = false);
 
@@ -68,6 +70,7 @@ namespace resophonic {
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
 	return strides[index]; 
       }
+
       int stride(std::size_t index) const 
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());

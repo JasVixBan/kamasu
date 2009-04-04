@@ -23,8 +23,6 @@ namespace resophonic {
       std::size_t factors[KAMASU_MAX_ARRAY_DIM];
       int strides[KAMASU_MAX_ARRAY_DIM];
 
-      bool rvalue;
-
       offset_t offset;
       std::size_t linear_size;
       unsigned nd;

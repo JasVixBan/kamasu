@@ -57,27 +57,56 @@ struct benchmark
   }
 };
 
-template <typename T>
+struct cpu 
+{
+  template <typename T>
+  struct impl {
+    typedef typename T::cpu type;
+  };
+};
+
+struct kamasu 
+{
+  template <typename T>
+  struct impl {
+    typedef typename T::kamasu type;
+  };
+};
+
+template <typename Test, typename Selector>
 int main_impl1(int argc, char** argv)
 {
+  if (argc < 1)
+    {
+      std::cout << "usage:\n" << argv[0] << " ";
+      Test::usage();
+    }
   unsigned i = boost::lexical_cast<unsigned>(argv[1]);
-  T mark(i);
+  std::cout << "Args: " << i << "\n";
+  typename Selector::template impl<Test>::type mark(i);
   mark.run();
 }
 
-template <typename T>
+template <typename Test, typename Selector>
 int main_impl2(int argc, char** argv)
 {
+  if (argc < 2)
+    {
+      std::cout << "usage:\n" << argv[0] << " ";
+      Test::usage();
+    }
+
   unsigned i = boost::lexical_cast<unsigned>(argv[1]);
   unsigned j = boost::lexical_cast<unsigned>(argv[2]);
-  T mark(i,j);
+  std::cout << "Args: " << i << " " << j << "\n";
+  typename Selector::template impl<Test>::type mark(i,j);
   mark.run();
 }
 
 #define MAIN(N)							\
   int main(int argc, char** argv)				\
   {								\
-    main_impl ## N <NAME::TYPE>(argc, argv);			\
+    main_impl ## N <NAME, TYPE>(argc, argv);			\
   }
 
 

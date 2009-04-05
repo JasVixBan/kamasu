@@ -72,14 +72,14 @@ namespace resophonic
       typedef array_impl<float> result_type;
 
       result_type
-      operator()(const array_impl<float>& a)
+      operator()(const array_impl<float>& a, data_t& data)
       {
-	return a.clone();
+	return data.tmp == &a ? std::move(a) : a.clone();
       }
     };
 
     struct RkArrayTerminal 
-      : bp::when<bp::terminal<rk::array_impl<float> >, CopyLValue(bp::_value)>
+      : bp::when<bp::terminal<rk::array_impl<float> >, CopyLValue(bp::_value, bp::_data)>
     { };
 
     struct BuMatrixTerminal 

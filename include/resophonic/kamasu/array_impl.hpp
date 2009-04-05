@@ -41,6 +41,8 @@ namespace resophonic {
 
       void swap(array_impl& rhs);
 
+      
+
       void show() const;
       std::size_t size() const;
       T* data() const;

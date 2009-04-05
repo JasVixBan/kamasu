@@ -169,6 +169,8 @@ namespace resophonic {
 
 	log_trace("%s fn %s", "not what we want" % __PRETTY_FUNCTION__);
 
+	data_.tmp = &self();
+
 	typename boost::result_of<Grammar(Expr const&, const state_t&, data_t&)>::type thingy 
 	  = Grammar()(expr, state_t(), data_);
 	this->self_.copy_from(thingy);

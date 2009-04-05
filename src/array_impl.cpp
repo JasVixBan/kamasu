@@ -150,6 +150,8 @@ namespace resophonic
     void 
     array_impl<T>::copy_from(const array_impl<T>& rhs, bool clone)
     {
+      if (&rhs == this)
+	return;
 #if RESOPHONIC_KAMASU_DEBUG
       log_trace("%s",  __PRETTY_FUNCTION__);
       rhs.show();
@@ -194,6 +196,7 @@ namespace resophonic
     void
     array_impl<T>::show() const
     {
+      assert(0);
       log_trace("%s", "____ Array ____");
       log_trace("offset %u,  nd %u",  offset % nd);
       for (unsigned i=0; i < nd; i++)

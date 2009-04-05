@@ -7,13 +7,13 @@ namespace resophonic {
   namespace kamasu {
 
     template <typename T>
-    class array;
+    class array_impl;
 
 
     struct data_t
     {
       stream_impl si;
-      array<float> *tmp;
+      array_impl<float> *tmp;
     };
   }
 }

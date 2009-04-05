@@ -3,12 +3,6 @@
 
 #define KAMASU_MAX_ARRAY_DIM 6
 
-#ifdef NDEBUG
-#define RESOPHONIC_KAMASU_DEBUG 0
-#else
-#define RESOPHONIC_KAMASU_DEBUG 1
-#endif
-
 #if RESOPHONIC_KAMASU_DEBUG
 #define RESOPHONIC_KAMASU_THROW(PRED, EX) do { if (PRED) throw EX; } while (false)
 #else

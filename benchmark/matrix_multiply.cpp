@@ -8,6 +8,10 @@ namespace ublas = boost::numeric::ublas;
 
 struct matrix_multiply 
 {
+  static void usage() {
+    std::cout << "n x\nn = size of a(n,n) and b(n,n)\nx = number of times to multiply\n";
+  }
+
   struct kamasu : benchmark<kamasu>
   {
     unsigned n, x;

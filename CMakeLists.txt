@@ -9,7 +9,8 @@ set(BOOST_ROOT
 add_definitions(-DBOOST_SP_USE_QUICK_ALLOCATOR)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  add_definitions(-DKAMASU_WHITEBOX_TESTING)
+  add_definitions(-DRESOPHONIC_KAMASU_DEBUG)
+  add_definitions(-DRESOPHONIC_WHITEBOX_TESTING)
 endif ()
 
 

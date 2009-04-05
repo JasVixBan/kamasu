@@ -5,6 +5,10 @@ using resophonic::kamasu::array;
 
 struct deepexpr 
 {
+  static void usage() { 
+    std::cout << "\nno options.\n";
+  }
+
   struct kamasu : benchmark<kamasu>
   {
     unsigned n;

@@ -24,7 +24,7 @@ namespace rk = resophonic::kamasu;
 
 using namespace resophonic::kamasu;
 
-#ifdef RESOPHONIC_KAMASU_DEBUG
+#ifdef KAMASU_WHITEBOX_TESTING
 
 TEST_GROUP();
 

@@ -6,6 +6,11 @@ using namespace resophonic::kamasu;
 
 struct deepexpr_streamed
 {
+  static void usage()
+  {
+    std::cout << "n\nn = each dimension of 2d array a(n,n)\n";
+  }
+
   struct kamasu : benchmark<kamasu>
   {
     unsigned n;

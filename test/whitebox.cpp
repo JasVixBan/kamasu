@@ -118,6 +118,18 @@ TEST(forward_a_temp_1)
   ENSURE_EQUAL(testing::gpu_malloc, 1);
 }
  
+TEST(forward_a_temp_2)
+{
+  testing::n_clones = 0;
+  testing::gpu_malloc = 0;
+  array<float> a(2);
+  
+  a = a * 3.0f; 
+
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::gpu_malloc, 1);
+}
+ 
 TEST(forward_a_temp)
 {
   testing::n_clones = 0;

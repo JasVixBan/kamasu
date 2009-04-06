@@ -15,11 +15,6 @@ struct R
   ~R() { SHOW(); }
 };
 
-R&& maker() 
-{
-  R r;
-  return r;
-}
 
 
 

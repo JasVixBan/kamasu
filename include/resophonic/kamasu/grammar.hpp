@@ -74,7 +74,13 @@ namespace resophonic
       result_type
       operator()(const array_impl<float>& a, data_t& data)
       {
-	return data.tmp == &a ? std::move(a) : a.clone();
+	if (data.tmp == &a)
+	  {
+	    data.tmp = 0;
+	    return a;
+	  }
+	else
+	  return a.clone();
       }
     };
 

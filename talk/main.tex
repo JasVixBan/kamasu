@@ -146,7 +146,13 @@ Aspen, CO}
     \pgfuseimage{x}
     \end{columns}
 
-  \note{The good news is that the problem-hungry amongst you are about to be well fed}
+  \note{The good news is that the problem-hungry amongst you are about to be well fed
+
+    I haven't written a compiler for the GPU using only templates.
+
+    By combining proto and CUDA I went for cheap laughs, so to speak,
+    and I'm sure some of you will find this in bad taste.
+}
 
 \end{frame}
 
@@ -433,13 +439,358 @@ float f = b(0,0); // a(9,9)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{Kamaus array metadata}
+\begin{frame}[fragile]{Kamasu array metadata}
 \begin{semiverbatim}
 
 \end{semiverbatim}
 \note{arrays can be views of the same data,
 
 semantics is always 'shared' unless you specifically copy something... same as numpy.
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{boost::proto}
+\subsection{transforms}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Life before proto}
+\begin{semiverbatim}
+array<float> operator+(const array<float>& a, float f);
+
+array<float> a(10), b(10);
+a = b + 14;
+\end{semiverbatim}
+\note{T::T()
+T::T()
+T::T(float)
+T\& T::operator=(T\&\&)
+a.value=14
+
+important thing is that the rhs gets eagerly evaluated... the T on the
+lhs has only operator=(T\&)
+
+problem is when you try to make that operator+ return a template that
+you can evaluate later}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{\alert<4-7>{b} \alert<3>{+} \alert<8-11>{7.0f};}
+\begin{semiverbatim}
+\alert<2>{expr<
+  \alert<3>{tag::plus}, 
+  list2<
+    \alert<4>{expr<
+      \alert<5>{tag::terminal}, 
+      \alert<6>{array const&}, 
+    >},
+    \alert<7>{expr<
+      \alert<8>{tag::terminal}, 
+      \alert<9>{float const&}, 
+    >} 
+  >,
+>} 
+\end{semiverbatim}
+\note{ 
+
+  evaluates to this big nested type.
+
+  it has a tag plus, which we'll use later when we want to actually do something
+  
+  plus has two children, the first is also an expression
+
+  so expressions have tags, like plus, multiplies, comma, or terminal.
+  everything is overloaded, that's all done for you.  
+
+  When you see things laid out the way proto lays them out for you it is
+  easier to think.  imv.
+  
+  
+% boost::proto::exprns_::expr<boost::proto::tag::plus, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<bing::matrix&>, 0l>, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<int const&>, 0l> >, 2l>
+
+% resophonic::kamasu::Expression<boost::proto::exprns_::expr<boost::proto::tag::plus, boost::proto::argsns_::list2<resophonic::kamasu::array<float>&, resophonic::kamasu::Expression<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<int const&>, 0l> > >, 2l> >
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{\visible<1-6>{\alert<6>{b} + 7.0f;}}
+\begin{semiverbatim}
+\only<1>{boost::proto::}\only<1-2>{exprns_::}expr<
+   \only<1>{boost::proto::}tag::plus, 
+   \only<1>{boost::proto::}\only<1-2>{argsns_::}list2<
+     \only<1>{boost::proto::}\only<1-2>{exprns_::}expr<
+       \only<1>{boost::proto::}tag::terminal, 
+       \only<1>{boost::proto::}\only<1-2>{argsns_::}\alert<4>{term}\hskip0pt<\alert<6>{array}>, 
+       \alert<5>{0}
+     >, 
+     \only<1>{boost::proto::}\only<1-2>{exprns_::}expr<
+       \only<1>{boost::proto::}tag::terminal, 
+       \only<1>{boost::proto::}\only<1-2>{argsns_::}\alert<4>{term}\hskip0pt<int const&>, 
+       \alert<5>{0}
+     > 
+   >, 
+   \alert<5>{2}
+>
+\end{semiverbatim}
+\note{ 
+  actually its more complicated than that
+
+  so the first thing we'll look at is where did this expression come
+  from, if this object 'b' is just of type array?  Actually it came
+  from someplace irrelevant, but we'll look at how to make this array
+  type a proto expression itself.
+
+}
+\end{frame}
+
+  % FIXME can't explain this
+%  So we have two elementwise additions and a multiplication (which
+%  isn't elementwise).  Still haven't thought about things like
+%  elementwise multiplication vs matrix multiplication, or how useful
+%  they are.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{an array is an expression}
+\begin{semiverbatim}
+proto::exprns_::\alert<2>{expr}\hskip0pt<
+  proto::\alert<3>{tag::terminal}, 
+  proto::argsns_::term<\alert<4>{T}>, 
+  0
+>
+
+\alert<6>{\alert<5>{proto::terminal}\hskip0pt<T>::type}
+
+namespace bp = boost::proto;
+
+struct array_impl \{ /* data goes here */ \};
+
+struct array : proto::terminal<array_impl>::type
+\{ ... \};
+
+\end{semiverbatim}
+\note{ 
+
+  the overloads that build the expression are defined by proto,
+  for this type 'expr' which holds a terminal of some type T
+
+  proto has lots of metafunctions, and this one terminal, luckily,
+  will create that expression type for us.
+
+  the array\_impl is also a good place for a compiler firewall since
+  we're not doing everything in our headers
+
+  so now this array type participates in all the overloads,
+  transforms, domains, grammars and other goodies that proto provides.
+
+}
+\end{frame}
+
+  % FIXME can't explain this
+%  So we have two elementwise additions and a multiplication (which
+%  isn't elementwise).  Still haven't thought about things like
+%  elementwise multiplication vs matrix multiplication, or how useful
+%  they are.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Hello World}
+\begin{semiverbatim}struct array_impl \{ \};
+
+struct array : bp::terminal<array_impl>::type
+\{
+  template <typename Expr>
+  void operator=(const Expr& expr)
+  \{
+    std::cout << name_of(expr);
+  \}
+\};
+
+array a, b;
+a = b + 7.0f;
+
+boost::proto::exprns_::expr<boost::proto::tag::plus, 
+boost::proto::argsns_::list2<array&, boost::proto::e
+xprns_::expr<boost::proto::tag::terminal, boost::pro
+to::argsns_::term<float const&>, 0l> >, 2l>
+\end{semiverbatim}
+\note{ 
+
+  the overloads that build the expression are defined by proto,
+  for this type 'expr' which holds a terminal of some type T
+
+  proto has lots of metafunctions, and this one terminal, luckily,
+  will create that expression type for us.
+
+  the array\_impl is also a good place for a compiler firewall since
+  we're not doing everything in our headers
+
+  so now this array type participates in all the overloads,
+  transforms, domains, grammars and other goodies that proto provides.
+
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{display\_expr}
+\begin{semiverbatim}\alert<2>{std::ostream& operator<<(std::ostream& s, array_impl) 
+\{
+  return s << "array_impl";
+\}}
+
+struct array : bp::terminal<array_impl>::type
+\{
+  template <typename Expr>
+  void operator=(const Expr& \alert<4>{expr})
+  \{
+    std::cout << \alert<3>{bp::display_expr}(\alert<4>{expr});
+  \}
+\};
+
+\only<-5>{\alert<5>{array a, b;
+a = b + 7.0f;
+
+
+}}\only<6>{\alert<6>{plus(
+    terminal(array_impl)
+  , terminal(7)
+)
+}}
+\end{semiverbatim}
+\note{ clearly display\_expr has somehow walked the expression tree,
+  printing things as it goes along.  Let's do that.
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Overloaded operators}
+\begin{semiverbatim}trespasser s, t;   array m, n;
+m = \alert<4>{s} \alert<3>{&} \alert<5>{~n} \alert<2>{>>=} \alert<7>{std::cout} \alert<6>{%} \alert<9>{m}\alert<8>{->*}\alert<10>{t};
+
+\alert<2>{shift_right_assign}(
+    \alert<3>{bitwise_and}(
+        \alert<4>{terminal(trespasser)}
+      , \alert<5>{complement(
+            terminal(array_impl)
+        )}
+    )
+  , \alert<6>{modulus}(
+        \alert<7>{terminal(0x607068)}
+      , \alert<8>{mem_ptr}(
+            \alert<9>{terminal(array_impl)}
+          , \alert<10>{terminal(trespasser)}
+        )
+    )
+)
+\end{semiverbatim}
+\note{
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{doing something}
+\begin{semiverbatim}\alert<2>{std::ostream& operator<<(std::ostream& s, array_impl) 
+\{
+  return s << "array_impl";
+\}}
+
+struct array : bp::terminal<array_impl>::type
+\{
+  template <typename Expr>
+  void operator=(const Expr& \alert<4>{expr})
+  \{
+    std::cout << \alert<3>{bp::display_expr}(\alert<4>{expr});
+  \}
+\};
+
+\only<-5>{\alert<5>{array a, b;
+a = b + 7.0f;
+
+
+}}\only<6>{\alert<6>{plus(
+    terminal(array_impl)
+  , terminal(7)
+)
+}}
+\end{semiverbatim}
+\note{ 
+  clearly d
+}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Avoiding temporaries 1: emulating rvalues}
+\begin{semiverbatim}
+struct CopyLValue : bp::callable
+\{
+  typedef array_impl<float> result_type;
+
+  result_type
+  operator()(const array_impl<float>& a)
+  \{
+    return a.clone();
+  \}
+\};
+
+
+struct RkArrayTerminal 
+  : bp::when<bp::terminal<rk::array_impl<float> >, 
+             CopyLValue(bp::_value)>
+\{ \};
+
+
+\end{semiverbatim}
+\note{
+
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% \begin{frame}[fragile]{Avoiding temporaries 2: use the LHS}
+% \begin{semiverbatim}
+% 
+% rk::array<float> a(10, 10);
+% 
+% a = sin(a);
+% 
+% \end{semiverbatim}
+% \note{
+%   in practice the LHS 
+% }
+% \end{frame}
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Avoiding temporaries 2: reuse the LHS}
+\begin{semiverbatim}
+struct CopyLValue : bp::callable
+\{
+  typedef array_impl<float> result_type;
+
+  result_type
+  operator()(const array_impl<float>& a, data_t& data)
+  \{
+    if (data.tmp == &a) \{ data.tmp = 0; return a; \} 
+    else                \{ return a.clone();       \}
+  \}
+\};
+
+struct RkArrayTerminal 
+  : bp::when<bp::terminal<rk::array_impl<float> >, 
+             CopyLValue(bp::_value, bp::_data)>
+\{ \};
+
+
+\end{semiverbatim}
+\note{
+  in practice the LHS 
 }
 \end{frame}
 
@@ -475,9 +826,6 @@ print dest-a*b
     of various templating engines to 'metaprogram'}
 
 \end{frame}
-
-\section{boost::proto}
-\subsection{transforms}
 
 \section{resophonic::kamasu}
 \subsection{benchmarks}

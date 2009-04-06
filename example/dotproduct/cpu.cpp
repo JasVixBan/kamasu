@@ -37,10 +37,10 @@ int main(int argc, char *argv[]) {
     }
   std::cout << "taking dot product of two " << n << " element vectors (" << times << " times).\n";
   t.restart();
-  for (int i=0; i<times; i++)
+  for (unsigned i=0; i<times; i++)
     {    
       A(0) = i;
-      float f = ublas::inner_prod(A, B);
+      ublas::inner_prod(A, B);
     }
 
   time = t.elapsed();

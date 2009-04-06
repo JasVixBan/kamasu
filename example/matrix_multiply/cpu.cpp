@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
   
   std::cout << "multiplying NxN array by NxN array where N=" << n << " (" << times << " times).\n";
   t.restart();
-  for (int i=0; i<times; i++)
+  for (unsigned i=0; i<times; i++)
     C = prod(A,B);
 
   time = t.elapsed();

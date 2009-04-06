@@ -46,7 +46,7 @@ int main(int argc, char** argv)
   fftwf_plan plan;
 
   int j=0;
-  for (int i=0; i<nsamples-fftsize; i+=stepsize, j++)
+  for (unsigned i=0; i<nsamples-fftsize; i+=stepsize, j++)
     {
       if (i%1000 == 0)
 	{

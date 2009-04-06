@@ -692,36 +692,103 @@ m = \alert<4>{s} \alert<3>{&} \alert<5>{~n} \alert<2>{>>=} \alert<7>{std::cout} 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{doing something}
-\begin{semiverbatim}\alert<2>{std::ostream& operator<<(std::ostream& s, array_impl) 
-\{
-  return s << "array_impl";
-\}}
+\begin{frame}[fragile]{Overloaded operators}
+\begin{semiverbatim}trespasser s, t;   array m, n;
+m = \alert<4>{s} \alert<3>{&} \alert<5>{~n} \alert<2>{>>=} \alert<7>{std::cout} \alert<6>{%} \alert<9>{m}\alert<8>{->*}\alert<10>{t};
 
-struct array : bp::terminal<array_impl>::type
-\{
-  template <typename Expr>
-  void operator=(const Expr& \alert<4>{expr})
-  \{
-    std::cout << \alert<3>{bp::display_expr}(\alert<4>{expr});
-  \}
-\};
-
-\only<-5>{\alert<5>{array a, b;
-a = b + 7.0f;
-
-
-}}\only<6>{\alert<6>{plus(
-    terminal(array_impl)
-  , terminal(7)
+\alert<2>{shift_right_assign}(
+    \alert<3>{bitwise_and}(
+        \alert<4>{terminal(trespasser)}
+      , \alert<5>{complement(
+            terminal(array_impl)
+        )}
+    )
+  , \alert<6>{modulus}(
+        \alert<7>{terminal(0x607068)}
+      , \alert<8>{mem_ptr}(
+            \alert<9>{terminal(array_impl)}
+          , \alert<10>{terminal(trespasser)}
+        )
+    )
 )
-}}
 \end{semiverbatim}
-\note{ 
-  clearly d
+\note{
 }
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Detecting invalid expressions}
+\begin{semiverbatim}struct grammar
+  : bp::or_<bp::terminal<array_impl>,
+            bp::terminal<float>,
+            bp::plus<grammar, grammar>
+            >
+\{ \};
+
+template <typename Expr>
+void
+array::operator=(const Expr& expr)
+\{
+  std::cout << bp::matches<Expr, grammar>() << "\\n";
+\}
+
+m = s & ~m >\hskip0pt>= std::cout % n->*t;   // prints '0'
+m = n + 7.0f;                                // prints '1'
+\end{semiverbatim}
+\note{ 
+you can do this with enable\_if, which gives you an error that
+looks like roadkill,
+
+or with MPL\_ASSERT, which looks like not so much like roadkill but
+like something that is just injured, with the stars around its head
+there.  but at least should give the user the idea that the errror is
+on purpose, library is trying to tell him something, not that he
+hasn't found a bug }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Detecting invalid expressions}
+\begin{semiverbatim}template <typename Expr>
+\only<1,3->{void}\only<2>{typename enable_if<bp::matches<Expr, grammar> >::type}
+array::operator=(const Expr& expr)
+\{
+  \only<3->{BOOST_MPL_ASSERT((bp::matches<Expr, grammar>));}
+  do_something_with(expr);
+\}
+
+m = s & ~m >\hskip0pt>= std::cout % n->*t;
+
+\only<2>{error: no match for 'operator=' in 'm = boost::prot
+o::exprns_::operator>>= [with Left = boost::proto::
+exprns_::expr<boost::proto::tag::bitwise_and, boost
+::proto::argsns_::list2<boost::proto::exprns_::expr
+<boost::proto::tag::terminal, boost::proto::argsns_
+::term<trespasser&>, 0l>, const boost::proto::exprn
+s_::expr<boost::proto::tag::complement, boost::prot
+o::argsns_::list1<boost::proto::exprns_::expr<bo...}\only<3>{error: no matching function for call to 'assertion_
+failed(mpl_::failed************ boost::proto::resul
+t_of::matches<boost::proto::exprns_::expr<boost::pr
+oto::tag::shift_right_assign, boost::proto::argsns_
+::list2<const boost::proto::exprns_::expr<boost::pr
+oto::tag::bitwise_and, boost::proto::argsns_::list2
+<boost::proto::exprns_::expr<boost::proto::tag::ter
+mina  ....  proto::a>, 2l>, grammar>::************)'}
+\end{semiverbatim}
+\note{ 
+you can do this with enable\_if, which gives you an error that
+looks like roadkill,
+
+or with MPL\_ASSERT, which looks like not so much like roadkill but
+like something that is just injured, with the stars around its head
+there.  but at least should give the user the idea that the errror is
+on purpose, library is trying to tell him something, not that he
+hasn't found a bug }
+\end{frame}
+
+ 
+%  error: no match for 'operator=' in 'm = boost::proto::exprns_::operator>>= [with Left = boost::proto::exprns_::expr<boost::proto::tag::bitwise_and, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>&>, 2l>, Right = boost::proto::exprns_::expr<boost::proto::tag::modulus, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<std::basic_ostream<char, std::char_traits<char> >&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>&>, 2l>](((const boost::proto::exprns_::expr<boost::proto::tag::bitwise_and, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>&>, 2l>&)(& boost::proto::exprns_::operator& [with Left = trespasser, Right = boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>](((trespasser&)(& s)), ((const boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>&)(& boost::proto::exprns_::operator~ [with Arg = array](((array&)(& m)))))))), ((const boost::proto::exprns_::expr<boost::proto::tag::modulus, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<std::basic_ostream<char, std::char_traits<char> >&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>&>, 2l>&)(& boost::proto::exprns_::operator% [with Left = std::ostream, Right = boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>](((std::ostream&)(& std::cout)), ((const boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>&)(& boost::proto::exprns_::operator->* [with Left = array, Right = trespasser](((array&)(& n)), ((trespasser&)(& t)))))))))'
+
+%error: no matching function for call to 'assertion_failed(mpl_::failed************ boost::proto::result_of::matches<boost::proto::exprns_::expr<boost::proto::tag::shift_right_assign, boost::proto::argsns_::list2<const boost::proto::exprns_::expr<boost::proto::tag::bitwise_and, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>&>, 2l>&, const boost::proto::exprns_::expr<boost::proto::tag::modulus, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<std::basic_ostream<char, std::char_traits<char> >&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>&>, 2l>&>, 2l>, grammar>::************)'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

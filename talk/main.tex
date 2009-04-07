@@ -1,6 +1,12 @@
 \documentclass[10pt]{beamer}
 \usepackage{wrapfig}
 \usepackage{pgfpages}
+\usepackage{listings}
+\lstset{language=C++,
+basicstyle=\ttfamily,
+emph={const,typedef,struct,return,operator,float},       emphstyle=\color{orange},
+emph={[2]bp,when,terminal,_value,_child0,_left,_right},  emphstyle={[2]\color{yellow}}
+}
 
 \setbeameroption{show notes}
 \setbeameroption{show notes on second screen=bottom}
@@ -650,16 +656,17 @@ struct array : bp::terminal<array_impl>::type
     std::cout << \alert<3>{bp::display_expr}(\alert<4>{expr});
   \}
 \};
-
-\only<-5>{\alert<5>{array a, b;
+\begin{columns}[t]
+  \column{0.5\textwidth}\only<-6>{\alert<5>{array a, b;
 a = b + 7.0f;
 
 
-}}\only<6>{\alert<6>{plus(
+}}\column{0.5\textwidth}\only<6>{\alert<6>{plus(
     terminal(array_impl)
   , terminal(7)
 )
 }}
+\end{columns}
 \end{semiverbatim}
 \note{ clearly display\_expr has somehow walked the expression tree,
   printing things as it goes along.  Let's do that.
@@ -692,32 +699,7 @@ m = \alert<4>{s} \alert<3>{&} \alert<5>{~n} \alert<2>{>>=} \alert<7>{std::cout} 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Overloaded operators}
-\begin{semiverbatim}trespasser s, t;   array m, n;
-m = \alert<4>{s} \alert<3>{&} \alert<5>{~n} \alert<2>{>>=} \alert<7>{std::cout} \alert<6>{%} \alert<9>{m}\alert<8>{->*}\alert<10>{t};
-
-\alert<2>{shift_right_assign}(
-    \alert<3>{bitwise_and}(
-        \alert<4>{terminal(trespasser)}
-      , \alert<5>{complement(
-            terminal(array_impl)
-        )}
-    )
-  , \alert<6>{modulus}(
-        \alert<7>{terminal(0x607068)}
-      , \alert<8>{mem_ptr}(
-            \alert<9>{terminal(array_impl)}
-          , \alert<10>{terminal(trespasser)}
-        )
-    )
-)
-\end{semiverbatim}
-\note{
-}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Detecting invalid expressions}
+\begin{frame}[fragile]{Matching expressions}
 \begin{semiverbatim}struct grammar
   : bp::or_<bp::terminal<array_impl>,
             bp::terminal<float>,
@@ -733,7 +715,7 @@ array::operator=(const Expr& expr)
 \}
 
 m = s & ~m >\hskip0pt>= std::cout % n->*t;   // prints '0'
-m = n + 7.0f;                                // prints '1'
+m = n + 7.0f;                       // prints '1'
 \end{semiverbatim}
 \note{ 
 you can do this with enable\_if, which gives you an error that
@@ -749,52 +731,147 @@ hasn't found a bug }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Detecting invalid expressions}
 \begin{semiverbatim}template <typename Expr>
-\only<1,3->{void}\only<2>{typename enable_if<bp::matches<Expr, grammar> >::type}
+\only<1,4->{void}\only<2-3>{\alert<2>{typename enable_if<bp::matches<Expr, grammar> >::type}}
 array::operator=(const Expr& expr)
 \{
-  \only<3->{BOOST_MPL_ASSERT((bp::matches<Expr, grammar>));}
-  do_something_with(expr);
+  // to come: do something with expr
+  \only<4->{\alert<4>{BOOST_MPL_ASSERT((bp::matches<Expr, grammar>));}}
 \}
 
 m = s & ~m >\hskip0pt>= std::cout % n->*t;
+\only<1-2,4>{
 
-\only<2>{error: no match for 'operator=' in 'm = boost::prot
+
+
+
+
+
+}\only<3>{\alert<3>{error: no match for 'operator=' in 'm = boost::prot
 o::exprns_::operator>>= [with Left = boost::proto::
 exprns_::expr<boost::proto::tag::bitwise_and, boost
 ::proto::argsns_::list2<boost::proto::exprns_::expr
 <boost::proto::tag::terminal, boost::proto::argsns_
 ::term<trespasser&>, 0l>, const boost::proto::exprn
 s_::expr<boost::proto::tag::complement, boost::prot
-o::argsns_::list1<boost::proto::exprns_::expr<bo...}\only<3>{error: no matching function for call to 'assertion_
-failed(mpl_::failed************ boost::proto::resul
+o::argsns_::list1<boost::proto::exprns_::expr<bo...}}\only<5-6>{error: no matching function for call to 'assertion_
+failed(mpl_::failed\alert<6>{************ }boost::proto::resul
 t_of::matches<boost::proto::exprns_::expr<boost::pr
 oto::tag::shift_right_assign, boost::proto::argsns_
 ::list2<const boost::proto::exprns_::expr<boost::pr
 oto::tag::bitwise_and, boost::proto::argsns_::list2
 <boost::proto::exprns_::expr<boost::proto::tag::ter
-mina  ....  proto::a>, 2l>, grammar>::************)'}
+mina  ....  proto::a>, 2l>, grammar>::\alert<6>{************})'}
 \end{semiverbatim}
 \note{ 
 you can do this with enable\_if, which gives you an error that
 looks like roadkill,
 
-or with MPL\_ASSERT, which looks like not so much like roadkill but
-like something that is just injured, with the stars around its head
-there.  but at least should give the user the idea that the errror is
-on purpose, library is trying to tell him something, not that he
-hasn't found a bug }
+or with MPL\_ASSERT, which looks like roadkill with stars around its
+head.  not so much like roadkill but like something that is just
+injured, with the stars around its head there.  but at least should
+give the user the idea that the errror is on purpose, library is
+trying to tell him something, not that he hasn't found a bug }
 \end{frame}
 
- 
-%  error: no match for 'operator=' in 'm = boost::proto::exprns_::operator>>= [with Left = boost::proto::exprns_::expr<boost::proto::tag::bitwise_and, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>&>, 2l>, Right = boost::proto::exprns_::expr<boost::proto::tag::modulus, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<std::basic_ostream<char, std::char_traits<char> >&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>&>, 2l>](((const boost::proto::exprns_::expr<boost::proto::tag::bitwise_and, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>&>, 2l>&)(& boost::proto::exprns_::operator& [with Left = trespasser, Right = boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>](((trespasser&)(& s)), ((const boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>&)(& boost::proto::exprns_::operator~ [with Arg = array](((array&)(& m)))))))), ((const boost::proto::exprns_::expr<boost::proto::tag::modulus, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<std::basic_ostream<char, std::char_traits<char> >&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>&>, 2l>&)(& boost::proto::exprns_::operator% [with Left = std::ostream, Right = boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>](((std::ostream&)(& std::cout)), ((const boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>&)(& boost::proto::exprns_::operator->* [with Left = array, Right = trespasser](((array&)(& n)), ((trespasser&)(& t)))))))))'
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%error: no matching function for call to 'assertion_failed(mpl_::failed************ boost::proto::result_of::matches<boost::proto::exprns_::expr<boost::proto::tag::shift_right_assign, boost::proto::argsns_::list2<const boost::proto::exprns_::expr<boost::proto::tag::bitwise_and, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::complement, boost::proto::argsns_::list1<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<array_impl>, 0l>&>, 1l>&>, 2l>&, const boost::proto::exprns_::expr<boost::proto::tag::modulus, boost::proto::argsns_::list2<boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<std::basic_ostream<char, std::char_traits<char> >&>, 0l>, const boost::proto::exprns_::expr<boost::proto::tag::mem_ptr, boost::proto::argsns_::list2<array&, boost::proto::exprns_::expr<boost::proto::tag::terminal, boost::proto::argsns_::term<trespasser&>, 0l> >, 2l>&>, 2l>&>, 2l>, grammar>::************)'
+\begin{frame}[fragile]{Transforms}
+\begin{semiverbatim}
+struct array_impl \{ float value; \};
+struct array : bp::terminal<array_impl>::type
+\{ /* ... */ \};
+
+array \alert<2>{a};
+
+\alert<3>{array_impl& aimpl =}
+\alert<4>{   a.child0;}          // via base class
+\alert<5>{   bp::value(a);}      // free function
+   \alert<8>{\alert<7>{\alert<6>{bp::_value}()}(a);}   // instance of _value
+   \alert<9>{bp::_child0()(a);}  // instance of _child0
+   \alert<10>{bp::child_c<0>(a);}
+   \alert<11>{bp::child<mpl::long_<0> >(a);}
+   \alert<12>{bp::_left()(a);}    // instance of _left
+   \alert<13>{bp::left(a);}       // left function
+\end{semiverbatim}
+\note{ \_value the type is different than value the free function for a
+  very important reason and spectacularly nifty trick, we'll see in a
+  minute.
+
+  so what is the return type of the function bp::value?  it is the
+  result of running the transform \_value on the object.  How is that
+  determined?  By types nested inside this \_value transform type.
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{More transforms}
+\begin{semiverbatim}
+struct array_impl \{ float value; \};
+struct array : bp::terminal<array_impl>::type \{ ... \};
+array t;
+
+\alert<4>{\only<4-5>{bp::display_expr(}\alert<2>{t + 2}\only<4-5>{)}}
+\begin{columns}[t]
+  \column{0.5\textwidth}\alert<3>{expr<
+  tag::plus 
+, list2<
+    array&
+  , expr<
+      tag::terminal 
+    , term<int const&> 
+    , 0
+    > 
+  >
+, 2
+>}
+\column{0.5\textwidth}\alert<5>{plus(
+    terminal(array_impl)
+  , terminal(2)
+)}
+\end{columns}
+
+
+
+\end{semiverbatim}
+\note{ }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{More transforms}
+\begin{semiverbatim}
+struct array_impl \{ float value; \};
+struct array : bp::terminal<array_impl>::type \{ ... \};
+array t;
+
+\only<1>{bp::display_expr(t + 2)
+}\only<2>{bp::display_expr(bp::child1(t + 2))
+}\only<3>{std::cout << bp::value(bp::child1(t + 2))}
+
+
+\only<1>{plus(
+    terminal(array_impl)
+  , terminal(2)
+)}\only<2>{terminal(2)
+
+
+}\only<3>{2
+
+
+
+}
+
+
+\end{semiverbatim}
+\note{ }
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{Avoiding temporaries 1: emulating rvalues}
 \begin{semiverbatim}
-struct CopyLValue : bp::callable
+struct \alert<2>{CopyLValue} : bp::callable
 \{
   typedef array_impl<float> result_type;
 

@@ -74,7 +74,7 @@ namespace resophonic {
     void 
     array<T>::show() const
     {
-      self_.show();
+      //      self_.show();
     }
 
     template <typename T>

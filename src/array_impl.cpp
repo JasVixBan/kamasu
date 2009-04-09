@@ -154,7 +154,7 @@ namespace resophonic
 	return;
 #if RESOPHONIC_KAMASU_DEBUG
       log_trace("%s",  __PRETTY_FUNCTION__);
-      rhs.show();
+      //      rhs.show();
 #endif
       nd = rhs.nd;
       data_ = clone ? rhs.data_->clone() : rhs.data_;
@@ -196,7 +196,7 @@ namespace resophonic
     void
     array_impl<T>::show() const
     {
-      assert(0);
+      /*
       log_trace("%s", "____ Array ____");
       log_trace("offset %u,  nd %u",  offset % nd);
       for (unsigned i=0; i < nd; i++)
@@ -207,6 +207,7 @@ namespace resophonic
 	log_trace("stride[%u]   %u",  i % stride(i));
       log_trace("off      %lu",  offset);
       log_trace("last     %lu",  linear_size);
+      */
     }
 
     template class array_impl<float>;

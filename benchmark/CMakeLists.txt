@@ -16,6 +16,8 @@ endmacro(add_bmark_impl NAME TYPE)
 macro(add_bmark NAME)
   add_bmark_impl(${NAME} kamasu)
   add_bmark_impl(${NAME} cpu)
+  add_custom_target(${NAME})
+  add_dependencies(${NAME} ${NAME}-kamasu ${NAME}-cpu)
 endmacro(add_bmark NAME)
 
 add_bmark(scalarmult)
@@ -23,6 +25,7 @@ add_bmark(deepexpr)
 add_bmark(deepexpr_streamed)
 add_bmark(sine)
 add_bmark(matrix_multiply)
+add_bmark(matrix_multiply_2)
 add_bmark(synthesis)
 
 

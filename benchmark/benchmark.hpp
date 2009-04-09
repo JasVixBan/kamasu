@@ -81,6 +81,7 @@ int main_impl1(int argc, char** argv)
     {
       std::cout << "usage:\n" << argv[0] << " ";
       Test::usage();
+      return 1;
     }
   unsigned i = boost::lexical_cast<unsigned>(argv[1]);
   std::cout << "Args: " << i << "\n";
@@ -95,6 +96,7 @@ int main_impl2(int argc, char** argv)
     {
       std::cout << "usage:\n" << argv[0] << " ";
       Test::usage();
+      return 1;
     }
 
   unsigned i = boost::lexical_cast<unsigned>(argv[1]);

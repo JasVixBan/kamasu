@@ -32,7 +32,7 @@ int main(int argc, char** argv)
   float* indata = (float*) fftw_malloc(nsamples * sizeof(float));
   fftwf_complex* outdata = (fftwf_complex*) fftw_malloc(fftsize * sizeof(fftwf_complex));
 
-  read(fd, indata, nsamples * sizeof(float));
+  int i = read(fd, indata, nsamples * sizeof(float));
 
   cout << "Writing to " << argv[2] << "\n";
   unlink(argv[2]);

@@ -63,12 +63,12 @@ int main(int argc, char** argv)
   
   std::vector<float> signal(nsamples);
   
-  read(fd, signal.data(), nsamples*sizeof(float));
+  int i = read(fd, signal.data(), nsamples*sizeof(float));
 
   std::vector<float> freqs = autocorrelate(signal);
   
   cout << "writing frequencies to freqs.cpu.dat\n";
   int outfd = open("freqs.cpu.dat", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-  write(outfd, freqs.data(), sizeof(float) * freqs.size());
+  i = write(outfd, freqs.data(), sizeof(float) * freqs.size());
   close(outfd);
 }

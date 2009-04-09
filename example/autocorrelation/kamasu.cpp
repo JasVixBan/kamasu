@@ -29,7 +29,6 @@ rk::array<float> autocorrelate(rk::array<float>& signal)
 	  cout.flush();
 	}
       rk::array<float> lhs(signal(rk::index_range(outer, outer+winlen)));
-      unsigned inner = 0;
       for (unsigned inner = 0; inner < winlen; inner++)
 	{
 	  rk::array<float> tmp(signal(rk::index_range(outer+inner, outer+inner+winlen)));
@@ -55,7 +54,7 @@ int main(int argc, char** argv)
   
   std::vector<float> signal(nsamples);
   
-  read(fd, signal.data(), nsamples*sizeof(float));
+  int i = read(fd, signal.data(), nsamples*sizeof(float));
 
   rk::array<float> a(nsamples);
 

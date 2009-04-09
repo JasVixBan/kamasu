@@ -26,7 +26,7 @@ int main(int argc, char** argv)
   
   for (int i=0; i<9; i++)
     {
-      float freq = 200 + i * 50;
+      // float freq = 200 + i * 50;
       rk::array<float> sl = signal(rk::index_range(i*sr, i*sr + sr));
       sl += rk::sin(linear) * 0.5f;
     }

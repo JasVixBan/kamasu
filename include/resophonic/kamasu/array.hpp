@@ -125,7 +125,6 @@ namespace resophonic {
 
       array& operator=(T value)
       {
-	float* foo = 0;
 	self().assign(value);
 	return *this;
       }

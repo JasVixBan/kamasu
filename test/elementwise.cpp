@@ -37,7 +37,7 @@ TEST(plus)
   b = a + 2.0f;
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (float i=0; i<n; i++)
@@ -55,7 +55,7 @@ TEST(minus)
   b = a - 2.0f;
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (float i=0; i<n; i++)
@@ -73,7 +73,7 @@ TEST(multiplies)
   b = a * 2.0f;
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (float i=0; i<n; i++)
@@ -91,7 +91,7 @@ TEST(divides)
   b = a / 2.0f;
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (float i=0; i<n; i++)
@@ -109,7 +109,7 @@ TEST(pow_2)
   b = rk::pow(a, 2.0f);
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (float i=0; i<n; i++)
@@ -124,14 +124,14 @@ TEST(exp)
   unsigned n = 10000;
   array<float> a = make_1d(n), b;
   ENSURE_EQUAL(a.linear_size(), n);
-  ENSURE_EQUAL(b.linear_size(), 0);
+  ENSURE_EQUAL(b.linear_size(), 0u);
 
   b = rk::exp(a);
 
   ENSURE_NOT_EQUAL(a.data(), b.data());
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (float i=0; i<n; i++)
@@ -149,7 +149,7 @@ TEST(exp2)
   b = rk::exp2(a);
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (float i=0; i<n; i++)

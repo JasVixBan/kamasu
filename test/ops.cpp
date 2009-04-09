@@ -35,13 +35,13 @@ void test_multiplies(unsigned n)
 {
   array<float> a = make_1d(n), b;
   ENSURE_EQUAL(a.linear_size(), n);
-  ENSURE_EQUAL(a.nd(), 1);
+  ENSURE_EQUAL(a.nd(), 1u);
   ENSURE_EQUAL(a.dim(0), n);
 
   b = a * 2.0f;
 
   ENSURE_EQUAL(b.linear_size(), n);
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.dim(0), n);
 
   for (unsigned i=0; i<n; i++)
@@ -103,13 +103,13 @@ TEST(m1_divides)
     ENSURE_EQUAL(b(i), i/2.0f);
 }
 
-void test_stride(unsigned length, unsigned stride)
+void test_stride(unsigned length, int stride)
 {
   array<float> a = make_1d(length), b, c;
 
   b = a(index_range(0, length, stride));
 
-  ENSURE_EQUAL(b.nd(), 1);
+  ENSURE_EQUAL(b.nd(), 1u);
   ENSURE_EQUAL(b.stride(0), stride);
   //  ENSURE_EQUAL(b.dim(0), slicedim);
 
@@ -119,7 +119,7 @@ void test_stride(unsigned length, unsigned stride)
 
   c = b + factor;
 
-  ENSURE_EQUAL(c.nd(), 1);
+  ENSURE_EQUAL(c.nd(), 1u);
   ENSURE_EQUAL(c.stride(0), stride);
 
   for (unsigned i=0; i<length; i++)
@@ -181,8 +181,8 @@ TEST(m2_2d_stride)
   // 3 11 19
   b = a(index_range(0,4,2), index_range(0, 5, 2));
 
-  for (int i=0; i<b.dim(0); i++)
-    for (int j=0; j<b.dim(1); j++)
+  for (unsigned i=0; i<b.dim(0); i++)
+    for (unsigned j=0; j<b.dim(1); j++)
       {
 	log_trace("b(%d,%d) = %f", i % j % b(i,j));
 	ENSURE_EQUAL(b(i,j), a(i*2, j*2));
@@ -206,8 +206,8 @@ TEST(m2_2d_stride)
 
   check_unchanged_4x5(a);
 
-  for (int i=0; i<c.dim(0); i++)
-    for (int j=0; j<c.dim(1); j++)
+  for (unsigned i=0; i<c.dim(0); i++)
+    for (unsigned j=0; j<c.dim(1); j++)
       log_trace("c(%d,%d) = %f", i % j % c(i,j));
 
 
@@ -277,12 +277,12 @@ TEST(dot_with_mul)
   //    0   8  14  18  20  20  18  14   8   0 == 120
   unsigned n = 10;
   array<float> a(n), b(n);
-  for (int i=0; i<n; i++)
+  for (unsigned i=0; i<n; i++)
     {
       a(i) = i;
       b(i) = n-1-i;
     }
-  for (int i=0; i<n; i++)
+  for (unsigned i=0; i<n; i++)
     {
       ENSURE_EQUAL(a(i), i);
       ENSURE_EQUAL(b(i), n-i-1);
@@ -301,12 +301,12 @@ TEST(dot_half_mul)
   //    0   8  14  18  20  20  18  14   8   0 == 120
   unsigned n = 10;
   array<float> a(n), b(n);
-  for (int i=0; i<n; i++)
+  for (unsigned i=0; i<n; i++)
     {
       a(i) = i;
       b(i) = n-1-i;
     }
-  for (int i=0; i<n; i++)
+  for (unsigned i=0; i<n; i++)
     {
       ENSURE_EQUAL(a(i), i);
       ENSURE_EQUAL(b(i), n-i-1);
@@ -326,12 +326,12 @@ TEST(dot)
   //    0   8  14  18  20  20  18  14   8   0 == 120
   unsigned n = 10;
   array<float> a(n), b(n);
-  for (int i=0; i<n; i++)
+  for (unsigned i=0; i<n; i++)
     {
       a(i) = i;
       b(i) = n-1-i;
     }
-  for (int i=0; i<n; i++)
+  for (unsigned i=0; i<n; i++)
     {
       ENSURE_EQUAL(a(i), i);
       ENSURE_EQUAL(b(i), n-i-1);

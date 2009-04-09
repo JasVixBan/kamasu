@@ -26,11 +26,12 @@ struct deepexpr
     void stop() 
     { 
     }
-    void main() 
+    int main() 
     { 
       e = a * 2.0f; 
       e += (d * 2.0f);
       e += (b * 2.0f) / (c * 2.0f);
+      return 0;
     }
   };
 
@@ -52,10 +53,11 @@ struct deepexpr
     void stop() 
     { 
     }
-    void main() 
+    int main() 
     { 
       for (unsigned i=0; i<n; i++)
 	e[i] = (a[i] * 2.0f) + (b[i] * 2.0f) / (c[i] * 2.0f) + (d[i] * 2.0f);
+      return 0;
     }
   };
 };

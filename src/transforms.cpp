@@ -72,7 +72,7 @@ namespace resophonic {
 	{
 	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
 	  
-	  for (int i=0; i<lhs.nd; i++)
+	  for (unsigned i=0; i<lhs.nd; i++)
 	    RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
 				    dimensions_dont_match());
 
@@ -121,7 +121,7 @@ namespace resophonic {
 	  
 	  const rk::array_impl<float> rv(lhs);
 
-	  for (int i=0; i<lhs.nd; i++)
+	  for (unsigned i=0; i<lhs.nd; i++)
 	    RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
 				    dimensions_dont_match());
 

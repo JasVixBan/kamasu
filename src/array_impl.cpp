@@ -33,8 +33,8 @@ namespace resophonic
 
     template <typename T>
     array_impl<T>::array_impl(const array_impl<T>& rhs) :
-      offset(rhs.offset),
       linear_size(rhs.linear_size),
+      offset(rhs.offset),
       nd(rhs.nd)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
@@ -62,7 +62,7 @@ namespace resophonic
       log_trace("%s", "reshape");
       offset = 0;
       nd = 0;
-      for (int i=0; i<shape.size(); i++)
+      for (unsigned i=0; i<shape.size(); i++)
 	{
 	  if (shape[i] != 0)
 	    {
@@ -114,7 +114,7 @@ namespace resophonic
 	log_trace("dim %u is %u, stride %u",  i % dim(i) % stride(i));
 
       std::size_t size = 1;
-      for (int i=0; i<nd; i++)
+      for (unsigned i=0; i<nd; i++)
 	size *= dim(i);
       return size;
     }

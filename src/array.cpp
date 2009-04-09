@@ -59,6 +59,7 @@ namespace resophonic {
       std::vector<std::size_t> newshape = make_vector(m.size1(), m.size2());
       self_.reshape(newshape, true);
       self_.data_->host_to_device(&(m.data()[0]), m.size1() * m.size2());
+      return *this;
     }
 
     template <typename T>

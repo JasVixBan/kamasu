@@ -137,6 +137,7 @@ namespace {
     switch(len(t)) {
       KS_REPEAT(GETITEM_CLAUSE, t);
     }
+    throw std::runtime_error("bad get_item");
   };
 
   template <typename Array, typename T>

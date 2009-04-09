@@ -27,10 +27,11 @@ struct matrix_multiply
     void stop() 
     { 
     }
-    void main() 
+    int main() 
     { 
-      for (int i = 0; i<x; i++)
+      for (unsigned i = 0; i<x; i++)
 	c = a * b;
+      return 0;
     }
   };
 
@@ -49,10 +50,11 @@ struct matrix_multiply
     void stop() 
     { 
     }
-    void main() 
+    int main() 
     { 
       for (unsigned i=0; i<x; i++)
 	c = prod(a,b);
+      return 0;
     }
   };
 };

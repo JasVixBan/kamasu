@@ -35,7 +35,7 @@ struct benchmark
     clock_gettime(CLOCK_REALTIME, &fullendtime);
   }
 
-  void run()
+  int run()
   {
     start();
     derived().main();
@@ -54,6 +54,7 @@ struct benchmark
 
     std::cerr << boost::format("%10s %10s %10s %10s\n") % "user" % "sys" % "wall" % "full";
     std::cout << boost::format("%10f %10f %10f %10f\n") % user % sys % wall % full;
+    return 0;
   }
 };
 
@@ -84,7 +85,7 @@ int main_impl1(int argc, char** argv)
   unsigned i = boost::lexical_cast<unsigned>(argv[1]);
   std::cout << "Args: " << i << "\n";
   typename Selector::template impl<Test>::type mark(i);
-  mark.run();
+  return mark.run();
 }
 
 template <typename Test, typename Selector>
@@ -100,16 +101,14 @@ int main_impl2(int argc, char** argv)
   unsigned j = boost::lexical_cast<unsigned>(argv[2]);
   std::cout << "Args: " << i << " " << j << "\n";
   typename Selector::template impl<Test>::type mark(i,j);
-  mark.run();
+  return mark.run();
 }
 
 #define MAIN(N)							\
   int main(int argc, char** argv)				\
   {								\
-    main_impl ## N <NAME, TYPE>(argc, argv);			\
+    return main_impl ## N <NAME, TYPE>(argc, argv);		\
   }
-
-
 
 
 #endif

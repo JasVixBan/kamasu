@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[9pt]{beamer}
 \usepackage{wrapfig}
 \usepackage{pgfpages}
 \usepackage{listings}
@@ -447,11 +447,37 @@ float f = b(0,0); // a(9,9)
 
 \begin{frame}[fragile]{Kamasu array metadata}
 \begin{semiverbatim}
+template <typename T>
+struct array_impl
+\{
+  std::size_t \alert<2>{dims}[KAMASU_MAX_ARRAY_DIM];
+  std::size_t \alert<3>{factors}[KAMASU_MAX_ARRAY_DIM];
+  int strides[KAMASU_MAX_ARRAY_DIM];
+
+  offset_t offset;
+  std::size_t linear_size;
+  unsigned nd;
+
+  shared_ptr<holder<T> > gpu_data;
+\};
+
+array a(10,10), b;
+b = a.slice(index_range(_,_,-1), index_range(2));
+b(4) // which index is that?
 
 \end{semiverbatim}
 \note{arrays can be views of the same data,
 
 semantics is always 'shared' unless you specifically copy something... same as numpy.
+
+gpu_data is stored in column-major form for compatibilty with cublas,
+(if the stride of the last dimension is one)
+
+We need to be able to find the index in memory of a particular entry
+if we index it with parenthesis, on the c++ side, and also, from the
+CUDA side, we start with the 3-dimensional grid-block-thread index,
+the indexes and dimensions of which have nothing to do with the array,
+and we have to know which entry we're working on.
 }
 \end{frame}
 
@@ -700,10 +726,10 @@ m = \alert<4>{s} \alert<3>{&} \alert<5>{~n} \alert<2>{>>=} \alert<7>{std::cout} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Matching expressions}
-\begin{semiverbatim}struct grammar
+\begin{semiverbatim}struct Grammar
   : bp::or_<bp::terminal<array_impl>,
             bp::terminal<float>,
-            bp::plus<grammar, grammar>
+            bp::plus<Grammar, Grammar>
             >
 \{ \};
 
@@ -711,7 +737,7 @@ template <typename Expr>
 void
 array::operator=(const Expr& expr)
 \{
-  std::cout << bp::matches<Expr, grammar>() << "\\n";
+  std::cout << bp::matches<Expr, Grammar>() << "\\n";
 \}
 
 m = s & ~m >\hskip0pt>= std::cout % n->*t;   // prints '0'
@@ -731,11 +757,11 @@ hasn't found a bug }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Detecting invalid expressions}
 \begin{semiverbatim}template <typename Expr>
-\only<1,4->{void}\only<2-3>{\alert<2>{typename enable_if<bp::matches<Expr, grammar> >::type}}
+\only<1,4->{void}\only<2-3>{\alert<2>{typename enable_if<bp::matches<Expr, Grammar> >::type}}
 array::operator=(const Expr& expr)
 \{
   // to come: do something with expr
-  \only<4->{\alert<4>{BOOST_MPL_ASSERT((bp::matches<Expr, grammar>));}}
+  \only<4->{\alert<4>{BOOST_MPL_ASSERT((bp::matches<Expr, Grammar>));}}
 \}
 
 m = s & ~m >\hskip0pt>= std::cout % n->*t;
@@ -760,17 +786,17 @@ oto::tag::shift_right_assign, boost::proto::argsns_
 ::list2<const boost::proto::exprns_::expr<boost::pr
 oto::tag::bitwise_and, boost::proto::argsns_::list2
 <boost::proto::exprns_::expr<boost::proto::tag::ter
-mina  ....  proto::a>, 2l>, grammar>::\alert<6>{************})'}
+mina  ....  proto::a>, 2l>, Grammar>::\alert<6>{************})'}
 \end{semiverbatim}
 \note{ 
 you can do this with enable\_if, which gives you an error that
 looks like roadkill,
 
-or with MPL\_ASSERT, which looks like roadkill with stars around its
-head.  not so much like roadkill but like something that is just
-injured, with the stars around its head there.  but at least should
-give the user the idea that the errror is on purpose, library is
-trying to tell him something, not that he hasn't found a bug }
+or with MPL\_ASSERT, which looks like roadkill with stars in in.  not
+so much like roadkill but like something that is just injured, with
+the stars around its head there.  but at least should give the user
+the idea that the errror is on purpose, library is trying to tell him
+something, not that he hasn't found a bug }
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -784,7 +810,7 @@ struct array : bp::terminal<array_impl>::type
 array \alert<2>{a};
 
 \alert<3>{array_impl& aimpl =}
-\alert<4>{   a.child0;}          // via base class
+\alert<4>{   a.child0;}          // via base class' member
 \alert<5>{   bp::value(a);}      // free function
    \alert<8>{\alert<7>{\alert<6>{bp::_value}()}(a);}   // instance of _value
    \alert<9>{bp::_child0()(a);}  // instance of _child0
@@ -863,8 +889,191 @@ array t;
 }
 
 
+
+
+
+
+
+
+
 \end{semiverbatim}
 \note{ }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{More transforms}
+\begin{semiverbatim}
+struct array_impl \{ float value; \};
+struct array : bp::terminal<array_impl>::type \{ ... \};
+array t;
+
+\alert<8>{bp::value(\alert<6>{bp::right(\alert<4>{bp::left(\alert<2>{\alert<5>{a++->* \alert<7,9>{7}} /= 4})})});}
+
+\alert<3>{divides_assign(
+\alert<5>{    mem_ptr(
+        post_inc(
+            terminal(array_impl)
+        )
+      , \alert<7>{terminal(\alert<9>{7})}
+    )}
+  , terminal(4)
+)}
+\end{semiverbatim}
+\note{ 
+
+but the free functions aren't what is interesting.  it is the
+transforms, or function objects that are nice.
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{proto::when}
+\begin{semiverbatim}
+bp::terminal<float>::type f;
+f.child0 = 3.14;
+
+std::cout << bp::value(f);    // prints 3.14
+std::cout << bp::_value()(f); // also prints 3.14
+
+struct FloatTerminal
+: bp::when<bp::terminal<float>, bp::_value>
+\{ \};
+
+FloatTerminal transform;
+std::cout << transform(f);  // prints 3.14
+
+
+
+
+\end{semiverbatim}
+\note{ }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{proto::when}
+\begin{semiverbatim}
+struct ToString : bp::callable
+\{
+  typedef std::string result_type;
+  
+  template <typename T>
+  result_type operator()(const T& t)
+  \{
+    return str(boost::format("%s @ %p") % t % &t);
+  \}
+\};
+
+struct FloatTerminal
+  : bp::when<bp::terminal<float>, ToString(bp::_value)>
+\{ \};
+
+bp::terminal<float>::type f = {3.14}; 
+std::cout << FloatTerminal()(f);  
+``3.14 @ 0x7fff0d839aa0''
+
+\end{semiverbatim}
+\note{ }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{proto::when}
+\begin{semiverbatim}
+struct \alert<3>{ArrayTerminal}
+  : bp::when<\alert<2,8>{bp::terminal<\alert<9>{array_impl}>}, \alert<11>{ToString(bp::_value)}>
+\{ \};
+
+struct \alert<5>{FloatTerminal}
+  : bp::when<\alert<4>{bp::terminal<float>}, ToString(bp::_value)>
+\{ \};
+
+struct Grammar : 
+  bp::or_<ArrayTerminal,
+          FloatTerminal,
+          bp::when<\alert<6>{bp::plus<\only<1-2>{\alert<2>{bp::terminal<array_impl>}}\only<3->{\alert<3>{ArrayTerminal}}, 
+                            \only<1-4>{\alert<4>{bp::terminal<float> >}}\only<5->{\alert<5>{FloatTerminal}}>},
+                   \alert<7>{ToString(\alert<14>{bp::tag::plus()},
+                            \only<-11>{\alert<11>{\alert<10>{ToString}(\alert<9>{bp::_value(\alert<8>{bp::_left})})}}\only<12->{\alert<12>{ArrayTerminal(bp::_left)}},
+                            \only<-12>{ToString(bp::_value(bp::_right)))}}\only<13->{\alert<13>{FloatTerminal(bp::_right))}}>
+	    >
+\{ \};      \only<14>{\alert<14>{// struct plus \{ \};}}
+\end{semiverbatim}
+\note{ }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{They recurse!}
+\begin{semiverbatim}
+struct \alert<2>{ArrayTerminal}
+  : bp::when<bp::terminal<array_impl>, ToString(bp::_value)>
+\{ \};
+
+struct \alert<2>{FloatTerminal}
+  : bp::when<bp::terminal<float>, ToString(bp::_value)>
+\{ \};
+
+struct \alert<4>{Grammar} :
+  bp::or_<\alert<3>{ArrayTerminal},
+          \alert<3>{FloatTerminal},
+          bp::when<bp::plus<\only<-3>{\alert<2>{ArrayTerminal}}\only<4->{\alert<4>{Grammar}},
+                            \only<-3>{\alert<2>{FloatTerminal}}\only<4->{\alert<4>{Grammar}}>,
+                   \alert<5>{ToString(bp::tag::plus(),
+                            \only<-3>{\alert<2>{ArrayTerminal}}\only<4->{\alert<4>{Grammar}}(bp::_left),
+                            \only<-3>{\alert<2>{FloatTerminal}}\only<4->{\alert<4>{Grammar}}(bp::_right))}>
+     >
+\{ \};
+\end{semiverbatim}
+\note{since plus is commutative, it doesnt matter what order the operands are in}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Tune up the transform}
+\begin{semiverbatim}
+ToString(bp::tag::plus(), 
+         Grammar(bp::_left), Grammar(bp::_right))
+
+struct ToString : bp::callable
+\{
+  typedef std::string result_type;
+
+  template <typename T>
+  result_type operator()(const T& t)
+  \{
+    return str(boost::format("%s @ %p") % t % &t);
+  \}
+
+  result_type operator()(bp::tag::plus, 
+                         const std::string& lhs, 
+                         const std::string& rhs)
+  \{
+    return str(boost::format("%s PLUS %s") % lhs % rhs );
+  \}
+\};
+\end{semiverbatim}
+\note{since plus is commutative, it doesnt matter what order the operands are in}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Tune up the transform}
+\begin{semiverbatim}
+struct Grammar : bp::or_< ...
+struct ToString : bp::callable \{ ...
+struct array : bp::terminal<array_impl>::type ...
+
+array a;
+
+std::cout << Grammar()(a + 777);
+
+``array_impl @ 0x7fffe0f3f11f PLUS 777 @ 0x7fffe0f3f10c''
+
+\end{semiverbatim}
+\note{since plus is commutative, it doesnt matter what order the operands are in}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -880,6 +1089,29 @@ struct \alert<2>{CopyLValue} : bp::callable
   \{
     return a.clone();
   \}
+\};
+
+
+struct RkArrayTerminal 
+  : bp::when<bp::terminal<rk::array_impl<float> >, 
+             CopyLValue(bp::_value)>
+\{ \};
+
+
+\end{semiverbatim}
+\note{
+
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Kamasu hello world}
+\begin{semiverbatim}
+template <typename T>
+class array : array_impl<T>
+\{
+
 \};
 
 

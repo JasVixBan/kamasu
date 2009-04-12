@@ -79,6 +79,15 @@ namespace resophonic {
       }
     };
 
+#define RESOPHONIC_KAMASU_CUDA_ERROR_CHECK()			\
+    {								\
+      cudaError_t err = cudaGetLastError();			\
+      if (cudaSuccess != err)					\
+	{							\
+	  std::cout << "IS ERROR\n";				\
+	  throw cuda_exception(err, __FILE__, __LINE__);	\
+	}							\
+    }
 
   }
 }

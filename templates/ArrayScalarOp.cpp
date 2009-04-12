@@ -1,5 +1,6 @@
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/grammar.hpp>
+#include <resophonic/kamasu/exception.hpp>
 #include "opmap.hpp"
 #include <resophonic/pfeilhecht.h>
 
@@ -22,6 +23,8 @@ namespace resophonic {
 	throw std::runtime_error("kamasu internal error");
       }
 
+      std::cout << "AAAAUGH\n";
+      RESOPHONIC_KAMASU_CUDA_ERROR_CHECK();
       return rv;
     }
   }

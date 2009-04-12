@@ -131,6 +131,7 @@ namespace resophonic {
 
       array& operator<<(const boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
       void operator>>(boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
+      void operator>>(std::vector<T>&); 
 
       template <typename Expr>
       void 

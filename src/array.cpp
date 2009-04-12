@@ -71,6 +71,16 @@ namespace resophonic {
     }
 
     template <typename T>
+    void
+    array<T>::operator>>(std::vector<T>& v)
+    {
+      if (this->nd() != 1)
+	log_fatal("%s", "can't read multidimensional array into std::vector");
+      v.resize(this->dim(0));
+      self_.data_->device_to_host(&(v.data()[0]));
+    }
+
+    template <typename T>
     void 
     array<T>::show() const
     {

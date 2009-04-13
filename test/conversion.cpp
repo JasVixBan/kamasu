@@ -32,19 +32,19 @@ void from_gpu_test(unsigned n, unsigned m)
 {
   array<float> a(n, m);
   
-  for (int i=0; i<n; i++)
-    for (int j=0; j<m; j++)
+  for (unsigned i=0; i<n; i++)
+    for (unsigned j=0; j<m; j++)
       a(i,j) = i * m + j;
 
   bnu::matrix<float, bnu::column_major> fetched;
   a >> fetched;
 
-  ENSURE_EQUAL(a.nd(), 2);
+  ENSURE_EQUAL(a.nd(), 2u);
   ENSURE_EQUAL(a.dim(0), fetched.size1());
   ENSURE_EQUAL(a.dim(1), fetched.size2());
 
-  for (int i=0; i<n; i++)
-    for (int j=0; j<m; j++)
+  for (unsigned i=0; i<n; i++)
+    for (unsigned j=0; j<m; j++)
       ENSURE_EQUAL(fetched(i,j), i * m + j);
     
 }
@@ -53,20 +53,20 @@ void to_gpu_test(unsigned n, unsigned m)
 {
   bnu::matrix<float, bnu::column_major> a(n, m);
 
-  for (int i=0; i<n; i++)
-    for (int j=0; j<m; j++)
+  for (unsigned i=0; i<n; i++)
+    for (unsigned j=0; j<m; j++)
       a(i,j) = i * m + j;
 
   array<float> put;
 
   put << a;
 
-  ENSURE_EQUAL(put.nd(), 2);
+  ENSURE_EQUAL(put.nd(), 2u);
   ENSURE_EQUAL(put.dim(0), a.size1());
   ENSURE_EQUAL(put.dim(1), a.size2());
 
-  for (int i=0; i<n; i++)
-    for (int j=0; j<m; j++)
+  for (unsigned i=0; i<n; i++)
+    for (unsigned j=0; j<m; j++)
       //std::cout << i << "," << j << " == " << put(i,j) << " should be " << i*m+j << "\n";
       ENSURE_EQUAL(put(i,j), i * m + j);
 }

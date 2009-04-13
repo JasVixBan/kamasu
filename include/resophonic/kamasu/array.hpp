@@ -130,6 +130,7 @@ namespace resophonic {
       }
 
       array& operator<<(const boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
+      array& operator<<(const std::vector<T>&); 
       void operator>>(boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>&); 
       void operator>>(std::vector<T>&); 
 
@@ -173,6 +174,8 @@ namespace resophonic {
 
 	typename boost::result_of<Grammar(Expr const&, const state_t&, data_t&)>::type thingy 
 	  = Grammar()(expr, state_t(), data_);
+	CUDA_SAFE_CALL(cudaThreadSynchronize());
+
 	this->self_.copy_from(thingy);
       }
     };

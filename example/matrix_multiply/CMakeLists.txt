@@ -3,7 +3,7 @@ add_executable(matrixmul-kamasu
   )
 target_link_libraries(matrixmul-kamasu
   resophonic_kamasu
-  ${FOUND_CUDART}
+  ${CUDART_LIBRARY}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}
   )

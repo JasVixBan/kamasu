@@ -1,0 +1,6 @@
+set(KAMASU_INITIAL_CACHE TRUE 
+  CACHE BOOL "flag" FORCE)
+
+set(CMAKE_BUILD_TYPE Release CACHE STRING "build type" FORCE)
+set(CMAKE_CXX_COMPILER /usr/bin/gcc-4.3)
+set(CMAKE_CXX_FLAGS -std=c++0x)

@@ -176,16 +176,16 @@ ENDIF(NOT CUDA_NVCC)
 # CUDA_TARGET_LINK
 IF (NOT CUDA_TARGET_LINK)
 
-  FIND_LIBRARY(FOUND_CUDART
+  FIND_LIBRARY(CUDART_LIBRARY
     cudart
     PATHS ${CUDA_INSTALL_PREFIX}/lib $ENV{CUDA_LIB_PATH}
     DOC "\"cudart\" library"
     )
   
   # Check to see if cudart library was found.
-  IF(NOT FOUND_CUDART)
+  IF(NOT CUDART_LIBRARY)
     MESSAGE(FATAL_ERROR "Could not find cudart library (cudart)")
-  ENDIF(NOT FOUND_CUDART)  
+  ENDIF(NOT CUDART_LIBRARY)  
 
   # 1.1 toolkit on linux doesn't appear to have a separate library on 
   # some platforms.
@@ -206,19 +206,19 @@ IF (NOT CUDA_TARGET_LINK)
   ENDIF(FOUND_CUDA)
 
   # Always add cudart to the link line.
-  IF(FOUND_CUDART)
+  IF(CUDART_LIBRARY)
     SET(CUDA_TARGET_LINK
-      ${CUDA_TARGET_LINK} ${FOUND_CUDART}
+      ${CUDA_TARGET_LINK} ${CUDART_LIBRARY}
       )
     MARK_AS_ADVANCED(
       CUDA_TARGET_LINK 
       CUDA_LIB
       FOUND_CUDA
-      FOUND_CUDART
+      CUDART_LIBRARY
       )
-  ELSE(FOUND_CUDART)
+  ELSE(CUDART_LIBRARY)
     MESSAGE(FATAL_ERROR "Could not find cuda libraries.")
-  ENDIF(FOUND_CUDART)
+  ENDIF(CUDART_LIBRARY)
   
 ENDIF(NOT CUDA_TARGET_LINK)
 

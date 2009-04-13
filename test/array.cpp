@@ -173,8 +173,8 @@ TEST(slice_2d_reduce)
   // 2 6 10 14 18
   array<float> sliced = a(index_range(1), index_range(0, 5));
 
-  ENSURE_EQUAL(sliced.nd(), 1);
-  ENSURE_EQUAL(sliced.dim(0), 5);
+  ENSURE_EQUAL(sliced.nd(), 1u);
+  ENSURE_EQUAL(sliced.dim(0), 5u);
 
   for (unsigned i=0; i<5; i++)
     log_trace("[%u] == %f",  i % sliced(i));
@@ -195,9 +195,9 @@ TEST(slice_2d)
     //    7  11  15
 
     array<float> sliced = a(index_range(1,3), index_range(1,4));
-    ENSURE_EQUAL(sliced.nd(), 2);
-    ENSURE_EQUAL(sliced.dim(0), 2);
-    ENSURE_EQUAL(sliced.dim(1), 3);
+    ENSURE_EQUAL(sliced.nd(), 2u);
+    ENSURE_EQUAL(sliced.dim(0), 2u);
+    ENSURE_EQUAL(sliced.dim(1), 3u);
 
     // verify they contain what they should
     ENSURE_EQUAL(sliced(0,0), 6.0);
@@ -211,8 +211,8 @@ TEST(slice_2d)
     // 5 6 7 8
 
     array<float> sliced = a(index_range(0,4), index_range(1));
-    ENSURE_EQUAL(sliced.nd(), 1);
-    ENSURE_EQUAL(sliced.dim(0), 4);
+    ENSURE_EQUAL(sliced.nd(), 1u);
+    ENSURE_EQUAL(sliced.dim(0), 4u);
 
     log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 5.0);
@@ -226,8 +226,8 @@ TEST(slice_2d)
     // 5 6 7 8
 
     array<float> sliced = a(index_range(_,_), index_range(1));
-    ENSURE_EQUAL(sliced.nd(), 1);
-    ENSURE_EQUAL(sliced.dim(0), 4);
+    ENSURE_EQUAL(sliced.nd(), 1u);
+    ENSURE_EQUAL(sliced.dim(0), 4u);
 
     log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 5.0);
@@ -241,8 +241,8 @@ TEST(slice_2d)
     // 8 7 6 5 
 
     array<float> sliced = a(index_range(_,_,-1), index_range(1));
-    ENSURE_EQUAL(sliced.nd(), 1);
-    ENSURE_EQUAL(sliced.dim(0), 4);
+    ENSURE_EQUAL(sliced.nd(), 1u);
+    ENSURE_EQUAL(sliced.dim(0), 4u);
 
     log_trace("[0] == %f",  sliced(0));
     ENSURE_EQUAL(sliced(0), 8.0);
@@ -728,5 +728,64 @@ TEST(array_is_column_major)
   ENSURE_EQUAL(a.index_of(1,1), 3);
   ENSURE_EQUAL(a.index_of(0,2), 4);
   ENSURE_EQUAL(a.index_of(1,2), 5);
+
+}
+
+namespace {
+  struct should_have_thrown { };
+}
+
+const static unsigned precision = 18;
+
+#define ED_FAIL(L, R, EPS) try {					\
+    std::cout << std::fixed << std::setprecision(18)			\
+	      << L << " near " << R << " epsilon=" << EPS << "... ";	\
+    ENSURE_DISTANCE(L, R, EPS);						\
+    throw should_have_thrown();						\
+  } catch (const I3Test::test_failure&) {				\
+    std::cout << "  no, as expected.\n";				\
+  } catch (struct should_have_thrown&) {				\
+    FAIL("didnt throw as expected");					\
+  }
+
+#define ED_PASS(L, R, EPS) {						\
+    std::cout << std::fixed << std::setprecision(18)			\
+	      << L << " near " << R << " epsilon=" << EPS << "... ";	\
+    ENSURE_DISTANCE(L, R, EPS);						\
+    std::cout << "yes, as expected.\n";					\
+  }
+
+
+
+TEST(ensure_distance)
+{
+  ED_PASS(1, 2, 5);
+  ED_PASS(1, 2, 0.5 + 0.1e-250);
+  ED_FAIL(1, 2, 0.5 - 0.1e-14);
+  ED_FAIL(0.1, 0.2, 0.5 - 0.1e-14);
+  ED_FAIL(0.01, 0.02, 0.5  - 0.1e-14);
+  ED_FAIL(0.001, 0.002, 0.5  - 0.1e-14);
+  ED_FAIL(0.0001, 0.0002, 0.5  - 0.1e-14);
+  ED_FAIL(0.00001, 0.00002, 0.5  - 0.1e-14);
+  ED_FAIL(0.000001, 0.000002, 0.5  - 0.1e-14);
+  ED_FAIL(0.1e-14, 0.2e-14, 0.5  - 0.1e-14);
+  ED_FAIL(0.1e-15, 0.2e-15, 0.5  - 0.1e-14);
+
+  ED_PASS(5, 10, 0.5);
+//  ED_PASS(1, 2, 0.5000001);
+//  ED_PASS(0.1, 0.2, 0.5000001);
+//  ED_PASS(0.05, 0.1, 0.5000001);
+//  ED_PASS(0.005, 0.01, 0.5000001);
+//  ED_PASS(0.0005, 0.001, 0.5000001);
+//  ED_PASS(0.00005, 0.0001, 0.5000001);
+//  ED_PASS(0.000005, 0.00001, 0.5000001);
+//  ED_PASS(0.0000005, 0.000001, 0.5000001);
+
+
+
+  ED_PASS(1, 2, 1.0000001);
+
+  ED_PASS(9, 10, 0.1);
+  ED_FAIL(9, 10, 0.1 - 1.0e-16);
 
 }

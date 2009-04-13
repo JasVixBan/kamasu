@@ -8,8 +8,8 @@ emph={const,typedef,struct,return,operator,float},       emphstyle=\color{orange
 emph={[2]bp,when,terminal,_value,_child0,_left,_right},  emphstyle={[2]\color{yellow}}
 }
 
-\setbeameroption{show notes}
-\setbeameroption{show notes on second screen=bottom}
+% \setbeameroption{show notes}
+% \setbeameroption{show notes on second screen=bottom}
 
 \mode<presentation>
 {
@@ -117,7 +117,8 @@ Aspen, CO}
     to what happens after this talk, lots of time for questions and
     discussion.
 
-    Not a finished product.
+    Not a finished product.  We don't have special handling for
+    triangular matrices or any of that. 
    }
    \titlepage
 \end{frame}
@@ -470,7 +471,7 @@ b(4) // which index is that?
 
 semantics is always 'shared' unless you specifically copy something... same as numpy.
 
-gpu_data is stored in column-major form for compatibilty with cublas,
+gpu\_data is stored in column-major form for compatibilty with cublas,
 (if the stride of the last dimension is one)
 
 We need to be able to find the index in memory of a particular entry
@@ -478,6 +479,10 @@ if we index it with parenthesis, on the c++ side, and also, from the
 CUDA side, we start with the 3-dimensional grid-block-thread index,
 the indexes and dimensions of which have nothing to do with the array,
 and we have to know which entry we're working on.
+
+linear size could be recomputed, it is just the product of the dimensions, 
+we precompute to save time, as numpy does
+
 }
 \end{frame}
 
@@ -1108,24 +1113,161 @@ struct RkArrayTerminal
 
 \begin{frame}[fragile]{Kamasu hello world}
 \begin{semiverbatim}
-template <typename T>
-class array : array_impl<T>
-\{
 
-\};
+array<float> a, b, c;
 
-
-struct RkArrayTerminal 
+\alert<2>{c = (a / 3.0f) * (b / 7.0f);}
+\only<-3>{\alert<3>{
+struct Array
   : bp::when<bp::terminal<rk::array_impl<float> >, 
-             CopyLValue(bp::_value)>
+             bp::_value>
 \{ \};
 
+struct Scalar
+  : bp::or_<bp::when<bp::terminal<float>, bp::_value>, ...>
+\{ \};
+}}\only<4->{\alert<4>{
+struct Grammar 
+  : bp::or_<bp::when<bp::divides<\alert<5>{Array, Scalar}>,
+                     \alert<5>{ArrayScalarOp}(bp::tag::divides(),
+                                   Array(bp::_left), 
+                                   Scalar(bp::_right))>,
+            bp::when<bp::multiplies<\alert<6>{Array, Array}>,
+                     \alert<6>{ArrayArrayOp}(bp::tag::multiplies(),
+                                  Array(bp::_left), 
+                                  Array(bp::_right))> 
+            >
+\{ \};
+}}
 
 \end{semiverbatim}
 \note{
 
 }
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{a / 7.0f:  Transform declaration}
+\begin{semiverbatim}
+
+struct ArrayScalarOp : bp::callable
+\{
+  typedef rk::array_impl<float> result_type;
+
+  template <typename Op>
+  result_type 
+  operator()(Op, const rk::array_impl<float>& v, const float& f);
+\};
+
+
+\end{semiverbatim}
+\note{
+This is also a compliation firewall  
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{a / 7.0f; Transform implementation}
+\begin{semiverbatim}template <>
+ArrayScalarOp::result_type
+ArrayScalarOp::operator()(boost::proto::tag::minus, 
+                          const rk::array_impl<float>& rv, 
+                          const float& scalar)
+\{
+  switch (rv.nd) \{
+    case 1:  k_easd1(rv.data() + rv.offset, rv.linear_size, 
+                    rv.factors, rv.strides, 
+                    scalar); break;
+    case 2:  k_easd2(rv.data() + rv.offset, rv.linear_size, 
+                    rv.factors, rv.strides, 
+                    scalar); break;
+    //...
+        default:
+    throw dimensions_out_of_range(rv.nd);
+  \}
+  return rv;
+\}
+\end{semiverbatim}
+\note{
+we're on the other side of the compliation firewall
+}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{a / 7.0f: calculate gridsize, call kernel}
+\begin{semiverbatim}
+void k_easd2(float* data, 
+             std::size_t linear_size,
+             const std::size_t* factors, 
+             const int* strides,
+             float scalar)
+\{
+  bd_t bd = gridsize(linear_size);
+
+  k_easd2_knl<\hskip0pt<\hskip0pt<bd.first, bd.second, 0>\hskip0pt>\hskip0pt>
+    (data,
+     linear_size,
+     factors[0],factors[1],
+     strides[0],strides[1],
+     scalar);
+\}
+\end{semiverbatim}
+\note{ 
+  things get unrolled for passing to a cuda kernel.  We can't
+  pass pointers, note that the factors and strides are in host memory,
+  and these kernel functions expect pods
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{a / 7.0f: kernel function}
+\begin{semiverbatim}__global__ void
+k_easd2_knl(float* data,
+            std::size_t linear_size,
+            const std::size_t factor0, const std::size_t factor1,
+            const int stride0, const int stride1,
+            float scalar)
+\{
+  if (INDEX() >= linear_size)
+    return;
+
+  unsigned actual_index = 
+    INDEX()/factor1*stride1 
+    +  unsigned(INDEX() % factor1)/factor0*stride0;
+
+  data[actual_index] /= scalar;
+\}
+\end{semiverbatim}
+\note{ 
+  things get unrolled for passing to a cuda kernel.  We can't
+  pass pointers, note that the factors and strides are in host memory,
+  and these kernel functions expect pods
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}[fragile]{}
+% \begin{semiverbatim}template <>
+% ArrayArrayOp::result_type
+% ArrayArrayOp::operator()(boost::proto::tag::multiplies, 
+%                          const rk::array_impl<float>& lhs, 
+%                          const rk::array_impl<float>& rhs) 
+% \{
+%   // verify dimensions, etc.
+% 
+%   cublasSgemm(lhs, rhs) // call cublas matrix multiplication
+% 
+%   return rv;
+% \}
+% \end{semiverbatim}
+% \note{ 
+%   things get unrolled for passing to a cuda kernel.  We can't
+%   pass pointers, note that the factors and strides are in host memory,
+%   and these kernel functions expect pods
+% }
+% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
@@ -1174,6 +1316,15 @@ struct RkArrayTerminal
 
 \section{Related efforts}
 
+\begin{frame}{CuPP}
+  
+\end{frame}
+
+\begin{frame}{komrade}
+  
+\end{frame}
+
+
 \begin{frame}[fragile]{PyCuda (Andreas Kl\"ockner)}
   \begin{semiverbatim}import pycuda.autoinit, pycuda.driver as drv, numpy
 
@@ -1205,6 +1356,32 @@ print dest-a*b
 
 \section{resophonic::kamasu}
 \subsection{benchmarks}
+
+\begin{frame}{matrix multiplication}
+gpu runs at theoretical 933GFlops peak 4k -on-a-side matrixis 16M of
+single precision floats 68billion multiplies, only takes a couple of
+seconds a singlethreaded cpu implementation just sits there staring
+and you get bored.
+
+on the other hand, operations with low numerical intensity like
+multiplying a vector by a scalar are slower, by say 10 to 100
+
+can't really benchmark the worst case, to move one float out to the
+video card, launch a kernel to multiply it, move it back... the
+multiply takes however many clock cycles on the cpu, and the gpu case
+could be held up by who-knows what.   
+
+So any real benchmarking here is premature optimization, you see posts
+mentionin various speedups on various problems, YMMV.  
+
+\end{frame}
+\begin{frame}{scalar multiplication}
+
+this is guarnteed to be slower no matter what, as a copy across the
+bus costs more than a multiply (?)
+
+\end{frame}
+
 
 \end{document}
 

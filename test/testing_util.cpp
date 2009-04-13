@@ -48,10 +48,10 @@ array<float> make_4x5()
 	a(i,j) = ++counter;
       }
 
-  ENSURE_EQUAL(a.nd(), 2);
-  ENSURE_EQUAL(a.dim(0), 4);
-  ENSURE_EQUAL(a.dim(1), 5);
-  ENSURE_EQUAL(a.linear_size(), 20);
+  ENSURE_EQUAL(a.nd(), 2u);
+  ENSURE_EQUAL(a.dim(0), 4u);
+  ENSURE_EQUAL(a.dim(1), 5u);
+  ENSURE_EQUAL(a.linear_size(), 20u);
  
   check_unchanged_4x5(a);
 
@@ -78,20 +78,19 @@ array<float> make_1d(unsigned n)
 
   array<float> a(shp);
   ENSURE_EQUAL(a.linear_size(), n);
-  ENSURE_EQUAL(a.nd(), 1);
+  ENSURE_EQUAL(a.nd(), 1u);
   ENSURE_EQUAL(a.dim(0), n);
 
   a.show();
 
-  for (int i=0; i<n; i++)
+  for (unsigned i=0; i<n; i++)
     a(i) = i;
 
-  for (int i=0; i<n; i++)
+  for (unsigned i=0; i<n; i++)
     ENSURE_EQUAL(a(i), i);
 
   return a;
 }
-
 
 array<float> make_3d(unsigned n)
 {
@@ -102,7 +101,7 @@ array<float> make_3d(unsigned n)
 
   array<float> a(shp);
   ENSURE_EQUAL(a.linear_size(), n * n * n);
-  ENSURE_EQUAL(a.nd(), 3);
+  ENSURE_EQUAL(a.nd(), 3u);
   ENSURE_EQUAL(a.dim(0), n);
   ENSURE_EQUAL(a.dim(1), n);
   ENSURE_EQUAL(a.dim(2), n);
@@ -111,9 +110,9 @@ array<float> make_3d(unsigned n)
 
   unsigned counter = 0;
 
-  for (int k=0; k<n; k++)
-    for (int j=0; j<n; j++)
-      for (int i=0; i<n; i++)
+  for (unsigned k=0; k<n; k++)
+    for (unsigned j=0; j<n; j++)
+      for (unsigned i=0; i<n; i++)
 	a(i,j,k) = counter++;
 
   return a;
@@ -122,7 +121,7 @@ array<float> make_3d(unsigned n)
 void check_3d(const array<float>&a, unsigned n)
 {
   ENSURE_EQUAL(a.linear_size(), n * n * n);
-  ENSURE_EQUAL(a.nd(), 3);
+  ENSURE_EQUAL(a.nd(), 3u);
   ENSURE_EQUAL(a.dim(0), n);
   ENSURE_EQUAL(a.dim(1), n);
   ENSURE_EQUAL(a.dim(2), n);
@@ -131,9 +130,9 @@ void check_3d(const array<float>&a, unsigned n)
 
   unsigned counter = 0;
 
-  for (int k=0; k<n; k++)
-    for (int j=0; j<n; j++)
-      for (int i=0; i<n; i++)
+  for (unsigned k=0; k<n; k++)
+    for (unsigned j=0; j<n; j++)
+      for (unsigned i=0; i<n; i++)
 	ENSURE_EQUAL(a(i,j,k), counter++);
 }
 

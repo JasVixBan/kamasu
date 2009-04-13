@@ -1,176 +1,193 @@
-#include <boost/fusion/sequence.hpp>
-
+#include <iostream>
+#include <vector>
+#include <array>
 #include <boost/proto/proto.hpp>
-#include <boost/ref.hpp>
-#include <cassert>
+#include <boost/proto/transform.hpp>
+#include <boost/mpl/print.hpp>
+#include <boost/mpl/vector.hpp>
+#include <tuple>
+
+#include <boost/mpl/if.hpp>
+#include <boost/function.hpp>
+#include <boost/array.hpp>
+#include <boost/type_traits/is_integral.hpp>
+#include <boost/type_traits/is_same.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <resophonic/kamasu/name_of.hpp>
+#include "cuda.h"
+
 
 namespace bp = boost::proto;
 using resophonic::name_of;
 
-//
-// Tag for calls to exp() in our DSEL
-//
-struct exp_tag 
-{ 
-  friend std::ostream& operator<<(std::ostream& os, exp_tag) 
-  { 
-    return os << "exp_tag"; 
-  }
-};
+template <typename T, T... Args> struct product;
 
-//
-//  The terminal.  Assume this thing is very heavy.  Some construtors
-//  have assert(0) in them to verify they aren't called.
-//
-//
-struct array_impl 
+template <typename T, T Head, T... Tail>
+struct product<T, Head, Tail...> : private product<T, Tail...>
 {
-  std::string name;
-
-  array_impl() 
-    : name("NONAME") 
-  { }
-
-  array_impl(const std::string& name_) 
-    : name(name_) 
-  { 
-    std::cout << "name=" << name << "\n";
-  }
-
-  //
-  //  constructors
-  //
-
-  array_impl(array_impl& rhs) 
-    : name(rhs.name + "_copied")
-  { }
-
-  array_impl(const array_impl& rhs) 
-    : name(rhs.name+ "_copied")
-  { }
-
-  array_impl(array_impl&& rhs) 
-  { 
-    name.swap(rhs.name);
-    name += "_moved";
-  }
-
-  array_impl& operator=(array_impl&& rhs)
-  {
-    name.swap(rhs.name);
-    name += "_moved";
-    return *this;
-  }
-
-  friend std::ostream& operator<<(std::ostream& os, 
-				  const array_impl&)
-  {
-    return os << "array_impl";
-  }
+  typedef product<T, Tail...> base_t;
+  const static T value = Head * base_t::value;
 };
 
-struct UnaryFnCall;
-struct array;
+template <typename T, T Head>
+struct product<T, Head>
+{
+  const static T value = Head;
+};
 
-struct Grammar :
-  bp::or_<bp::when<bp::terminal<array_impl>, bp::_value>,
-	  bp::when<bp::unary_expr<exp_tag, Grammar>, 
-		   UnaryFnCall(exp_tag(), 
-			       Grammar(bp::_child0))> 
-	  >
+template <template <typename> class Trait, 
+	  typename... Args> struct all;
+
+template <template <typename> class Trait, 
+	  typename Head, 
+	  typename... Tail>
+struct all<Trait, Head, Tail...> : private all<Trait, Tail...>
+{
+  typedef all<Trait, Tail...> base_t;
+
+  const static bool value = Trait<Head>::value && base_t::value;
+};
+
+template <template <typename> class Trait,
+	  typename Head>
+struct all<Trait, Head>
+{
+  const static bool value = Trait<Head>::value;
+};
+
+
+
+template <typename T, unsigned... Dims>
+struct array_impl
+{
+  const static unsigned linear_size = product<unsigned, Dims...>::value;
+  const static unsigned dimensionality = sizeof...(Dims);
+  T data[linear_size];
+
+  array_impl() { std::cout << "create array with " << linear_size << " entries.\n"; }
+
+  template <typename... Args>
+  T& operator()(Args... values) 
+  { 
+    static_assert(sizeof...(Args) == dimensionality, 
+		  "Number of arguments does not match matrix dimensionality");
+    static_assert(all<boost::is_integral, Args...>::value, "Not all args are integral");
+    //    unsigned args[dimensionality] = {values...};
+  }
+
+};
+
+/*
+template <typename T, unsigned... Dims>
+array<T, Dims...> 
+operator*(const array<T, Dims...>& lhs, T rhs)
+{
+  return array<T, Dims...>();
+}
+*/
+
+struct Array 
+  : bp::when<bp::terminal<array_impl<bp::_, bp::N, bp::N> >, 
+	     bp::_value> 
 { };
 
-template <typename T>
-struct Expression;
+struct Float : bp::when<bp::terminal<float>, bp::_value> { };
 
-struct Domain
-  : bp::domain<bp::pod_generator<Expression>, Grammar>
-{ };
-
-template <typename Expr>
-struct Expression
+struct _linearsize : bp::transform<_linearsize>
 {
-  BOOST_PROTO_EXTENDS(Expr, Expression<Expr>, Domain);
+  template <typename Expr, typename State, typename Data>
+  struct impl : bp::transform_impl<Expr, State, Data>
+  {
+    typedef unsigned result_type;
+    
+    result_type operator()(typename impl::expr_param expr,
+			   typename impl::state_param state,
+			   typename impl::data_param data) const
+    {
+      return impl::expr::linear_size;
+    }
+  };
 };
 
-template<class T>
-typename bp::result_of::make_expr<
-  exp_tag,
-  Domain,
-  const T&
-  >::type
-exp (const T& t)
-{
-  return bp::make_expr<exp_tag, Domain>(boost::ref(t));
+namespace boost {
+  namespace proto {
+    template <>
+    struct is_callable<_linearsize> : boost::mpl::true_ { };
+  }
 }
 
-//
-//  Our expression type that 
-//
-struct array : public Expression<bp::terminal<array_impl>::type>
-{
-  typedef array_impl impl_t;
-
-  impl_t& self() { return boost::proto::value(*this); }
-
-  array() { assert(0); }
-
-  array(const std::string& name)
-  {
-    self().name = name;
-  }
-
-  array(const array&) { assert(0); }
-
-  array(array&&) { assert(0); }
-  
-  template <typename Expr>
-  array& operator=(Expr const& expr)
-  {
-    bp::display_expr(expr, std::cout);
-    BOOST_MPL_ASSERT(( bp::matches<Expr, Grammar> ));
-
-    typedef typename boost::result_of<Grammar(Expr const&)>::type result_t;
-
-    std::cout << "result_t = " << name_of<result_t>() << "\n";
-
-    return *this;
-  }
-};
-
-//
-//  The transform for calls to exp.  You'd like to be able to see if
-//  this is getting called with a movable object.  
-//
-struct UnaryFnCall : bp::callable
+/*
+struct Multiply : bp::callable
 {
   typedef array_impl result_type;
-  
-  template <typename Tag>
-  result_type
-  operator()(Tag, const array_impl& t)
+  template <typename T>
+  result_type operator()(const T& t)
   {
-    std::cout << "transform a const ref\n";
-    array_impl tmp(t);
-    return tmp;
+    return str(boost::format("%s @ %p") % t % &t);
+  }
+
+  result_type operator()(bp::tag::plus, const std::string& lhs, const std::string& rhs)
+  {
+    return str(boost::format("%s PLUS %s") % lhs % rhs );
   }
 };
 
+struct Grammar
+  : bp::or_<Array,
+	    Float,
+	    bp::when<bp::multiplies<Array, Float>
+		     Multiply(Array(bp::_left), Float(bp::_right))>
+	    >
+{ };
 
-int main(int, char**)
+*/
+
+template <typename T, unsigned... Dims>
+struct array : bp::terminal<array_impl<T, Dims...> >::type
+{ 
+  template <typename Expr>
+  array& operator=(const Expr& expr)
+  {
+    BOOST_MPL_ASSERT((bp::matches<Expr, Array>));
+    std::cout << name_of<Expr>() << "\n";
+  }
+};
+
+std::string kernel = "\
+__global__ void add_to (float* data, float scalar)\
+{\
+  data[INDEX] += scalar;\
+}\
+";
+
+int main() 
 {
-  array a("a"), b("b");
+  array<float, 3,4> a;
+  //  array<float, 4,3> b;
 
-  // Here, only one copy is made
-  a = exp(b);
-  std::cout << "a's name:" << a.self().name << "\n\n";
+  //  std::cout << "matches:"
+  //	    << bp::matches<bp::terminal<array_impl<float, 3, 7> >::type, Array>::type << "\n";
 
-  // Here, two copies are made
-  //  a = exp(exp(exp(b)));
-  //  std::cout << "a's name:" << a.self().name << "\n";
+  //  a * 7.0f;
 
+  //  a(2,3);
 
+  CUmodule module;
+  CUresult res = cuModuleLoadDataEx(&module,  // CuModule*
+				    (void*)kernel.c_str(), // const void*
+				    0, // unsigned numoptions
+				    0, // CUjit_option* options
+				    0); // void** optionValues
 
+  std::cout << "res is " << res << "\n";
+  std::cout << ">>>" << bp::when<Array, _linearsize(bp::_value)>()(a) << "\n";
+  std::cout << ">>> " << array_impl<float, 3, 4>::linear_size << "\n";
+  a = a;
 
+  //  std::cout << name_of<array<float, 3,4,5>>() << "\n";
+
+  // std::vector<unsigned> v = {1,2,3};
+
+  return 0;
 }
+

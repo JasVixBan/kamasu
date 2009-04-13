@@ -28,7 +28,7 @@ int main(int argc, char** argv)
   std::vector<float> coeff(N);
   math.restart();
 
-  for (int n=0; n<N; n++)
+  for (unsigned n=0; n<N; n++)
     {
       filtered += a(rk::index_range(n,data_len-N+n)) * coeff[n];
     }

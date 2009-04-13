@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 
   std::cout << "taking dot product of two " << n << " element vectors (" << times << " times).\n";
   math.restart();
-  for (int i=0; i<times; i++)
+  for (unsigned i=0; i<times; i++)
     rk::dot(a,b);
 
   std::cout << "mathtime: " << math.elapsed() << "\n";

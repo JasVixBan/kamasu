@@ -1,4 +1,5 @@
 #define SHOW() std::cout << __PRETTY_FUNCTION__ << "\n"
+
 #include <iostream>
 
 struct S {

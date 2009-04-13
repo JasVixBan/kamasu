@@ -63,6 +63,16 @@ namespace resophonic {
     }
 
     template <typename T>
+    array<T>&
+    array<T>::operator<<(const std::vector<T>& v)
+    {
+      std::vector<std::size_t> newshape = make_vector(v.size());
+      self_.reshape(newshape, true);
+      self_.data_->host_to_device(&(v.data()[0]), v.size());
+      return *this;
+    }
+
+    template <typename T>
     void
     array<T>::operator>>(boost::numeric::ublas::matrix<T,boost::numeric::ublas::column_major>& m)
     {

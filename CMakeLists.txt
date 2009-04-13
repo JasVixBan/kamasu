@@ -1,5 +1,20 @@
 cmake_minimum_required(VERSION 2.6)
 
+if(NOT KAMASU_INITIAL_CACHE)
+  message(FATAL_ERROR "
+   There are values in CMAKE_SRC_DIR/CMakeInitialCache.txt
+   that need setting, have a look there for
+   what they are and how to disable this error.
+
+   or just run (from your empty build dir)
+   /path/to/kamasu/source/configure
+")
+endif(NOT KAMASU_INITIAL_CACHE)
+
+set(CMAKE_CXX_COMPILER /usr/bin/g++-4.3)
+set(CMAKE_CXX_FLAGS -std=c++0x)
+
+
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -96,6 +111,12 @@ find_library(CUFFT_LIBRARY
   NO_DEFAULT_PATH
   )
 
+find_library(CUDA_DRIVER_LIBRARY
+  cuda
+  PATHS /usr/lib
+  NO_DEFAULT_PATH
+  )
+
 find_library(CUDPP_LIBRARY
   cudpp64
   PATHS ${CMAKE_SOURCE_DIR}/../cudpp_1.0a/lib
@@ -126,6 +147,7 @@ add_subdirectory(python)
 add_subdirectory(test)
 add_subdirectory(example)
 add_subdirectory(benchmark)
+add_subdirectory(utils)
 
 add_executable(proto proto.cpp)
 

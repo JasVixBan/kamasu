@@ -30,9 +30,12 @@ struct matrix_multiply_2
     int main() 
     { 
       for (unsigned i = 0; i<x; i++)
-	c = (a + 3.0f) * (b + 7.0f);
+	c = (a / 3.0f) * (b / 7.0f);
       return 0;
     }
+
+    void verify(const ublas::matrix<ublas::column_major>& v) { }
+
   };
 
   struct cpu : benchmark<cpu>
@@ -40,7 +43,7 @@ struct matrix_multiply_2
     unsigned n, x;
     cpu(unsigned n_, unsigned x_) : n(n_), x(x_) { }
 
-    ublas::matrix<float> a, b, c;
+    ublas::matrix<float> a, b, result;
 
     void start() 
     { 
@@ -53,11 +56,13 @@ struct matrix_multiply_2
     int main() 
     { 
       for (unsigned i=0; i<x; i++)
-	c = prod(a * 3.0f, b * 7.0f);
+	result = prod(a * 3.0f, b * 7.0f);
+      if (result.size1() != n || result.size2() != n)
+	throw std::runtime_error("wrong size");
       return 0;
     }
   };
 };
 
-MAIN(2);
+MAIN();
 

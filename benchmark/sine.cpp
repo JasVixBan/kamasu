@@ -17,19 +17,29 @@ struct sine
     unsigned m, n;
     kamasu(unsigned m_, unsigned n_) : m(m_), n(n_) { }
 
-    array<float> a;
-
+    array<float> result;
+    std::vector<float> v;
     void start() 
     { 
-      a = array<float>(m); 
+      v.resize(m);
+      rng.seed(13);
+      for (unsigned i=0; i<m; i++)
+	v[i] = rand();
     }
     void stop() 
     { 
     }
     void main() 
     { 
+      result << v;
       for (unsigned i=0; i<n; i++)
-	a = resophonic::kamasu::sin(a);
+	result = resophonic::kamasu::sin(result);
+      result >> v;
+    }
+    void verify(const std::vector<float>& ublas) 
+    { 
+      for(unsigned i=0; i<m; i++)
+	ENSURE_DISTANCE(ublas[i], v[i], 1.0e-04);
     }
   };
 
@@ -38,11 +48,14 @@ struct sine
     unsigned m,n;
     cpu(unsigned m_, unsigned n_) : m(m_), n(n_) { }
 
-    std::vector<float> a;
+    std::vector<float> result;
 
     void start() 
     { 
-      a.resize(m);
+      result.resize(m);
+      rng.seed(13);
+      for (unsigned i=0; i<m; i++)
+	result[i] = rand();
     }
     void stop() 
     { 
@@ -51,7 +64,7 @@ struct sine
     { 
       for (unsigned j=0; j<n; j++)
 	for (unsigned i=0; i<m; i++)
-	  a[i] = ::sin(a[i]);
+	  result[i] = ::sin(result[i]);
     }
   };
 };

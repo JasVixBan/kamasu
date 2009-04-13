@@ -42,8 +42,8 @@ int main(int argc, char** argv)
   float* hostdata;
   CUDA_SAFE_CALL( cudaMallocHost((void**)&hostdata, sizeof(float) * nsamples) );
 
-  read(fd, hostdata, sizeof(float) * nsamples);
-
+  int i =read(fd, hostdata, sizeof(float) * nsamples);
+  i ++;
   // alloc/fill device input memory
 
   float* gpu_indata;
@@ -58,10 +58,10 @@ int main(int argc, char** argv)
   unlink(argv[2]);
   int outfd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
   float nsteps = div(nsamples-fftsize, stepsize).quot + 1;
-  write(outfd, &nsteps, sizeof(float));
+  i = write(outfd, &nsteps, sizeof(float));
 
   float writefreqs = nfreqs;
-  write(outfd, &writefreqs, sizeof(float));
+  i = write(outfd, &writefreqs, sizeof(float));
 
   // create device output memory
 
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
   // loop through input data calling ffts
   int j=0;
-  for (int i=0; i<nsamples-fftsize; i+=stepsize, j++)
+  for (unsigned i=0; i<nsamples-fftsize; i+=stepsize, j++)
     {
       if (i%1000 == 0)
 	{

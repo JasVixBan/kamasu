@@ -18,9 +18,9 @@ namespace rk = resophonic::kamasu;
 
 int main(int argc, char** argv)
 {
-  int fd = open("signal.dat", O_RDONLY);
-  assert(fd);
-  
+  //  int fd = open("signal.dat", O_RDONLY);
+  //  assert(fd);
+
   rk::array<float> signal(nchan, nsamp);
   rk::array<float> linear = rk::linspace<float>(0, 2*M_PI, sr);
   

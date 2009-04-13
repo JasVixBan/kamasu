@@ -205,12 +205,12 @@ void mmul_test(const unsigned M, const unsigned N, const unsigned K)
   bnu::matrix<float, bnu::column_major> A(M,N), B(N,K);
   array<float> a, b;
 
-  for (int m = 0; m<M; m++)
-    for (int n = 0; n<N; n++)
+  for (unsigned m = 0; m<M; m++)
+    for (unsigned n = 0; n<N; n++)
       A(m,n) = n*M + m;
 
-  for (int n = 0; n<N; n++)
-    for (int k = 0; k<K; k++)
+  for (unsigned n = 0; n<N; n++)
+    for (unsigned k = 0; k<K; k++)
       B(n,k) = k*N + k;
 
   // move to gpu
@@ -221,7 +221,7 @@ void mmul_test(const unsigned M, const unsigned N, const unsigned K)
 
   c = a * b;
 
-  ENSURE_EQUAL(c.nd(), 2);
+  ENSURE_EQUAL(c.nd(), 2u);
   ENSURE_EQUAL(c.dim(0), M);
   ENSURE_EQUAL(c.dim(1), K);
 
@@ -234,10 +234,10 @@ void mmul_test(const unsigned M, const unsigned N, const unsigned K)
   bnu::matrix<float, bnu::column_major> kamasu_c;
   c >> kamasu_c;
 
-  for (int m=0; m<M; m++)
-    for (int k=0; k<K; k++)
+  for (unsigned m=0; m<M; m++)
+    for (unsigned k=0; k<K; k++)
       {
-	ENSURE_DISTANCE(C(m,k), kamasu_c(m,k), C(m,k)*10e-07);
+	ENSURE_DISTANCE(C(m,k), kamasu_c(m,k), C(m,k)*1.0e-07);
       }
 }
 

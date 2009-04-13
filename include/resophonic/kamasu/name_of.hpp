@@ -108,11 +108,11 @@ namespace resophonic {
     int status;
     char *realname;
     std::string to_return;
-    const static char *const notavailable = "N/A";
+    const static char *const notavailable = "";
     const std::type_info &ti = typeid(T);
     const char* mangled = ti.name();
     if (!mangled)
-       to_return = notavailable;
+      return "[no ti.name]";
     else
     {
       realname = abi::__cxa_demangle(ti.name(), 0, 0, &status);

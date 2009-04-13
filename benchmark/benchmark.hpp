@@ -8,6 +8,8 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <boost/random.hpp>
+#include <test/I3Test.h>
 
 template <typename Derived>
 struct benchmark
@@ -16,6 +18,12 @@ struct benchmark
   rusage start_rusage, stop_rusage;
 
   Derived& derived() { return *(static_cast<Derived*>(this)); }
+
+  boost::mt19937 rng;
+  boost::uniform_real<float> uniform_distribution;
+  boost::variate_generator<boost::mt19937, boost::uniform_real<float> > rand;
+
+  benchmark() : uniform_distribution(-10, 10), rand(rng, uniform_distribution) { }
 
   void start()
   {
@@ -33,7 +41,7 @@ struct benchmark
     clock_gettime(CLOCK_REALTIME, &fullendtime);
   }
 
-  int run(int argc, const char** argv)
+  int run()
   {
     start();
     derived().main();
@@ -56,11 +64,10 @@ struct benchmark
     //	      << "full_ns:" << full_ns << "\n";
 
     //std::cerr << boost::format("%10s %10s %10s %10s\n") % "user" % "sys" % "wall" % "full";
-    for (int i=0; i<argc; i++)
-      std::cout << argv[i] << " ";
     std::cout << boost::format("%10f %10f %10f %10f\n") % user % sys % wall % full;
     return 0;
   }
+
 };
 
 struct cpu 
@@ -79,41 +86,54 @@ struct kamasu
   };
 };
 
-template <typename Test, typename Selector>
-int main_impl1(int argc, const char** argv)
-{
-  if (argc < 1)
-    {
-      std::cout << "usage:\n" << argv[0] << " ";
-      Test::usage();
-      return 1;
-    }
-  unsigned i = boost::lexical_cast<unsigned>(argv[1]);
-  typename Selector::template impl<Test>::type mark(i);
-  return mark.run(argc, argv);
-}
 
-template <typename Test, typename Selector>
-int main_impl2(int argc, const char** argv)
+template <typename Derived>
+struct suite
 {
-  if (argc < 2)
-    {
-      std::cout << "usage:\n" << argv[0] << " ";
-      Test::usage();
-      return 1;
-    }
+  Derived& derived() { return *(static_cast<Derived*>(this)); }
+  
+  int main(int argc, const char** argv)
+  {
+    if (argc < 2)
+      {
+	std::cout << "usage:\n" << argv[0] << " ";
+	Derived::usage();
+	return 1;
+      }
 
-  unsigned i = boost::lexical_cast<unsigned>(argv[1]);
-  unsigned j = boost::lexical_cast<unsigned>(argv[2]);
-  typename Selector::template impl<Test>::type mark(i,j);
-  return mark.run(argc, argv);
-}
+    unsigned i = boost::lexical_cast<unsigned>(argv[1]);
+    unsigned j = boost::lexical_cast<unsigned>(argv[2]);
+
+    std::cout << "kamasu ";
+    for (int i=1; i<argc; i++)
+      std::cout << argv[i] << " ";
+    typename Derived::kamasu k(i,j);
+    k.run();
+
+    std::cout << "cpu ";
+    for (int i=1; i<argc; i++)
+      std::cout << argv[i] << " ";
+    typename Derived::cpu c(i,j);
+    c.run();
+    
+    try {
+      k.verify(c.result);
+    } catch (const I3Test::test_failure& failure) {
+
+      std::cout << failure.to_string("FAIL");
+      
+    }
+    return 0;
+  }
+
+};
 
 #define MAIN(N)							\
   int main(int argc, const char** argv)				\
   {								\
-    return main_impl ## N <NAME, TYPE>(argc, argv);		\
+    suite<NAME> s;  return s.main(argc, argv);			\
   }
+
 
 
 #endif

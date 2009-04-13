@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   std::vector<float> signal(nsamples);
   
   int i = read(fd, signal.data(), nsamples*sizeof(float));
-
+  i ++;
   rk::array<float> a(nsamples);
 
   for (unsigned i=0; i<signal.size(); i++)

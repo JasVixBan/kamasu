@@ -14,14 +14,15 @@ add_executable(test
   )
 
 target_link_libraries(test
-  resophonic_kamasu ${FOUND_CUDART}
+  resophonic_kamasu ${CUDART_LIBRARY}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}
   )
 
-add_executable(small
-  small.cpp
-  )
+#add_executable(small
+#  small.cpp
+#  )
+#target_link_libraries(small resophonic_kamasu ${CUDART_LIBRARY})
 
 add_executable(usecase
   usecase.cpp
@@ -43,7 +44,7 @@ add_executable(fleh
 #   )
 # 
 # target_link_libraries(benchmark
-#   resophonic_barracuda ${FOUND_CUDART}
+#   resophonic_barracuda ${CUDART_LIBRARY}
 #   ${BOOST_LIBRARIES}
 #   ${CUDA_CUTIL_LIB}
 #   )

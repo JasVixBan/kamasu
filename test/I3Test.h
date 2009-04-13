@@ -31,6 +31,7 @@
 #include <stdexcept>
 #include <map>
 #include <set>
+#include <cmath>
 
 namespace fs = boost::filesystem;
 namespace I3Test {
@@ -121,24 +122,28 @@ namespace I3Test {
   inline
   void ensure_distance (const string& file, unsigned line, 
 			const string& left_txt, const string& right_txt, const string& distance_txt,
-			const LeftType& actual, const RightType& expected, const ResultType& distance,
+			const LeftType& actual, const RightType& expected, const ResultType& epsilon,
 			const string& msg = "unspecified")
 
   {
-    if (isnan(expected) || isnan(actual) || isnan(distance))
+    if (isnan(expected) || isnan(actual) || isnan(epsilon))
       {
 	stringstream ss;
 	ss << "ENSURE_DISTANCE(" << left_txt << ", " << right_txt << ", " << distance_txt
 	   << "): " << left_txt << " == " << actual
 	   << " " << right_txt << " == " << expected 
-	   << " " << distance_txt << " == " << distance;
+	   << " " << distance_txt << " == " << epsilon;
 	throw test_failure(file, line, ss.str(), msg);
       }
-    if( expected-distance > actual || expected+distance < actual )
+    if( std::abs(expected-actual) > std::abs(epsilon * expected))
       {
 	stringstream ss;
-	ss << "ensure_distance: expected [" << expected-distance << ";" 
-	   << expected+distance << "] actual " << std::setprecision(16) << actual;
+	ss << "ensure_distance:\n" << std::fixed << std::setprecision(16)
+	   << "              actual: " << actual << "\n"
+	   << "            expected: " << expected << "\n"
+	   << "     abs(difference): " << std::abs(expected-actual) << "\n"
+	   << "    adjusted epsilon: " << std::abs(epsilon * expected) << "\n"
+	  ;
 	throw test_failure(file, line, ss.str(), msg);
       }
   }

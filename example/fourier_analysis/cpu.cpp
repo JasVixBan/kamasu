@@ -39,9 +39,9 @@ int main(int argc, char** argv)
 
   int outfd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR|S_IWUSR);
   float nsteps = div(nsamples-fftsize, stepsize).quot + 1;
-  write(outfd, &nsteps, sizeof(float));
+  i = write(outfd, &nsteps, sizeof(float));
   float writefreqs = nfreqs;
-  write(outfd, &writefreqs, sizeof(float));
+  i = write(outfd, &writefreqs, sizeof(float));
 
   fftwf_plan plan;
 

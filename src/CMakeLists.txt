@@ -52,6 +52,7 @@ add_custom_target(generated_public_headers
 
 cuda_add_library(resophonic_kamasu SHARED
 
+  init.cpp
   array.cpp
   array_impl.cpp
 
@@ -70,6 +71,7 @@ cuda_add_library(resophonic_kamasu SHARED
   )
 
 target_link_libraries(resophonic_kamasu
+  ${CUBLAS_TARGET_LINK}
   ${CUBLAS_TARGET_LINK}
   ${RESOPHONIC_PFEILHECHT_LIB}
   )

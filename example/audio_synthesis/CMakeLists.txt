@@ -3,7 +3,7 @@ add_executable(synth-kamasu
   )
 target_link_libraries(synth-kamasu
   resophonic_kamasu
-  ${FOUND_CUDART}
+  ${CUDART_LIBRARY}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}
   )

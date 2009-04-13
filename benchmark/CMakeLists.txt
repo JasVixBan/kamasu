@@ -28,14 +28,6 @@ add_bmark(scalarmult)
 add_bmark(sine)
 add_bmark(matrix_multiply)
 
-add_executable(create create.cpp)
-target_link_libraries(create 
-  resophonic_kamasu
-  ${CUDART_LIBRARY}
-  ${BOOST_LIBRARIES}
-  ${CUDA_CUTIL_LIB}
-  )
-
 
 
 # add_bmark(matrix_multiply_2)

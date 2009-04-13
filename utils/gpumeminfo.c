@@ -20,7 +20,6 @@ static void printStats(unsigned long free, unsigned long total)
 
 int main(int argc, char **argv)
 {
-  /*
    unsigned int free, total;
    int gpuCount, i;
    CUresult res;
@@ -33,24 +32,16 @@ int main(int argc, char **argv)
    printf("Detected %d GPU\n",gpuCount);
 
    for (i=0; i<gpuCount; i++)
-   {
-   cuDeviceGet(&dev,i);
-   cuCtxCreate(&ctx, 0, dev);
-   res = cuMemGetInfo(&free, &total);
-   if(res != CUDA_SUCCESS)
-       printf("!!!! cuMemGetInfo failed! (status = %x)", res);
-   printf("^^^^ Device: %d\n",i);
-   printStats(free, total);
-   cuCtxDetach(ctx);
-   }
-  */
-   float* alloced;
-   unsigned tomalloc = atoi(argv[1]);
-   printf ("cudaMallocing %u bytes...\n", tomalloc);
-   cudaMalloc((void**)&alloced, tomalloc);
-   
-   cudaError_t err = cudaGetLastError();
-   printf ("result: %s\n", cudaGetErrorString(err));
+     {
+       cuDeviceGet(&dev,i);
+       cuCtxCreate(&ctx, 0, dev);
+       res = cuMemGetInfo(&free, &total);
+       if(res != CUDA_SUCCESS)
+	 printf("!!!! cuMemGetInfo failed! (status = %x)", res);
+       printf("^^^^ Device: %d\n",i);
+       printStats(free, total);
+       cuCtxDetach(ctx);
+     }
 
    return 0;
 }

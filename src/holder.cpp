@@ -1,5 +1,6 @@
 #define I3_PRINTF_LOGGING_LEVEL LOG_WARN
 #include <resophonic/kamasu.hpp>
+#include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/exception.hpp>
@@ -42,6 +43,7 @@ namespace resophonic {
 	{
 	  // not kamasu safe call, which throws.  this is called
 	  // from the destructor.
+	  RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "free " << size_ << " bytes @ " << data_ << "\n");
 	  CUDA_SAFE_CALL(cudaFree(data_));
 	  data_ = 0;
 	  size_ = 0;
@@ -59,7 +61,10 @@ namespace resophonic {
     T* holder<T>::gpu_mallocn(unsigned n)
     {
       T* devmem;
+      RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "malloc " << n << " floats (" 
+			      << n * sizeof(T) << " bytes)... ");
       KAMASU_SAFE_CALL( cudaMalloc( reinterpret_cast<void**>(&devmem), n * sizeof(T)));
+      RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << " @ " << devmem << "\n");
       log_trace ("malloc %u = %x",  (n * sizeof(T)) % devmem);
       // cudaMemset(devmem, 0, n * sizeof(T));
       RESOPHONIC_KAMASU_WHITEBOX(testing::gpu_malloc++);
@@ -122,7 +127,7 @@ namespace resophonic {
       if (s == 0)
 	return;
       size_ = s;
-      data_ = gpu_mallocn(size_ * sizeof(T));
+      data_ = gpu_mallocn(size_);
       KAMASU_SAFE_CALL( cudaMemcpy( data_,  hdata, size_ * sizeof(T),
 				  cudaMemcpyHostToDevice) );
       RESOPHONIC_KAMASU_WHITEBOX(testing::host_to_device++);

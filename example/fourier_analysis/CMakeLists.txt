@@ -10,7 +10,7 @@ target_link_libraries(fft-kamasu
   ${CUDART_LIBRARY}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}
-  ${CUFFT_LIBRARY}
+  ${CUDA_CUFFT_LIBRARY}
   )
 
 find_library(FFTW3_LIBRARY
@@ -32,6 +32,3 @@ target_link_libraries(fft-cpu
   ${FFTW3F_LIBRARY}
   ${MATH_LIBRARY}
   )
-
-
-

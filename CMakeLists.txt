@@ -1,19 +1,25 @@
 cmake_minimum_required(VERSION 2.6)
 
-if(NOT KAMASU_INITIAL_CACHE)
-  message(FATAL_ERROR "
-   There are values in CMAKE_SRC_DIR/CMakeInitialCache.txt
-   that need setting, have a look there for
-   what they are and how to disable this error.
+#
+#  This should contain common/inc/cutil.h, common/lib/libcutil.a, etc.
+#
+set(NVIDIA_CUDA_SDK_DIR 
+  "${CMAKE_CURRENT_SOURCE_DIR}/../NVIDIA_CUDA_SDK"
+  CACHE PATH "where is dir 'NVIDIA_CUDA_SDK'")
 
-   or just run (from your empty build dir)
-   /path/to/kamasu/source/configure
-")
-endif(NOT KAMASU_INITIAL_CACHE)
+#
+#  Options here are "Device" or "Emulation"
+#
+set(CUDA_BUILD_TYPE "Device")
 
-set(CMAKE_CXX_COMPILER /usr/bin/g++-4.3)
-set(CMAKE_CXX_FLAGS -std=c++0x)
+# so's you can find the CUDA language when project() needs it
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+# this will trigger all the cuda detection stuff
+project(kamasu C CXX CUDA)
 
+# this must go after project()
+set(CMAKE_CXX_FLAGS -std=c++0x) 
+set(CMAKE_CUDA_FLAGS "-arch=sm_13")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -28,39 +34,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DRESOPHONIC_WHITEBOX_TESTING)
 endif ()
 
-
-
-#
-#  This should contain common/inc/cutil.h, common/lib/libcutil.a, etc.
-#
-set(NVIDIA_CUDA_SDK_DIR 
-  "${CMAKE_CURRENT_SOURCE_DIR}/../NVIDIA_CUDA_SDK"
-  CACHE PATH "where is dir 'NVIDIA_CUDA_SDK'")
-
-#
-#  Options here are "Device" or "Emulation"
-#
-set(CUDA_BUILD_TYPE "Device")
-
-
-
-include(${CMAKE_SOURCE_DIR}/CMake/cuda/FindCuda.cmake)
 include_directories(include)
 include_directories(${BOOST_ROOT}/src)
 include_directories(${FOUND_CUDA_NVCC_INCLUDE})
-
-cuda_include_directories(${BOOST_ROOT}/src)
-cuda_include_directories(${CMAKE_SOURCE_DIR}/include)
-
-# set(RESOPHONIC_PFEILHECHT_DIR "${CMAKE_SOURCE_DIR}/../backend-build" CACHE FILEPATH "pfeilhecht yo")
-
-#find_library(RESOPHONIC_PFEILHECHT_LIB
-#  resophonic_pfeilhecht
-#  PATHS ${RESOPHONIC_PFEILHECHT_DIR}/lib
-#  NO_DEFAULT_PATH
-#  )
-
-# include_directories(${RESOPHONIC_PFEILHECHT_DIR}/include)
 
 #
 #  Used by test driver
@@ -99,30 +75,6 @@ if(NOT EXISTS ${NVIDIA_CUDA_SDK_DIR}/common/inc/cutil.h)
   message(FATAL_ERROR "cutil.h not found in <NVIDIA_CUDA_SDK_DIR>/common/inc")
 endif(NOT EXISTS ${NVIDIA_CUDA_SDK_DIR}/common/inc/cutil.h)
 
-find_library(CUDA_CUTIL_LIB
-  cutil
-  PATHS ${NVIDIA_CUDA_SDK_DIR}/lib
-  NO_DEFAULT_PATH
-  )
-
-find_library(CUFFT_LIBRARY
-  cufft
-  PATHS /usr/local/cuda/lib
-  NO_DEFAULT_PATH
-  )
-
-find_library(CUDA_DRIVER_LIBRARY
-  cuda
-  PATHS /usr/lib
-  NO_DEFAULT_PATH
-  )
-
-find_library(CUDPP_LIBRARY
-  cudpp64
-  PATHS ${CMAKE_SOURCE_DIR}/../cudpp_1.0a/lib
-  NO_DEFAULT_PATH
-  )
-
 find_file(CUDPP_INCLUDE_FILE
   cudpp.h
   PATHS ${CMAKE_SOURCE_DIR}/../cudpp_1.0a/cudpp/include
@@ -136,11 +88,8 @@ get_filename_component(CUDPP_INCLUDE_DIR
 
 include_directories(${CUDPP_INCLUDE_DIR})
 
-# contains cutil.h
 include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc)
-cuda_include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc
-  /home/troy/Projects/boost/trunk
-  )
+include_directories(${CUDA_INCLUDE_DIRECTORY})
 
 add_subdirectory(src)
 add_subdirectory(python)

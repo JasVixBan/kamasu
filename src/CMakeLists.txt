@@ -1,6 +1,4 @@
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-cuda_include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 macro(generate X WHERETO)
   add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/${WHERETO}/${X}
@@ -43,19 +41,23 @@ endforeach()
 
 foreach(X ${GENERATED_PUBLIC_HEADERS})
   generate(${X} include/resophonic/kamasu/generated)
-  set(GENERATED_HEADERS_LIST ${GENERATED_HEADERS_LIST} ${CMAKE_SOURCE_DIR}/include/resophonic/kamasu/generated/${X}) 
+  list(APPEND GENERATED_HEADERS_LIST 
+    ${CMAKE_SOURCE_DIR}/include/resophonic/kamasu/generated/${X})
 endforeach()
 
 add_custom_target(generated_public_headers
   DEPENDS ${GENERATED_HEADERS_LIST}
   )
 
-cuda_add_library(resophonic_kamasu SHARED
+add_library(resophonic_kamasu SHARED
+
+  assign.cu
+  linspace.cu
 
   init.cpp
   array.cpp
   array_impl.cpp
-
+ 
   linspace.cpp
 
   holder.cpp
@@ -67,16 +69,12 @@ cuda_add_library(resophonic_kamasu SHARED
   logging.cpp
   testing.cpp
 
-  assign.cu
-  linspace.cu
 
   ${GENERATED_SRC_LIST}
   )
 
 target_link_libraries(resophonic_kamasu
-  ${CUBLAS_TARGET_LINK}
-  ${CUBLAS_TARGET_LINK}
-#  ${RESOPHONIC_PFEILHECHT_LIB}
+  ${CUDA_CUBLAS_LIBRARY}
   )
   
-add_dependencies(resophonic_kamasu generated_public_headers) 
+add_dependencies(resophonic_kamasu generated_public_headers)

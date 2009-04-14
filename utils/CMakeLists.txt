@@ -1,5 +1,6 @@
 add_executable(gpumeminfo
-  gpumeminfo.c)
+  gpumeminfo.c
+  )
 
 target_link_libraries(gpumeminfo
   ${CUDA_DRIVER_LIBRARY}

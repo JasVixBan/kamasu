@@ -14,7 +14,8 @@ add_executable(test
   )
 
 target_link_libraries(test
-  resophonic_kamasu ${CUDART_LIBRARY}
+  resophonic_kamasu 
+  ${CUDA_RT_LIBRARY}
   ${BOOST_LIBRARIES}
   ${CUDA_CUTIL_LIB}
   )
@@ -36,16 +37,4 @@ add_executable(blah
 add_executable(fleh
   fleh.cpp
   )
-
-# add_executable(benchmark
-#   main.cpp
-#   benchmarks.cpp
-#   testing_util.cpp
-#   )
-# 
-# target_link_libraries(benchmark
-#   resophonic_barracuda ${CUDART_LIBRARY}
-#   ${BOOST_LIBRARIES}
-#   ${CUDA_CUTIL_LIB}
-#   )
 

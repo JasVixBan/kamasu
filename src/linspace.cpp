@@ -1,7 +1,13 @@
 #include <resophonic/kamasu/linspace.hpp>
 #include <resophonic/kamasu/array.hpp>
-#include <resophonic/pfeilhecht.h>
 #include <cudpp.h>
+
+void 
+kamasu_linspace(float* data, 
+		std::size_t linear_size,
+		const int stride,
+		float start,
+		float stop);
 
 namespace resophonic {
   namespace kamasu {

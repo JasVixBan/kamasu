@@ -15,17 +15,17 @@ macro(generate X WHERETO)
 endmacro(generate X)
 
 set(GENERATED_SRC
-#  elementwise_array_scalar.cu 
-#  elementwise_array_array.cu
-#  unary_array_op.cu
+  eas.cu 
+  elementwise_array_array.cu
+  unary_array_op.cu
 
   UnaryFunctionDispatch.cpp
   ArrayScalarOp.cpp
 )
 
 set(GENERATED_PRIVATE_HEADERS 
-  #unary_array_op.h
-  #elementwise_array_scalar.h
+  unary_array_op.h
+  eas.hpp
   )
 
 set(GENERATED_PUBLIC_HEADERS 
@@ -67,13 +67,16 @@ cuda_add_library(resophonic_kamasu SHARED
   logging.cpp
   testing.cpp
 
+  assign.cu
+  linspace.cu
+
   ${GENERATED_SRC_LIST}
   )
 
 target_link_libraries(resophonic_kamasu
   ${CUBLAS_TARGET_LINK}
   ${CUBLAS_TARGET_LINK}
-  ${RESOPHONIC_PFEILHECHT_LIB}
+#  ${RESOPHONIC_PFEILHECHT_LIB}
   )
   
 add_dependencies(resophonic_kamasu generated_public_headers) 

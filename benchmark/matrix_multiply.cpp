@@ -16,6 +16,7 @@ struct matrix_multiply : suite<matrix_multiply>
   struct kamasu : benchmark<kamasu>
   {
     array<float> a, b, c;
+    ublas::matrix<float, ublas::column_major> myres;
 
     unsigned n, x;
     kamasu(unsigned n_, unsigned x_) : n(n_), x(x_) { }
@@ -48,18 +49,15 @@ struct matrix_multiply : suite<matrix_multiply>
 
     void stop() 
     { 
-      ublas::matrix<float, ublas::column_major> myres;
       c >> myres;
       cudaThreadSynchronize();
     }
 
     void verify(const ublas::matrix<float, ublas::column_major>& ub)
     {
-      /*
-	for (unsigned i=0; i<n; i++)
-	for (unsigned j=0; j<n; j++)
-	ENSURE_DISTANCE(ub(i,j), myres(i,j), 1.0);
-      */
+      //      for (unsigned i=0; i<n; i++)
+      //	for (unsigned j=0; j<n; j++)
+      //	  ENSURE_DISTANCE(ub(i,j), myres(i,j), 1.0e-01);
     }
   };
 
@@ -88,8 +86,8 @@ struct matrix_multiply : suite<matrix_multiply>
     }
     int main() 
     { 
-      //      for (unsigned i=0; i<x; i++)
-      //	result = prod(a,b);
+      for (unsigned i=0; i<x; i++)
+      	result = prod(a,b);
       return 0;
     }
   };

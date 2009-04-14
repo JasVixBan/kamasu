@@ -23,7 +23,8 @@
 #define RESOPHONIC_KAMASU_OPMAP_HPP_INCLUDED
 
 #include <boost/proto/proto.hpp>
-#include <resophonic/pfeilhecht.h>
+
+#include "kernel_util.hpp"
 
 namespace resophonic {
   namespace kamasu {

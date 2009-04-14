@@ -13,6 +13,25 @@
 namespace resophonic {
   namespace kamasu {
 
+#define FN_NAME(NAME,TAG,N) NAME##_##TAG##_##N
+
+#define ENUMERATED_DECLS(Z, N, DATA)					\
+  void BOOST_PP_CAT(kamasu_elementwise_array_array_,N)			\
+    (Op op,						\
+     std::size_t linear_size_l,						\
+     float* data_l,							\
+     float* data_r,							\
+     const std::size_t* factors_l,					\
+     const std::size_t* factors_r,					\
+     const int* strides_l,						\
+     const int* strides_r,						\
+     cudaStream_t s);
+
+
+BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
+
+#undef FN_NAME
+
     namespace detail {
 
       struct dispatch

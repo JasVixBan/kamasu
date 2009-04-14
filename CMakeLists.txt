@@ -52,15 +52,15 @@ include_directories(${FOUND_CUDA_NVCC_INCLUDE})
 cuda_include_directories(${BOOST_ROOT}/src)
 cuda_include_directories(${CMAKE_SOURCE_DIR}/include)
 
-set(RESOPHONIC_PFEILHECHT_DIR "${CMAKE_SOURCE_DIR}/../backend-build" CACHE FILEPATH "pfeilhecht yo")
+# set(RESOPHONIC_PFEILHECHT_DIR "${CMAKE_SOURCE_DIR}/../backend-build" CACHE FILEPATH "pfeilhecht yo")
 
-find_library(RESOPHONIC_PFEILHECHT_LIB
-  resophonic_pfeilhecht
-  PATHS ${RESOPHONIC_PFEILHECHT_DIR}/lib
-  NO_DEFAULT_PATH
-  )
+#find_library(RESOPHONIC_PFEILHECHT_LIB
+#  resophonic_pfeilhecht
+#  PATHS ${RESOPHONIC_PFEILHECHT_DIR}/lib
+#  NO_DEFAULT_PATH
+#  )
 
-include_directories(${RESOPHONIC_PFEILHECHT_DIR}/include)
+# include_directories(${RESOPHONIC_PFEILHECHT_DIR}/include)
 
 #
 #  Used by test driver

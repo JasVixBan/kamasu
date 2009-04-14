@@ -2,7 +2,9 @@
 #include <resophonic/kamasu/grammar.hpp>
 #include <resophonic/kamasu/exception.hpp>
 #include "opmap.hpp"
-#include <resophonic/pfeilhecht.h>
+
+#include "eas.hpp"
+
 
 namespace resophonic {
   namespace kamasu {
@@ -17,13 +19,12 @@ namespace resophonic {
 			      data_t& data)
     {
       switch (rv.nd) {
-	/*'\n'.join(['case %u:  kamasu_elementwise_array_scalar_%d(op_map<%s>::value, rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar, data.si.value); break;' % (this_n, this_n, OP) for this_n in one_to_n])*/
+	/*'\n'.join(['case %u:  eas_%d(op_map<%s>::value, rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar, data.si.value); break;' % (this_n, this_n, OP) for this_n in one_to_n])*/
 
       default:
 	throw std::runtime_error("kamasu internal error");
       }
 
-      std::cout << "AAAAUGH\n";
       RESOPHONIC_KAMASU_CUDA_ERROR_CHECK();
       return rv;
     }

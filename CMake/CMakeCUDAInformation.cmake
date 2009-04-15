@@ -4,7 +4,13 @@ set(CMAKE_CUDA_COMPILE_OBJECT
   "<CMAKE_CUDA_COMPILER> <DEFINES> -c <SOURCE> -o <OBJECT> -Xcompiler <FLAGS>"
   )
 
-set(CMAKE_CUDA_FLAGS_DEBUG "-G -g" CACHE STRING "Generate debuggable device and host code")
+#
+#  the -G flag is for debuggable device code... buuut this gets you a
+#  strange error
+#
+#  http://forums.nvidia.com/index.php?showtopic=77057
+#
+# set(CMAKE_CUDA_FLAGS_DEBUG "-g" CACHE STRING "Generate debuggable device and host code")
 set(CMAKE_CUDA_FLAGS_RELEASE "-O" CACHE STRING "Opt flags for nvcc")
 
 find_library(CUDA_RT_LIBRARY

@@ -12,6 +12,7 @@ target_link_libraries(create
   resophonic_kamasu
   ${CUDART_LIBRARY}
   ${BOOST_LIBRARIES}
-  ${CUDA_CUTIL_LIB}
   )
 
+add_executable(sgemm sgemm.c)
+target_link_libraries(sgemm ${CUDA_CUBLAS_LIBRARY})

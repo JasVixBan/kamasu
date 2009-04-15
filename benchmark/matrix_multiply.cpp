@@ -29,14 +29,12 @@ struct matrix_multiply : suite<matrix_multiply>
 	for (unsigned j=0; j<n; j++)
 	  indata(i,j) = rand();
 
-      a = array<float>(n,n); 
       a << indata;
 
       for (unsigned i=0; i<n; i++)
 	for (unsigned j=0; j<n; j++)
 	  indata(i,j) = rand();
 
-      b = array<float>(n,n); 
       b << indata;
     }
 

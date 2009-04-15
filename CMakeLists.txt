@@ -28,10 +28,10 @@ set(BOOST_ROOT
   "${CMAKE_SOURCE_DIR}/../boost" CACHE PATH "where is boost")
 
 add_definitions(-DBOOST_SP_USE_QUICK_ALLOCATOR)
+add_definitions(-DRESOPHONIC_WHITEBOX_TESTING)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DRESOPHONIC_KAMASU_DEBUG)
-  add_definitions(-DRESOPHONIC_WHITEBOX_TESTING)
 endif ()
 
 include_directories(include)

@@ -27,6 +27,9 @@ namespace resophonic {
 	printf("After all allocation(%d):     free %d     total %d \n", memres, free, total);
 
 	cuCtxDetach(ctx);
+
+	cublasInit();
+
       }
 
       cuda_init() { 

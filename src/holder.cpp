@@ -43,7 +43,7 @@ namespace resophonic {
 	{
 	  // not kamasu safe call, which throws.  this is called
 	  // from the destructor.
-	  RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "free " << size_ << " bytes @ " << data_ << "\n");
+	  RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "FREE\t" << size_ * sizeof(T) << " bytes @ " << data_ << "\n");
 	  CUDA_SAFE_CALL(cudaFree(data_));
 	  data_ = 0;
 	  size_ = 0;
@@ -61,10 +61,9 @@ namespace resophonic {
     T* holder<T>::gpu_mallocn(unsigned n)
     {
       T* devmem;
-      RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "malloc " << n << " floats (" 
-			      << n * sizeof(T) << " bytes)... ");
+      RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "MALLOC\t" << n * sizeof(T) << " bytes ");
       KAMASU_SAFE_CALL( cudaMalloc( reinterpret_cast<void**>(&devmem), n * sizeof(T)));
-      RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << " @ " << devmem << "\n");
+      RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "@ " << devmem << "\n");
       log_trace ("malloc %u = %x",  (n * sizeof(T)) % devmem);
       // cudaMemset(devmem, 0, n * sizeof(T));
       RESOPHONIC_KAMASU_WHITEBOX(testing::gpu_malloc++);
@@ -103,13 +102,14 @@ namespace resophonic {
 	return;
       size_ = rhs.size_;
       data_ = gpu_mallocn(rhs.size_);
+      RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "CLONE\t" << size_ * sizeof(T)
+				  << " bytes @ " << data_ << "\n");
+
       KAMASU_SAFE_CALL( cudaMemcpy( data_, rhs.data_, 
 				    sizeof(T) * size_,
 				    cudaMemcpyDeviceToDevice) );
 
       RESOPHONIC_KAMASU_WHITEBOX(testing::n_clones++);
-
-      log_debug("*** CLONED RHS %u bytes @%p***",  size_ % data_);
     }
 
     template <typename T>
@@ -123,11 +123,16 @@ namespace resophonic {
     void
     holder<T>::host_to_device(const T* hdata, std::size_t s)
     {
-      reset();
       if (s == 0)
-	return;
-      size_ = s;
-      data_ = gpu_mallocn(size_);
+	{
+	  reset();
+	  return;
+	}
+      if (size_ != s){
+	reset();
+	size_ = s;
+	data_ = gpu_mallocn(size_);
+      }
       KAMASU_SAFE_CALL( cudaMemcpy( data_,  hdata, size_ * sizeof(T),
 				  cudaMemcpyHostToDevice) );
       RESOPHONIC_KAMASU_WHITEBOX(testing::host_to_device++);

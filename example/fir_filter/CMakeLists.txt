@@ -1,11 +1,12 @@
 add_executable(fir-kamasu
   kamasu.cpp
   )
+
 target_link_libraries(fir-kamasu
   resophonic_kamasu
-  ${CUDART_LIBRARY}
+  ${CUDA_RT_LIBRARY}
+  ${CUDA_DRIVER_LIBRARY}
   ${BOOST_LIBRARIES}
-  ${CUDA_CUTIL_LIB}
   )
 
 add_executable(fir-cpu

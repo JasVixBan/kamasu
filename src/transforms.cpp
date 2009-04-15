@@ -2,6 +2,7 @@
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/make_vector.hpp>
+#include <resophonic/kamasu/data.hpp>
 
 #include "opmap.hpp"
 
@@ -41,7 +42,8 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 	operator()(bp::tag::multiplies,
 		   const rk::array_impl<float>& lhs, 
 		   const rk::array_impl<float>& rhs,
-		   const stream_impl& si)
+		   const state_t&,
+		   data_t& data)
 	{
 	  BOOST_ASSERT(lhs.nd == 2);
 	  BOOST_ASSERT(rhs.nd == 2);
@@ -53,11 +55,16 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 	  BOOST_ASSERT(lhs_cols == rhs_rows);
 
 	  std::vector<std::size_t> shp = make_vector(lhs_rows, rhs_cols);
+
 	  rk::array_impl<float> rv;
+	  if (data.tmp)
+	    {
+	      rv = *data.tmp;
+	      data.tmp = 0;
+	    }
 	  rv.reshape(shp);
 
 	  //   C = alpha * op(A) * op(B) + beta * C
-	  
 	  cublasSgemm('n', // transa, no trans 
 		      'n', // transb, no trans
 		      lhs_rows, // rows of lhs and rows of result
@@ -72,7 +79,7 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 		      rv.data(), // pointer to C
 		      lhs_rows // leading dim of C
 		      );
-	  
+
 	  cublasStatus s = cublasGetError();
 	  if (s != CUBLAS_STATUS_SUCCESS)
 	    throw cublas_exception(s);
@@ -87,7 +94,8 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 	operator()(bp::tag::plus_assign,
 		   const rk::array_impl<float>& lhs, 
 		   const rk::array_impl<float>& rhs,
-		   const stream_impl& s)
+		   const state_t&,
+		   data_t& data)
 	{
 	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
 	  
@@ -111,7 +119,7 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 	       rhs.factors,						\
 	       lhs.strides,						\
 	       rhs.strides,						\
-	       s.value);						\
+	       data.si.value);						\
 	    break;
 
 	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
@@ -134,7 +142,8 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 	operator()(Op,
 		   const rk::array_impl<float>& lhs, 
 		   const rk::array_impl<float>& rhs,
-		   const stream_impl& s)
+		   const state_t&,
+		   data_t& data)
 	{
 	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
 	  
@@ -160,7 +169,7 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 	       rhs.factors,						\
 	       rv.strides,						\
 	       rhs.strides,						\
-	       s.value);						\
+	       data.si.value);						\
 	    break;
 
 	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
@@ -183,12 +192,12 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
     ArrayArrayOp::operator()(Op,
 			     const rk::array_impl<float>& lhs, 
 			     const rk::array_impl<float>& rhs,
-			     const state_t&,
+			     const state_t& s,
 			     data_t& data)
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
       
-      return detail::dispatch()(Op(), lhs, rhs, data.si);
+      return detail::dispatch()(Op(), lhs, rhs, s, data);
     }
 
 #define INSTANTIATE_ARRAYARRAY_OP_IMPL(OP) template			\

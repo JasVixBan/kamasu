@@ -28,7 +28,11 @@ target_link_libraries(test
 add_executable(usecase
   usecase.cpp
   )
-target_link_libraries(usecase resophonic_kamasu)
+target_link_libraries(usecase 
+  resophonic_kamasu
+  ${CUDA_RT_LIBRARY}
+  ${CUDA_DRIVER_LIBRARY}
+  )
 
 add_executable(blah
   blah.cpp

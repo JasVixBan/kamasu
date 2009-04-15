@@ -5,10 +5,8 @@
 
 #if RESOPHONIC_KAMASU_DEBUG
 #define RESOPHONIC_KAMASU_THROW(PRED, EX) do { if (PRED) throw EX; } while (false)
-#define RESOPHONIC_CUDAMALLOC_DEBUG(X) X
 #else
 #define RESOPHONIC_KAMASU_THROW(PRED, EX)
-#define RESOPHONIC_CUDAMALLOC_DEBUG(X) 
 #endif
 
 #endif

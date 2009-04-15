@@ -221,6 +221,10 @@ void mmul_test(const unsigned M, const unsigned N, const unsigned K)
 
   c = a * b;
 
+  std::cout << "multiply " << a.dim(0) << "x" << a.dim(1) << " * " 
+	    << b.dim(0) << "x" << b.dim(1) << " matrices ==> " 
+	    << c.dim(0) << "x" << c.dim(1) << "\n";
+
   ENSURE_EQUAL(c.nd(), 2u);
   ENSURE_EQUAL(c.dim(0), M);
   ENSURE_EQUAL(c.dim(1), K);

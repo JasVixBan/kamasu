@@ -24,7 +24,7 @@ namespace rk = resophonic::kamasu;
 
 using namespace resophonic::kamasu;
 
-#ifdef KAMASU_WHITEBOX_TESTING
+#ifdef RESOPHONIC_WHITEBOX_TESTING
 
 TEST_GROUP();
 
@@ -134,7 +134,7 @@ TEST(forward_a_temp)
 {
   testing::n_clones = 0;
   testing::gpu_malloc = 0;
-  array<float> a(2), b(2);
+  array<float> a, b(2);
   
   a = sin(b);
 
@@ -165,5 +165,37 @@ TEST(linspace_rvalueref)
   ENSURE_EQUAL(testing::n_clones, 0);
   ENSURE_EQUAL(testing::gpu_malloc, 1);
 }
+
+TEST(move_to_device)
+{
+  testing::gpu_malloc = 0;
+  testing::n_clones = 0;
+  testing::host_to_device = 0;
+  testing::device_to_host = 0;
+
+  array<float> a;
+
+  ENSURE_EQUAL(testing::gpu_malloc, 0);
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::host_to_device, 0);
+  ENSURE_EQUAL(testing::device_to_host, 0);
+
+  boost::numeric::ublas::matrix<float> m(1024, 1024);
+
+  a << m;
+
+  ENSURE_EQUAL(testing::gpu_malloc, 1);
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::host_to_device, 1);
+  ENSURE_EQUAL(testing::device_to_host, 0);
+
+  a << m;
+
+  ENSURE_EQUAL(testing::gpu_malloc, 1);
+  ENSURE_EQUAL(testing::n_clones, 0);
+  ENSURE_EQUAL(testing::host_to_device, 2);
+  ENSURE_EQUAL(testing::device_to_host, 0);
+}
+
 
 #endif

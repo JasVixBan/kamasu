@@ -9,6 +9,8 @@ namespace resophonic {
       unsigned device_to_host;
       unsigned gpu_malloc;
 
+      
+
     }
   }
 }

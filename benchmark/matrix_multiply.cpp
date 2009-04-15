@@ -13,28 +13,26 @@ struct matrix_multiply : suite<matrix_multiply>
     std::cout << "n x\nn = size of a(n,n) and b(n,n)\nx = number of times to multiply\n";
   }
 
+
   struct kamasu : benchmark<kamasu>
   {
     array<float> a, b, c;
+    ublas::matrix<float, ublas::column_major> indata;
     ublas::matrix<float, ublas::column_major> myres;
-
     unsigned n, x;
-    kamasu(unsigned n_, unsigned x_) : n(n_), x(x_) { }
+
+    kamasu(unsigned n_, unsigned x_) 
+      : n(n_), x(x_), indata(n_, n_) 
+    { 
+      rng.seed(13);
+      for (unsigned i=0; i<n; i++)
+	for (unsigned j=0; j<n; j++)
+	  indata(i,j) = rand();
+    }
 
     void start() 
     { 
-      rng.seed(13);
-      ublas::matrix<float, ublas::column_major> indata(n,n);
-      for (unsigned i=0; i<n; i++)
-	for (unsigned j=0; j<n; j++)
-	  indata(i,j) = rand();
-
       a << indata;
-
-      for (unsigned i=0; i<n; i++)
-	for (unsigned j=0; j<n; j++)
-	  indata(i,j) = rand();
-
       b << indata;
     }
 
@@ -48,7 +46,6 @@ struct matrix_multiply : suite<matrix_multiply>
     void stop() 
     { 
       c >> myres;
-      cudaThreadSynchronize();
     }
 
     void verify(const ublas::matrix<float, ublas::column_major>& ub)
@@ -62,22 +59,23 @@ struct matrix_multiply : suite<matrix_multiply>
   struct cpu : benchmark<cpu>
   {
     ublas::matrix<float> a, b, result;
-
+    ublas::matrix<float, ublas::column_major> indata;
     unsigned n, x;
-    cpu(unsigned n_, unsigned x_) : n(n_), x(x_) { }
+
+    cpu(unsigned n_, unsigned x_) 
+      : n(n_), x(x_), indata(n_, n_) 
+    { 
+      rng.seed(13);
+      for (unsigned i=0; i<n; i++)
+	for (unsigned j=0; j<n; j++)
+	  indata(i,j) = rand();
+    }
 
     void start() 
     { 
       rng.seed(13);
-      a = ublas::matrix<float>(n,n);
-      for (unsigned i=0; i<n; i++)
-	for (unsigned j=0; j<n; j++)
-	  a(i,j) = rand();
-
-      b = ublas::matrix<float>(n,n);
-      for (unsigned i=0; i<n; i++)
-	for (unsigned j=0; j<n; j++)
-	  b(i,j) = rand();
+      a = indata;
+      b = indata;
     }
     void stop() 
     { 

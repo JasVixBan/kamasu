@@ -59,11 +59,6 @@ struct benchmark
     double full_ns = (fullendtime.tv_nsec - fullstarttime.tv_nsec) * 1.0e-09;
     full += full_ns;
 
-    //    std::cout << "full: " << fullstarttime.tv_sec << " " << fullstarttime.tv_nsec << " ... " 
-    //	      << fullendtime.tv_sec << " " << fullendtime.tv_nsec << "\n"
-    //	      << "full_ns:" << full_ns << "\n";
-
-    //std::cerr << boost::format("%10s %10s %10s %10s\n") % "user" % "sys" % "wall" % "full";
     std::cout << boost::format("%10f %10f %10f %10f\n") % user % sys % wall % full;
     return 0;
   }

@@ -2,6 +2,7 @@
 #include "benchmark.hpp"
 
 using resophonic::kamasu::array;
+namespace t = resophonic::kamasu::testing;
 
 struct sine
 {
@@ -22,9 +23,9 @@ struct sine
     void start() 
     { 
       v.resize(m);
-      rng.seed(13);
+      t::rng.seed(13);
       for (unsigned i=0; i<m; i++)
-	v[i] = rand();
+	v[i] = t::rand();
     }
     void stop() 
     { 
@@ -53,9 +54,9 @@ struct sine
     void start() 
     { 
       result.resize(m);
-      rng.seed(13);
+      t::rng.seed(13);
       for (unsigned i=0; i<m; i++)
-	result[i] = rand();
+	result[i] = t::rand();
     }
     void stop() 
     { 

@@ -5,6 +5,7 @@
 
 using resophonic::kamasu::array;
 namespace ublas = boost::numeric::ublas;
+namespace t = resophonic::kamasu::testing;
 
 struct matrix_multiply : suite<matrix_multiply>
 {
@@ -24,7 +25,7 @@ struct matrix_multiply : suite<matrix_multiply>
     kamasu(unsigned n_, unsigned x_) 
       : n(n_), x(x_), indata(n_, n_) 
     { 
-      rng.seed(13);
+      t::rng.seed(13);
       for (unsigned i=0; i<n; i++)
 	for (unsigned j=0; j<n; j++)
 	  indata(i,j) = rand();
@@ -65,7 +66,7 @@ struct matrix_multiply : suite<matrix_multiply>
     cpu(unsigned n_, unsigned x_) 
       : n(n_), x(x_), indata(n_, n_) 
     { 
-      rng.seed(13);
+      t::rng.seed(13);
       for (unsigned i=0; i<n; i++)
 	for (unsigned j=0; j<n; j++)
 	  indata(i,j) = rand();
@@ -73,7 +74,7 @@ struct matrix_multiply : suite<matrix_multiply>
 
     void start() 
     { 
-      rng.seed(13);
+      t::rng.seed(13);
       a = indata;
       b = indata;
     }

@@ -10,6 +10,8 @@
 #include <sys/resource.h>
 #include <boost/random.hpp>
 #include <test/I3Test.h>
+#include <resophonic/kamasu/testing.hpp>
+
 
 template <typename Derived>
 struct benchmark
@@ -19,11 +21,7 @@ struct benchmark
 
   Derived& derived() { return *(static_cast<Derived*>(this)); }
 
-  boost::mt19937 rng;
-  boost::uniform_real<float> uniform_distribution;
-  boost::variate_generator<boost::mt19937, boost::uniform_real<float> > rand;
-
-  benchmark() : uniform_distribution(-10, 10), rand(rng, uniform_distribution) { }
+  benchmark() { }
 
   void start()
   {

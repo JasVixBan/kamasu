@@ -45,6 +45,20 @@ namespace resophonic {
       operator T() const;
       rval& operator=(T);
 
+      friend std::ostream& operator<<(std::ostream& os, const rval& rv)
+      {
+	return os << rv.operator T();
+      }
+
+      friend bool operator==(const rval& lhs, const rval& rhs)
+      {
+	return lhs.operator T() == rhs.operator T();
+      }
+      friend bool operator<=(const rval& lhs, const rval& rhs)
+      {
+	return lhs.operator T() <= rhs.operator T();
+      }
+
     };
 
   }

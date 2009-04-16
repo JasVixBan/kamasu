@@ -4,7 +4,7 @@
 #include <boost/proto/proto.hpp>
 #include <iostream>
 
-#define SHOW(ARG) std::cout << "\n" << __FILE__ << ":" << __LINE__ << ": " << ARG "" << " "<< __PRETTY_FUNCTION__ << std::endl
+// #define SHOW(ARG) std::cout << "\n" << __FILE__ << ":" << __LINE__ << ": " << ARG "" << " "<< __PRETTY_FUNCTION__ << std::endl
 #define LOG(ARG) std::cout << "\n" << __FILE__ << ":" << __LINE__ << ": " << ARG "" << " "
 #include <resophonic/kamasu/name_of.hpp>
 using resophonic::name_of;

@@ -1370,6 +1370,12 @@ print dest-a*b
 \section{resophonic::kamasu}
 \subsection{benchmarks}
 
+\begin{frame}{Benchmarks}
+  \pgfdeclareimage[width=4in]{x}{dilbert-benchmark} 
+  \pgfuseimage{x} 
+\end{frame}
+
+
 \begin{frame}{matrix multiplication}
 gpu runs at theoretical 933GFlops peak 4k -on-a-side matrixis 16M of
 single precision floats 68billion multiplies, only takes a couple of
@@ -1386,21 +1392,18 @@ could be held up by who-knows what.
 
 So any real benchmarking here is premature optimization, you see posts
 mentionin various speedups on various problems, YMMV.  
-
 \end{frame}
+
 \begin{frame}{scalar multiplication}
 
-this is guarnteed to be slower no matter what, as a copy across the
-bus costs more than a multiply (?)
-
 \end{frame}
 
-\begin{frame}{A = B * C}
-  \pgfdeclareimage[height=3in]{x}{mm_close} 
+\begin{frame}{NxN matrices,   A = B * C  (via cublas)}
+  \pgfdeclareimage[height=3in]{x}{mm_full} 
   \pgfuseimage{x} 
 
   \note{
-    so breakeven is at about 500.  This includes transfers to/from
+    This includes transfers to/from
     the card.  You can't even make the video card sweat, the
     computations are over in a flash, the fan in the card goes puff,
     lightly
@@ -1408,8 +1411,29 @@ bus costs more than a multiply (?)
 
 \end{frame}
 
-\begin{frame}{A = B * C}
-  \pgfdeclareimage[height=3in]{x}{mm_full} 
+\begin{frame}{Breakeven @  ~200x200 matrices}
+  \pgfdeclareimage[height=3in]{x}{mm_full_closeup} 
+  \pgfuseimage{x} 
+
+  \note{
+    so breakeven is at about 200.
+  }
+
+\end{frame}
+
+\begin{frame}{Low numeric intensity == low performance}
+  \pgfdeclareimage[height=3in]{x}{deepexpr_1} 
+  \pgfuseimage{x} 
+
+  \note{
+    this is guarnteed to be slower no matter what, as a copy across the
+    bus costs more than a multiply (?)
+  }
+
+\end{frame}
+
+\begin{frame}{Low numeric intensity == low performance}
+  \pgfdeclareimage[height=3in]{x}{deepexpr_10} 
   \pgfuseimage{x} 
 
   \note{
@@ -1418,14 +1442,26 @@ bus costs more than a multiply (?)
 
 \end{frame}
 
-\begin{frame}{A = B * C}
-  \pgfdeclareimage[height=3in]{x}{mm_kamasu_vs_boost} 
+\begin{frame}{Low numeric intensity == low performance}
+  \pgfdeclareimage[height=3in]{x}{deepexpr_100} 
   \pgfuseimage{x} 
 
-  \note{ 
-    kamasu vs boost times.  This just to show that they're
-    spiking in about the same place.
-  }
+  \note{ these are options that also don't take very long, so hard to
+    say if you'd be willing to pay for this slowdown if you get a huge
+    one elsewhere.
+    
+    considerations: overall speed, architecture
+    
+
+}
+
+\end{frame}
+
+\begin{frame}{Sort -- wall clock time including transfers}
+  \pgfdeclareimage[height=3in]{x}{sort_full} 
+  \pgfuseimage{x} 
+
+  \note{}
 
 \end{frame}
 

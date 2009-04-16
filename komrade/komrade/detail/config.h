@@ -4,8 +4,8 @@
 
 #pragma once
 
-#define SHOW() std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ << "\n"
-// #define SHOW()
+//#define SHOW() std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ << "\n"
+#define SHOW()
 
 #ifndef __CUDACC__
 

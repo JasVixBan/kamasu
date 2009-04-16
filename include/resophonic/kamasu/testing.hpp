@@ -16,7 +16,7 @@ namespace resophonic {
 
       extern boost::mt19937 rng;
       extern boost::uniform_real<float> uniform_distribution;
-      extern boost::variate_generator<boost::mt19937, boost::uniform_real<float> > rand;
+      extern boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > uniform;
 
     }
   }

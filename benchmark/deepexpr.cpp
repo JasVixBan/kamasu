@@ -3,7 +3,7 @@
 
 using resophonic::kamasu::array;
 
-struct deepexpr 
+struct deepexpr : suite<deepexpr>
 {
   static void usage() { 
     std::cout << "\nno options.\n";
@@ -79,6 +79,5 @@ struct deepexpr
   };
 };
 
-MAIN(1);
-
+MAIN();
 

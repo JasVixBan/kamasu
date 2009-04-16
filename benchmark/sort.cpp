@@ -27,7 +27,9 @@ struct sort : suite<sort>
     { 
       t::rng.seed(13);
       for (unsigned i=0; i<n; i++)
-	  indata[i] = rand();
+	{
+	  indata[i] = t::uniform();
+	}
     }
 
     void start() 
@@ -50,8 +52,7 @@ struct sort : suite<sort>
     {
       for (int i=0; i<n-1; i++)
 	{
-	  ENSURE(myres[i] <= myres[i+1]);
-	  ENSURE(v[i] <= v[i+1]);
+	  ENSURE_DISTANCE(myres[i], v[i], 10e-06);
 	}
     }
   };
@@ -66,7 +67,9 @@ struct sort : suite<sort>
     { 
       t::rng.seed(13);
       for (unsigned i=0; i<n; i++)
-	result[i] = rand();
+	{
+	  result[i] = t::uniform();
+	}
     }
 
     void start() 

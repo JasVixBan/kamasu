@@ -11,8 +11,8 @@ namespace resophonic {
 
       boost::mt19937 rng;
       boost::uniform_real<float> uniform_distribution(-10,10);
-      boost::variate_generator<boost::mt19937, 
-			       boost::uniform_real<float> > rand(rng, uniform_distribution);
+      boost::variate_generator<boost::mt19937&, 
+			       boost::uniform_real<float> > uniform(rng, uniform_distribution);
 
     }
   }

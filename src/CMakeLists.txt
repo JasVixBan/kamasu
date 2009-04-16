@@ -1,4 +1,5 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/komrade)
 
 macro(generate X WHERETO)
   add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/${WHERETO}/${X}
@@ -53,6 +54,9 @@ add_library(resophonic_kamasu SHARED
 
   assign.cu
   linspace.cu
+
+  sort.cpp
+  sort.cu
 
   init.cpp
   array.cpp

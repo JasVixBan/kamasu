@@ -10,6 +10,7 @@ add_executable(test
   whitebox.cpp
   array.cpp
   3d.cpp
+  sort.cpp
   testing_util.cpp
   )
 

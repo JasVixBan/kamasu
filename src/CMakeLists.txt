@@ -14,7 +14,6 @@ macro(generate X WHERETO)
 endmacro(generate X)
 
 set(GENERATED_SRC
-  eas.cu 
   elementwise_array_array.cu
   unary_array_op.cu
 
@@ -24,7 +23,6 @@ set(GENERATED_SRC
 
 set(GENERATED_PRIVATE_HEADERS 
   unary_array_op.h
-  eas.hpp
   )
 
 set(GENERATED_PUBLIC_HEADERS 
@@ -54,6 +52,8 @@ add_library(resophonic_kamasu SHARED
 
   assign.cu
   linspace.cu
+
+  elementwise_array_scalar.cu
 
   sort.cpp
   sort.cu

@@ -1,12 +1,10 @@
-// #define I3_PRINTF_LOGGING_LEVEL LOG_INFO
-
 #include <cassert>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <time.h>
-// includes, project
+
 #include <boost/multi_array.hpp>
 #include <boost/foreach.hpp>
 
@@ -19,8 +17,6 @@
 #include <resophonic/kamasu/exception.hpp>
 
 #include <boost/preprocessor/iteration/iterate.hpp>
-
-// #include <resophonic/pfeilhecht.h>
 
 namespace resophonic {
   namespace kamasu {

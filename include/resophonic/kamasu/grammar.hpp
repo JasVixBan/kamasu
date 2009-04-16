@@ -4,6 +4,7 @@
 #include <resophonic/kamasu/array_impl.hpp>
 #include <resophonic/kamasu/state.hpp>
 #include <resophonic/kamasu/data.hpp>
+#include <resophonic/kamasu/tag.hpp>
 #include <boost/proto/proto.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -18,11 +19,6 @@ namespace resophonic
   {
     namespace bp = boost::proto;
     namespace rk = resophonic::kamasu;
-
-    namespace tag 
-    {
-      struct pow { };
-    }
 
     bp::terminal<tag::pow>::type const pow = {{}};
 
@@ -47,7 +43,8 @@ namespace resophonic
 
       template <typename Op>
       result_type 
-      operator()(Op, const rk::array_impl<float>& v, const float& f,
+      operator()(Op, 
+		 const rk::array_impl<float>& v, const float& f,
 		 const state_t&,
 		 data_t&);
     };

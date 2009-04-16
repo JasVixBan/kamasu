@@ -1,12 +1,13 @@
 
 #include "kernel_util.hpp"
 
+template <typename T>
 __global__ void
-kamasu_linspace_knl(float* data,
+kamasu_linspace_knl(T* data,
 		    unsigned linear_size,
 		    const int stride,
-		    float start,
-		    float stop)
+		    T start,
+		    T stop)
 {
   if (INDEX >= linear_size)
     return;
@@ -16,12 +17,13 @@ kamasu_linspace_knl(float* data,
   data[actual_index] = start + INDEX * (stop - start) / (linear_size - 1);
 }
 
+template <typename T>
 void 
-kamasu_linspace(float* data, 
+kamasu_linspace(T* data, 
 		std::size_t linear_size,
 		const int stride,
-		float start,
-		float stop)
+		T start,
+		T stop)
 {
   bd_t bd = gridsize(linear_size);
 
@@ -33,3 +35,4 @@ kamasu_linspace(float* data,
      stop);
 }
 
+template void kamasu_linspace<float>(float*, std::size_t, const int, float, float);

@@ -5,7 +5,6 @@ target_link_libraries(synth-kamasu
   resophonic_kamasu
   ${CUDART_LIBRARY}
   ${BOOST_LIBRARIES}
-  ${CUDA_CUTIL_LIB}
   )
 
 # 

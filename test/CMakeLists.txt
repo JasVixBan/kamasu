@@ -18,7 +18,6 @@ target_link_libraries(test
   resophonic_kamasu 
   ${CUDA_RT_LIBRARY}
   ${BOOST_LIBRARIES}
-  ${CUDA_CUTIL_LIB}
   )
 
 #add_executable(small

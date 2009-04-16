@@ -12,7 +12,6 @@ macro(add_bmark_impl NAME)
   target_link_libraries(${NAME}
     resophonic_kamasu ${CUDART_LIBRARY}
     ${BOOST_LIBRARIES}
-    ${CUDA_CUTIL_LIB}
     )
 
 endmacro(add_bmark_impl NAME TYPE)

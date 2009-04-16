@@ -85,6 +85,7 @@ namespace resophonic {
 	throw resophonic::kamasu::cuda_exception(err);
       }
     }
+
     inline void cuda_check()
     {
       cudaError_t err = cudaGetLastError();			

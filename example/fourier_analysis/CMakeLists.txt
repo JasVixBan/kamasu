@@ -9,7 +9,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #   resophonic_kamasu 
 #   ${CUDART_LIBRARY}
 #   ${BOOST_LIBRARIES}
-#   ${CUDA_CUTIL_LIB}
 #   ${CUDA_CUFFT_LIBRARY}
 #   )
 

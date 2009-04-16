@@ -18,7 +18,6 @@ set(GENERATED_SRC
   unary_array_op.cu
 
   UnaryFunctionDispatch.cpp
-  ArrayScalarOp.cpp
 )
 
 set(GENERATED_PRIVATE_HEADERS 
@@ -53,6 +52,7 @@ add_library(resophonic_kamasu SHARED
   assign.cu
   linspace.cu
 
+  ArrayScalarOp.cpp
   elementwise_array_scalar.cu
 
   sort.cpp

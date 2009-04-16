@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   // alloc/fill host input memory
 
   float* hostdata;
-  CUDA_SAFE_CALL( cudaMallocHost((void**)&hostdata, sizeof(float) * nsamples) );
+  KAMASU_SAFE_CALL( cudaMallocHost((void**)&hostdata, sizeof(float) * nsamples) );
 
   int i =read(fd, hostdata, sizeof(float) * nsamples);
   i ++;
@@ -48,9 +48,9 @@ int main(int argc, char** argv)
 
   float* gpu_indata;
   cout << "malloc" << sizeof(float) * nsamples << " device mem for data\n";
-  CUDA_SAFE_CALL( cudaMalloc((void**)&gpu_indata, sizeof(float) * nsamples) );
+  KAMASU_SAFE_CALL( cudaMalloc((void**)&gpu_indata, sizeof(float) * nsamples) );
 
-  CUDA_SAFE_CALL( cudaMemcpy(gpu_indata, hostdata, sizeof(float) * nsamples, cudaMemcpyHostToDevice) );
+  KAMASU_SAFE_CALL( cudaMemcpy(gpu_indata, hostdata, sizeof(float) * nsamples, cudaMemcpyHostToDevice) );
 
   // write header to output file
 
@@ -66,11 +66,11 @@ int main(int argc, char** argv)
   // create device output memory
 
   cufftComplex *gpu_outdata;
-  CUDA_SAFE_CALL(cudaMalloc((void**)&gpu_outdata, sizeof(cufftComplex)*nfreqs));
+  KAMASU_SAFE_CALL(cudaMalloc((void**)&gpu_outdata, sizeof(cufftComplex)*nfreqs));
 
   // create host output memory
   cufftComplex *host_outdata;
-  CUDA_SAFE_CALL(cudaMallocHost((void**)&host_outdata, sizeof(cufftComplex)*nfreqs * nsteps));
+  KAMASU_SAFE_CALL(cudaMallocHost((void**)&host_outdata, sizeof(cufftComplex)*nfreqs * nsteps));
 
   // loop through input data calling ffts
   int j=0;

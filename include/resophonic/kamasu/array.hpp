@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <vector>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/rval.hpp>
@@ -174,7 +175,7 @@ namespace resophonic {
 
 	typename boost::result_of<Grammar(Expr const&, const state_t&, data_t&)>::type thingy 
 	  = Grammar()(expr, state_t(), data_);
-	CUDA_SAFE_CALL(cudaThreadSynchronize());
+	KAMASU_SAFE_CALL(cudaThreadSynchronize());
 
 	this->self_.copy_from(thingy);
       }

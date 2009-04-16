@@ -44,7 +44,7 @@ namespace resophonic {
 	  // not kamasu safe call, which throws.  this is called
 	  // from the destructor.
 	  RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "FREE\t" << size_ * sizeof(T) << " bytes @ " << data_ << "\n");
-	  CUDA_SAFE_CALL(cudaFree(data_));
+	  KAMASU_SAFE_CALL(cudaFree(data_));
 	  data_ = 0;
 	  size_ = 0;
 	}

@@ -5,7 +5,6 @@
 #include <resophonic/cuda/assign.h>
 
 #include "pool.hpp"
-#include "cutil.h"
 #include <cuda_runtime.h>
 #include <cassert>
 #include <string.h>

@@ -4,9 +4,9 @@
 #include <exception>
 #include <cassert>
 #include <resophonic/kamasu/config.hpp>
+#include <boost/noncopyable.hpp>
 #include <cuda.h>
 #include <cublas.h>
-#include <cutil.h>
 #include <cuda_runtime.h>
 
 namespace resophonic {
@@ -67,11 +67,11 @@ namespace resophonic {
     struct cuda_exception : virtual std::exception
     {
       cudaError_t e;
-      const char *file, *msg;
+      const char *msg;
       unsigned line;
 
-      cuda_exception(cudaError_t e_, const char* file_, unsigned line_) 
-	: e(e_), file(file_), msg(cudaGetErrorString(e_)), line(line_)  
+      cuda_exception(cudaError_t e_)
+	: e(e_), msg(cudaGetErrorString(e_))
       { }
       virtual const char* what() const throw()
       {
@@ -79,17 +79,18 @@ namespace resophonic {
       }
     };
 
-#define RESOPHONIC_KAMASU_CUDA_ERROR_CHECK()			\
-    {								\
-      cudaError_t err = cudaGetLastError();			\
-      if (cudaSuccess != err)					\
-	{							\
-	  std::cout << "IS ERROR\n";				\
-	  throw cuda_exception(err, __FILE__, __LINE__);	\
-	}							\
+    inline void cuda_check(cudaError err)
+    {
+      if( cudaSuccess != err) {
+	throw resophonic::kamasu::cuda_exception(err);
+      }
     }
-
+    inline void cuda_check()
+    {
+      cudaError_t err = cudaGetLastError();			
+      if (cudaSuccess != err)					
+	throw cuda_exception(err);
+    }
   }
 }
-
 #endif

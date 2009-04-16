@@ -15,7 +15,6 @@
 #include <resophonic/kamasu/testing.hpp>
 
 #include "cuda_runtime_api.h"
-#include "cutil.h"
 
 #include <vector>
 #include <cassert>

@@ -9,7 +9,6 @@
 #include <boost/mpl/map.hpp>
 
 #include <cublas.h>
-#include <cutil.h>
 
 namespace resophonic {
   namespace kamasu {

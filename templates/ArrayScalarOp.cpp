@@ -25,7 +25,8 @@ namespace resophonic {
 	throw std::runtime_error("kamasu internal error");
       }
 
-      RESOPHONIC_KAMASU_CUDA_ERROR_CHECK();
+      cuda_check();
+
       return rv;
     }
   }

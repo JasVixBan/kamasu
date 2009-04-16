@@ -10,7 +10,6 @@
 #include <boost/multi_array.hpp>
 #include <boost/foreach.hpp>
 
-#include "cutil.h"
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/array.hpp>
 #include <resophonic/kamasu/config.hpp>

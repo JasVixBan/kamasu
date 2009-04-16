@@ -16,7 +16,6 @@ using std::cout;
 
 #include <cufft.h>
 #include <cuda_runtime_api.h>
-#include <cutil.h>
 
 namespace rk = resophonic::kamasu;
 

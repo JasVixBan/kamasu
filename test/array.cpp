@@ -17,7 +17,6 @@
 #include <resophonic/kamasu/linspace.hpp>
 
 #include "cuda_runtime_api.h"
-#include "cutil.h"
 
 #include <vector>
 #include <cassert>

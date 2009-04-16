@@ -1,12 +1,6 @@
 #ifndef RESOPHONIC_KAMASU_HPP_INCLUDED
 #define RESOPHONIC_KAMASU_HPP_INCLUDED
 
-#define KAMASU_SAFE_CALL( call ) do {					\
-    cudaError err = call;						\
-    if( cudaSuccess != err) {						\
-      throw resophonic::kamasu::cuda_exception(err, __FILE__, __LINE__); \
-    } } while (false)
-
 #include <resophonic/kamasu/state.hpp>
 #include <resophonic/kamasu/data.hpp>
 #include <resophonic/kamasu/config.hpp>

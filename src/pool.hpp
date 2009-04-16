@@ -5,7 +5,6 @@
 #include <resophonic/kamasu/testing.hpp>
 #include <boost/pool/singleton_pool.hpp>
 #include <cuda_runtime.h>
-#include "cutil.h"
 
 
 namespace resophonic {
@@ -23,7 +22,7 @@ namespace resophonic {
 	{
 	  void *ptr;
 	  RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "mallocHost " << bytes << "\n");
-	  KAMASU_SAFE_CALL(cudaMallocHost(&ptr, bytes));
+	  cuda_check(cudaMallocHost(&ptr, bytes));
 	  RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << " @ " << ptr << "\n");
 	  return (char*)ptr;
 	}
@@ -31,7 +30,7 @@ namespace resophonic {
 	static void free(char* const block)
 	{
 	  RESOPHONIC_CUDAMALLOC_DEBUG(std::cerr << "free " << block << "\n");
-	  KAMASU_SAFE_CALL(cudaFreeHost(block));
+	  cuda_check(cudaFreeHost(block));
 	}
 
       };

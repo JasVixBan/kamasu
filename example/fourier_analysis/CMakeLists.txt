@@ -1,17 +1,17 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(fft-kamasu
-  kamasu.cpp
-  )
-
-
-target_link_libraries(fft-kamasu
-  resophonic_kamasu 
-  ${CUDART_LIBRARY}
-  ${BOOST_LIBRARIES}
-  ${CUDA_CUTIL_LIB}
-  ${CUDA_CUFFT_LIBRARY}
-  )
+# add_executable(fft-kamasu
+#   kamasu.cpp
+#   )
+# 
+# 
+# target_link_libraries(fft-kamasu
+#   resophonic_kamasu 
+#   ${CUDART_LIBRARY}
+#   ${BOOST_LIBRARIES}
+#   ${CUDA_CUTIL_LIB}
+#   ${CUDA_CUFFT_LIBRARY}
+#   )
 
 find_library(FFTW3_LIBRARY
   fftw3 

@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 2.6)
 #
 #  This should contain common/inc/cutil.h, common/lib/libcutil.a, etc.
 #
-set(NVIDIA_CUDA_SDK_DIR 
-  "${CMAKE_CURRENT_SOURCE_DIR}/../NVIDIA_CUDA_SDK"
-  CACHE PATH "where is dir 'NVIDIA_CUDA_SDK'")
+#set(NVIDIA_CUDA_SDK_DIR 
+#  "${CMAKE_CURRENT_SOURCE_DIR}/../NVIDIA_CUDA_SDK"
+#  CACHE PATH "where is dir 'NVIDIA_CUDA_SDK'")
 
 #
 #  Options here are "Device" or "Emulation"
@@ -71,9 +71,9 @@ set(BOOST_LIBRARIES
   ${BOOST_FILESYSTEM}
   )  
 
-if(NOT EXISTS ${NVIDIA_CUDA_SDK_DIR}/common/inc/cutil.h)
-  message(FATAL_ERROR "cutil.h not found in <NVIDIA_CUDA_SDK_DIR>/common/inc")
-endif(NOT EXISTS ${NVIDIA_CUDA_SDK_DIR}/common/inc/cutil.h)
+#if(NOT EXISTS ${NVIDIA_CUDA_SDK_DIR}/common/inc/cutil.h)
+#  message(FATAL_ERROR "cutil.h not found in <NVIDIA_CUDA_SDK_DIR>/common/inc")
+#endif(NOT EXISTS ${NVIDIA_CUDA_SDK_DIR}/common/inc/cutil.h)
 
 find_file(CUDPP_INCLUDE_FILE
   cudpp.h
@@ -88,7 +88,7 @@ get_filename_component(CUDPP_INCLUDE_DIR
 
 include_directories(${CUDPP_INCLUDE_DIR})
 
-include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc)
+#include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc)
 include_directories(${CUDA_INCLUDE_DIRECTORY})
 
 add_subdirectory(src)

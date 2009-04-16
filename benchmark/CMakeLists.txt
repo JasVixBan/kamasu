@@ -23,7 +23,7 @@ macro(add_bmark NAME)
 endmacro(add_bmark NAME)
 
 add_bmark(scalarmult)
-# add_bmark(deepexpr)
+add_bmark(deepexpr)
 # add_bmark(deepexpr_streamed)
 add_bmark(sine)
 add_bmark(matrix_multiply)

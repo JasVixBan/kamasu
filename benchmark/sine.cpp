@@ -25,7 +25,7 @@ struct sine
       v.resize(m);
       t::rng.seed(13);
       for (unsigned i=0; i<m; i++)
-	v[i] = t::rand();
+	v[i] = t::uniform();
     }
     void stop() 
     { 
@@ -56,7 +56,7 @@ struct sine
       result.resize(m);
       t::rng.seed(13);
       for (unsigned i=0; i<m; i++)
-	result[i] = t::rand();
+	result[i] = t::uniform();
     }
     void stop() 
     { 

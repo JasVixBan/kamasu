@@ -19,7 +19,7 @@ project(kamasu C CXX CUDA)
 
 # this must go after project()
 set(CMAKE_CXX_FLAGS -std=c++0x) 
-set(CMAKE_CUDA_FLAGS "-arch=sm_13")
+set(CMAKE_CUDA_COMPILE_FLAGS "-arch=sm_13")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

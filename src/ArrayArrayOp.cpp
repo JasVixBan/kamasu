@@ -1,6 +1,6 @@
 #include <resophonic/kamasu/grammar.hpp>
 #include <resophonic/kamasu/make_vector.hpp>
-#include "elementwise_array_array_op.hpp"
+#include "transform.hpp"
 
 namespace resophonic 
 {
@@ -32,7 +32,7 @@ namespace resophonic
       switch (rv.nd) {
 #define DISPATCH_CASE(Z, N, DATA)					\
 	case N:								\
-	elementwise_array_array_op<float, N, Op> \
+	transform<float, N, Op> \
 	  (rv.linear_size,						\
 	   rv.data() + rv.offset,					\
 	   rhs.data() + rhs.offset,					\

@@ -23,11 +23,11 @@ namespace resophonic {
 			      data_t& data)
     {
       switch (rv.nd) {
-      case 1:  elementwise_array_scalar_op<float, 1, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-      case 2:  elementwise_array_scalar_op<float, 2, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-      case 3:  elementwise_array_scalar_op<float, 3, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-      case 4:  elementwise_array_scalar_op<float, 4, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-      case 5:  elementwise_array_scalar_op<float, 5, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
+      case 1:  transform<float, 1, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
+      case 2:  transform<float, 2, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
+      case 3:  transform<float, 3, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
+      case 4:  transform<float, 4, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
+      case 5:  transform<float, 5, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
 
       default:
 	throw std::runtime_error("kamasu internal error");

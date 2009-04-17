@@ -52,10 +52,9 @@ add_library(resophonic_kamasu SHARED
   linspace.cu
 
   ArrayScalarOp.cpp
-  elementwise_array_scalar_op.cu
-
   ArrayArrayOp.cpp
-  elementwise_array_array_op.cu
+
+  transform.cu
 
   sort.cpp
   sort.cu

@@ -9,7 +9,7 @@
 #include <resophonic/kamasu/exception.hpp>
 #include "opmap.hpp"
 
-#include "elementwise_array_scalar.hpp"
+#include "elementwise_array_scalar_op.hpp"
 
 namespace resophonic {
   namespace kamasu {

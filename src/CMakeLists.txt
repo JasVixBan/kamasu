@@ -14,7 +14,6 @@ macro(generate X WHERETO)
 endmacro(generate X)
 
 set(GENERATED_SRC
-  elementwise_array_array.cu
   unary_array_op.cu
 
   UnaryFunctionDispatch.cpp
@@ -49,11 +48,14 @@ add_custom_target(generated_public_headers
 
 add_library(resophonic_kamasu SHARED
 
-  assign.cu
+  # assign.cu way broken it seems
   linspace.cu
 
   ArrayScalarOp.cpp
-  elementwise_array_scalar.cu
+  elementwise_array_scalar_op.cu
+
+  ArrayArrayOp.cpp
+  elementwise_array_array_op.cu
 
   sort.cpp
   sort.cu

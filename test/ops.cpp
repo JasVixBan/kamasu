@@ -268,6 +268,31 @@ TEST(plus)
   ENSURE_EQUAL(b(3,4), 22.5f);
 }
 
+TEST(mm_plus)
+{
+  array<float> a = make_4x5(), b = make_4x5(), c;
+
+  c = a + b;
+
+  ENSURE_EQUAL(a(0,0), 1.0f);
+  ENSURE_EQUAL(a(1,2), 10.0f);
+  ENSURE_EQUAL(a(3,0), 4.0f);
+  ENSURE_EQUAL(a(0,4), 17.0f);
+  ENSURE_EQUAL(a(3,4), 20.0f);
+
+  ENSURE_EQUAL(b(0,0), 1.0f);
+  ENSURE_EQUAL(b(1,2), 10.0f);
+  ENSURE_EQUAL(b(3,0), 4.0f);
+  ENSURE_EQUAL(b(0,4), 17.0f);
+  ENSURE_EQUAL(b(3,4), 20.0f);
+
+  ENSURE_EQUAL(c(0,0), 2.0f);
+  ENSURE_EQUAL(c(1,2), 20.0f);
+  ENSURE_EQUAL(c(3,0), 8.0f);
+  ENSURE_EQUAL(c(0,4), 34.0f);
+  ENSURE_EQUAL(c(3,4), 40.0f);
+}
+
 TEST(dot_with_mul)
 {
   //    0   1   2   3   4   5   6   7   8   9

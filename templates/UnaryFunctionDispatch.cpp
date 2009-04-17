@@ -17,7 +17,7 @@ namespace resophonic {
       log_trace("dispatch: %s", __PRETTY_FUNCTION__); 
 
       switch (v.nd) {					     
-	/*'\n'.join(['''case %u: kamasu_unary_array_%s_%d(v.data() + v.offset, 
+	/*'\n'.join(['''case %u: unary_array_%s_%d(v.data() + v.offset, 
 	  v.linear_size, v.factors, v.strides, data.si.value); break;''' % (n, OP, n) for n in one_to_n])*/
       
       default:							

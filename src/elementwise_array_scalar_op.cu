@@ -1,5 +1,5 @@
 
-#include "elementwise_array_scalar.hpp"
+#include "elementwise_array_scalar_op.hpp"
 #include "kernel_util.hpp"
 
 #include <proto_tags_fwd.hpp>
@@ -43,43 +43,9 @@ namespace resophonic {
       (*t) = pow(*t, scalar);
     }
 
-    template <typename T, int Length>
-    struct argpack
-    {
-      T data[Length];
-      argpack(const T* d)
-      {
-	memcpy(data, d, Length * sizeof(T));
-      }
-      T& operator[](unsigned index)
-      {
-	return data[index];
-      }
-      const T& operator[](unsigned index) const
-      {
-	return data[index];
-      }
-      void touchme() { }
-
-    };
-
-    template <int N>
-    __device__ unsigned actual_index(const argpack<std::size_t, N> &factors,
-				     const argpack<int, N> &strides)
-    {
-      unsigned x = INDEX/factors[N-1] * strides[N-1];
-							//      for (unsigned i=I-1; i<=0; i++)
-#pragma unroll 10
-      for (int i = N-1; i>0; i--)
-	x += unsigned(INDEX % factors[i]) / factors[i-1] * strides[i-1];
-
-      return x;
-
-    }
-
     template <typename T, int N, typename Tag>
     __global__ void 
-    doit(T* data, 
+    eas_knl(T* data, 
 	 std::size_t linear_size, 
 	 argpack<std::size_t, N> factors,
 	 argpack<int, N> strides,
@@ -106,11 +72,12 @@ namespace resophonic {
       argpack<std::size_t, N> factors_(factors);
       argpack<int, N> strides_(strides);
       
-      doit<T, N, Tag><<<bd.first, bd.second>>>(data, linear_size, factors_, strides_, scalar);
+      eas_knl<T, N, Tag><<<bd.first, bd.second>>>(data, linear_size, factors_, strides_, scalar);
     }
 
     template <typename T, typename Tag>
-    struct instantiate {
+    struct instantiate 
+    {
       instantiate()
       {
 	elementwise_array_scalar_op<T, 1, Tag>(0, 0, 0, 0, 0.0f);
@@ -129,4 +96,5 @@ namespace resophonic {
 
   }
 }
+
 

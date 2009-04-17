@@ -2,6 +2,7 @@
 #define RESOPHONIC_KAMASU_TESTING_HPP_INCLUDED
 
 #include <boost/random.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 // #define RESOPHONIC_CUDAMALLOC_DEBUG(X) resophonic::kamasu::testing::cudamalloc_bp(), X
 #define RESOPHONIC_CUDAMALLOC_DEBUG(X)
@@ -17,6 +18,10 @@ namespace resophonic {
       extern boost::mt19937 rng;
       extern boost::uniform_real<float> uniform_distribution;
       extern boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > uniform;
+
+      template <typename T> 
+      boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major> 
+      rand_matrix (unsigned n, unsigned m);
 
     }
   }

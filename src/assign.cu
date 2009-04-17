@@ -1,31 +1,38 @@
 #include "kernel_util.hpp"
 
-__global__ void
-kamasu_linspace_knl(float* data,
-		    float value,
-		    unsigned linear_size,
-		    const int stride)
+namespace resophonic
 {
-  if (INDEX >= linear_size)
-    return;
+  namespace kamasu
+  {
+    __global__ void
+    assign_knl(float* data,
+	       float value,
+	       unsigned linear_size,
+	       const int stride)
+    {
+      if (INDEX >= linear_size)
+	return;
+      unsigned actual_index =  INDEX*stride;
 
-  unsigned actual_index =  INDEX*stride;
+      data[actual_index] = value;
+    }
 
-  data[actual_index] = value;
+    void 
+    assign(float* data, 
+	   float value,
+	   std::size_t linear_size,
+	   const int stride)
+    {
+      float* thingy = 0;
+      *thingy = 1.0f;
+
+      bd_t bd = gridsize(linear_size);
+
+      assign_knl<<<bd.first, bd.second>>>(data,
+					  value,
+					  linear_size,
+					  stride);
+    }
+
+  }
 }
-
-void 
-kamasu_assign(float* data, 
-	      float value,
-	      std::size_t linear_size,
-	      const int stride)
-{
-  bd_t bd = gridsize(linear_size);
-
-  kamasu_linspace_knl<<<bd.first, bd.second>>>
-    (data,
-     value,
-     linear_size,
-     stride);
-}
-

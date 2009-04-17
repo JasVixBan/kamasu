@@ -2,7 +2,7 @@
 #include <resophonic/kamasu/holder.hpp>
 #include <resophonic/kamasu/dumper_context.hpp>
 #include <resophonic/kamasu/array_impl.hpp>
-#include <resophonic/cuda/assign.h>
+// #include <resophonic/cuda/assign.h>
 
 #include "pool.hpp"
 #include <cuda_runtime.h>
@@ -183,7 +183,9 @@ namespace resophonic
     array_impl<T>::assign(T value)
     {
       // only works on dense arrays.
-      kamasu_assign(data_->data(), value, linear_size, 1);
+      //      kamasu_assign(data_->data(), value, linear_size, 1);
+      float* feh = 0;
+      *feh = 1;
     }
 
     template<typename T>

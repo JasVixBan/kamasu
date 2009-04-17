@@ -3,6 +3,7 @@
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/make_vector.hpp>
 #include <resophonic/kamasu/data.hpp>
+#include "elementwise_array_array_op.hpp"
 
 #include "opmap.hpp"
 
@@ -12,6 +13,8 @@
 
 namespace resophonic {
   namespace kamasu {
+
+#if 0
 
 #define FN_NAME(NAME,TAG,N) NAME##_##TAG##_##N
 
@@ -36,14 +39,16 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 
       struct dispatch
       {
-
+    template <typename Op>
+    typename ArrayArrayOp::result_type
+    ArrayArrayOp::operator()(Op,
 	rk::array_impl<float>
 	operator()(bp::tag::multiplies,
 		   const rk::array_impl<float>& lhs, 
 		   const rk::array_impl<float>& rhs,
 		   const state_t&,
 		   data_t& data)
-	{
+	n{
 	  BOOST_ASSERT(lhs.nd == 2);
 	  BOOST_ASSERT(rhs.nd == 2);
 	  std::size_t lhs_rows = lhs.dim(0);
@@ -109,9 +114,8 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 	  switch (lhs.nd) {
 #define DISPATCH_CASE(Z, N, DATA) case N:				\
 	    log_trace("firing with nd=%u", lhs.nd);\
-             BOOST_PP_CAT(kamasu_elementwise_array_array_,N) \
-	      (op_map<bp::tag::plus>::value,				\
-	       lhs.linear_size,						\
+	    elementwise_array_array_op<float, N, boost::proto::tag::plus> \
+	      (lhs.linear_size,						\
 	       lhs.data() + lhs.offset,					\
 	       rhs.data() + rhs.offset,					\
 	       lhs.factors,						\
@@ -133,56 +137,6 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
 	  return rk::array_impl<float>();
 	}
 
-	//
-	//  general elementwise case
-	//
-	template <typename Op>
-	rk::array_impl<float>
-	operator()(Op,
-		   const rk::array_impl<float>& lhs, 
-		   const rk::array_impl<float>& rhs,
-		   const state_t&,
-		   data_t& data)
-	{
-	  RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
-	  
-	  const rk::array_impl<float> rv(lhs);
-
-	  for (unsigned i=0; i<lhs.nd; i++)
-	    RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
-				    dimensions_dont_match());
-
-	  log_trace("%s", "*** DISPATCH TO ARRAY-ARRAY KERNEL ***");
-
-	  log_trace("a.nd==%u", rv.nd);
-
-	  switch (rv.nd) {
-#define DISPATCH_CASE(Z, N, DATA) case N:				\
-	    log_trace("firing with nd=%u", rv.nd);\
-	    BOOST_PP_CAT(kamasu_elementwise_array_array_,N)		\
-	      (op_map<Op>::value,					\
-	       rv.linear_size,						\
-	       rv.data() + rv.offset,					\
-	       rhs.data() + rhs.offset,					\
-	       rv.factors,						\
-	       rhs.factors,						\
-	       rv.strides,						\
-	       rhs.strides,						\
-	       data.si.value);						\
-	    break;
-
-	    BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
-
-	  default:
-	    throw std::runtime_error("kamasu internal error");
-	  }
-
-#undef DISPATCH_CASE
-	  
-	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
-	  return rv;
-	}
-
       };
     }
 
@@ -196,7 +150,45 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
     {
       log_trace("%s",  __PRETTY_FUNCTION__);
       
-      return detail::dispatch()(Op(), lhs, rhs, s, data);
+      RESOPHONIC_KAMASU_THROW(lhs.nd != rhs.nd, dimensions_dont_match());
+	  
+      const rk::array_impl<float> rv(lhs);
+
+      for (unsigned i=0; i<lhs.nd; i++)
+	RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
+				dimensions_dont_match());
+
+      log_trace("%s", "*** DISPATCH TO ARRAY-ARRAY KERNEL ***");
+      
+      log_trace("a.nd==%u", rv.nd);
+
+      switch (rv.nd) {
+#define DISPATCH_CASE(Z, N, DATA)					\
+	case N:								\
+	elementwise_array_array_op<float, N, Op> \
+	  (rv.linear_size,						\
+	   rv.data() + rv.offset,					\
+	   rhs.data() + rhs.offset,					\
+	   rv.factors,							\
+	   rhs.factors,							\
+	   rv.strides,							\
+	   rhs.strides,							\
+	   data.si.value);						\
+	break;
+	
+	BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
+
+	  default:
+	    throw std::runtime_error("kamasu internal error");
+	  }
+
+#undef DISPATCH_CASE
+	  
+	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
+	  return rv;
+
+
+
     }
 
 #define INSTANTIATE_ARRAYARRAY_OP_IMPL(OP) template			\
@@ -218,5 +210,6 @@ BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, ENUMERATED_DECLS, ~);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::divides);
     //INSTANTIATE_ARRAYARRAY_OP(boost::proto::tag::minus);
 
+#endif
   }
 }

@@ -12,7 +12,6 @@ namespace resophonic {
     //
     // array-scalar
     //  
-
     template <typename T, int N, typename Tag>
     __global__ void 
     transform_knl(T* data, 
@@ -66,10 +65,10 @@ namespace resophonic {
       template struct eas<float, boost::proto::tag::assign>;
       template struct eas<float, resophonic::kamasu::tag::pow>;
     }
+
     //
     // array-array
     //
-
     template <typename T, int N, typename Tag>
     __global__ void 
     transform_knl(std::size_t linear_size,

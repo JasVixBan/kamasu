@@ -4,66 +4,25 @@
 
 #include <proto_tags_fwd.hpp>
 #include <resophonic/kamasu/tag.hpp>
+#include "primitives.hpp"
 
 namespace resophonic {
   namespace kamasu {
 
-    template <typename T>
-    __device__ void 
-    op_impl(T* t, const T& scalar, ::boost::proto::tag::plus)
-    {
-      (*t) += scalar;
-    }
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* t, const T& scalar, ::boost::proto::tag::multiplies)
-    {
-      (*t) *= scalar;
-    }
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* t, const T& scalar, ::boost::proto::tag::divides)
-    {
-      (*t) /= scalar;
-    }
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* t, const T& scalar, ::boost::proto::tag::minus)
-    {
-      (*t) -= scalar;
-    }
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* t, const T& scalar, ::boost::proto::tag::assign)
-    {
-      (*t) = scalar;
-    }
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* t, const T& scalar, resophonic::kamasu::tag::pow)
-    {
-      (*t) = pow(*t, scalar);
-    }
-
     template <typename T, int N, typename Tag>
     __global__ void 
     eas_knl(T* data, 
-	 std::size_t linear_size, 
-	 argpack<std::size_t, N> factors,
-	 argpack<int, N> strides,
-	 T scalar)
+	    std::size_t linear_size, 
+	    argpack<std::size_t,N> factors,
+	    argpack<int, N> strides,
+	    T scalar)
     {
       if (INDEX >= linear_size)
 	return;
 
       unsigned thisthread_offset = actual_index<N>(factors, strides);
 
-      op_impl(data + thisthread_offset, scalar, Tag()); 
+      op_impl_<T, Tag>::impl(data + thisthread_offset, scalar); 
     }
 
     template <typename T, int N, typename Tag>

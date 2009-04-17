@@ -1,5 +1,5 @@
 #ifndef RESOPHONIC_KAMASU_UNARY_FUNCTION_CALLS_HPP_INCLUDED
-#define RESOPHONIC_KAMASU_UNARY_FUNCTION_CALLS_HPP_INCLUDED
+#define RESOPHONIC_gKAMASU_UNARY_FUNCTION_CALLS_HPP_INCLUDED
 
 #include <resophonic/kamasu/state.hpp>
 #include <resophonic/kamasu/data.hpp>

@@ -12,10 +12,6 @@
 
 #include <utility>
 
-//
-// helpers
-// 
-
 namespace resophonic {
   namespace kamasu {
     enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW };
@@ -31,6 +27,7 @@ namespace resophonic {
       else
 	return std::make_pair(::ceil(double(size) / threads_per_block), threads_per_block);
     }
+
 
 #ifdef __CUDACC__
 

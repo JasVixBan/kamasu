@@ -1,6 +1,7 @@
 
 #include "elementwise_array_scalar_op.hpp"
 #include "kernel_util.hpp"
+#include "primitives.hpp"
 
 #include <proto_tags_fwd.hpp>
 #include <resophonic/kamasu/tag.hpp>
@@ -8,34 +9,6 @@
 
 namespace resophonic {
   namespace kamasu {
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* l, T* r, ::boost::proto::tag::plus)
-    {
-      *l += *r;
-    }
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* l, T* r, ::boost::proto::tag::minus)
-    {
-      (*l) -= *r;
-    }
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* l, T* r, ::boost::proto::tag::multiplies)
-    {
-      (*l) *= *r;
-    }
-
-    template <typename T>
-    __device__ void 
-    op_impl(T* l, T* r, ::boost::proto::tag::divides)
-    {
-      (*l) /= *r;
-    }
 
     template <typename T, int N, typename Tag>
     __global__ void 
@@ -53,7 +26,7 @@ namespace resophonic {
       unsigned lhs_off = actual_index<N>(factors_l, strides_l);
       unsigned rhs_off = actual_index<N>(factors_r, strides_r);
 
-      op_impl(data_l + lhs_off, data_r + rhs_off, Tag()); 
+      op_impl_<T, Tag>::impl(data_l + lhs_off, data_r + rhs_off); 
     }
 
     template <typename T, int N, typename Tag>
@@ -88,12 +61,11 @@ namespace resophonic {
       {
 	iaao()
 	{
-	  cudaStream_t s;
-	  elementwise_array_array_op<T, 1, Tag>(0U, 0, 0, 0, 0, 0, 0, s);
-	  elementwise_array_array_op<T, 2, Tag>(0, 0, 0, 0, 0, 0, 0, s);
-	  elementwise_array_array_op<T, 3, Tag>(0, 0, 0, 0, 0, 0, 0, s);
-	  elementwise_array_array_op<T, 4, Tag>(0, 0, 0, 0, 0, 0, 0, s);
-	  elementwise_array_array_op<T, 5, Tag>(0, 0, 0, 0, 0, 0, 0, s);
+	  elementwise_array_array_op<T, 1, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
+	  elementwise_array_array_op<T, 2, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
+	  elementwise_array_array_op<T, 3, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
+	  elementwise_array_array_op<T, 4, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
+	  elementwise_array_array_op<T, 5, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
 	}
       };
 
@@ -102,7 +74,6 @@ namespace resophonic {
       template struct iaao<float, boost::proto::tag::divides>;
 
     }
-    template void elementwise_array_array_op<float, 5, boost::proto::tag::minus>(unsigned long, float*, float*, unsigned long const*, unsigned long const*, int const*, int const*, int);
   }
 }
 

@@ -70,8 +70,6 @@ add_library(resophonic_kamasu SHARED
   rval.cpp
   make_vector.cpp
 
-  transforms.cpp
-
   logging.cpp
   testing.cpp
 

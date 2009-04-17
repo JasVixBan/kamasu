@@ -7,7 +7,6 @@
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/grammar.hpp>
 #include <resophonic/kamasu/exception.hpp>
-#include "opmap.hpp"
 
 #include "elementwise_array_scalar_op.hpp"
 

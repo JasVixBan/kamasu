@@ -8,7 +8,7 @@
 #include <resophonic/kamasu/grammar.hpp>
 #include <resophonic/kamasu/exception.hpp>
 
-#include "elementwise_array_scalar_op.hpp"
+#include "transform.hpp"
 
 namespace resophonic {
   namespace kamasu {

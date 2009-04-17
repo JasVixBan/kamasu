@@ -127,7 +127,7 @@ namespace resophonic {
 
       array& operator=(T value)
       {
-	self().assign(value);
+	ArrayScalarOp()(boost::proto::tag::assign(), self(), value, state_t(), data_);
 	return *this;
       }
 

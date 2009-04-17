@@ -56,6 +56,7 @@ namespace resophonic {
       template struct instantiate<float, boost::proto::tag::minus>;
       template struct instantiate<float, boost::proto::tag::multiplies>;
       template struct instantiate<float, boost::proto::tag::divides>;
+      template struct instantiate<float, boost::proto::tag::assign>;
       template struct instantiate<float, resophonic::kamasu::tag::pow>;
     //    }
   }

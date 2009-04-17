@@ -38,6 +38,13 @@ namespace resophonic {
 
     template <typename T>
     __device__ void 
+    op_impl(T* t, const T& scalar, ::boost::proto::tag::assign)
+    {
+      (*t) = scalar;
+    }
+
+    template <typename T>
+    __device__ void 
     op_impl(T* t, const T& scalar, resophonic::kamasu::tag::pow)
     {
       (*t) = pow(*t, scalar);
@@ -92,6 +99,7 @@ namespace resophonic {
     template struct instantiate<float, boost::proto::tag::minus>;
     template struct instantiate<float, boost::proto::tag::multiplies>;
     template struct instantiate<float, boost::proto::tag::divides>;
+    template struct instantiate<float, boost::proto::tag::assign>;
     template struct instantiate<float, resophonic::kamasu::tag::pow>;
 
   }

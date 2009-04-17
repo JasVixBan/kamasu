@@ -179,16 +179,6 @@ namespace resophonic
     }
 
     template<typename T>
-    void
-    array_impl<T>::assign(T value)
-    {
-      // only works on dense arrays.
-      //      kamasu_assign(data_->data(), value, linear_size, 1);
-      float* feh = 0;
-      *feh = 1;
-    }
-
-    template<typename T>
     array_impl<T>::~array_impl()
     { 
     }

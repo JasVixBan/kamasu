@@ -8,6 +8,7 @@
 #include "primitives.hpp"
 
 #include <resophonic/kamasu/array.hpp>
+#include <resophonic/kamasu/exception.hpp>
 
 
 namespace resophonic {
@@ -40,6 +41,7 @@ namespace resophonic {
 		<< " stride0 = " << vp.strides[0] << "\n";
       
       transform_knl<T, Tag><<<bd.first, bd.second>>>(data + vp.offset, vp, scalar);
+      cuda_check();
     }
 
     namespace inst {
@@ -61,73 +63,45 @@ namespace resophonic {
       template struct eas<float, resophonic::kamasu::tag::pow>;
     }
 
+
     //
     // array-array
     //
-    template <typename T, int N, typename Tag>
+    template <typename T, typename Tag>
     __global__ void 
-    transform_knl(std::size_t linear_size,
-		  T* data_l,
-		  T* data_r,
-		  argpack<std::size_t, N> factors_l,
-		  argpack<std::size_t, N> factors_r,
-		  argpack<int, N> strides_l,
-		  argpack<int, N> strides_r)
+    transform_knl(T* data_l, view_params vp_l,
+		  T* data_r, view_params vp_r)
     {
-      if (INDEX >= linear_size)
+      if (INDEX >= vp_l.linear_size)
 	return;
 
-      unsigned lhs_off = actual_index<N>(factors_l, strides_l);
-      unsigned rhs_off = actual_index<N>(factors_r, strides_r);
+      unsigned lhs_off = actual_index(vp_l.nd, vp_l.factors, vp_l.strides);
+      unsigned rhs_off = actual_index(vp_r.nd, vp_r.factors, vp_r.strides);
 
       op_impl_<T, Tag>::impl(data_l + lhs_off, data_r + rhs_off); 
     }
 
-    template <typename T, int N, typename Tag>
+    template <typename T, typename Tag>
     void 
-    transform(std::size_t linear_size,
-	      T* data_l,
-	      T* data_r,
-	      const std::size_t* factors_l,
-	      const std::size_t* factors_r,
-	      const int* strides_l,
-	      const int* strides_r,
-	      cudaStream_t stream)
+    transform(T* data_l, const view_params& vp_l,
+	      T* data_r, const view_params& vp_r)
     {
-      bd_t bd = gridsize(linear_size);
+      bd_t bd = gridsize(vp_l.linear_size, 16);
       
-      argpack<std::size_t, N> factors_l_(factors_l);
-      argpack<int, N> strides_l_(strides_l);
-      
-      argpack<std::size_t, N> factors_r_(factors_r);
-      argpack<int, N> strides_r_(strides_r);
-      
-      transform_knl<T, N, Tag><<<bd.first, bd.second, 0, stream>>>(linear_size, 
-								   data_l, data_r, 
-								   factors_l_, factors_r_,
-								   strides_l_, strides_r_);
+      transform_knl<T, Tag><<<bd.first, bd.second>>>(data_l + vp_l.offset, vp_l, 
+						     data_r + vp_r.offset, vp_r); 
+      cuda_check();
     }
+#define INST(TYPE, TAG)							\
+    template void transform<TYPE, TAG>(TYPE*, const view_params&,	\
+				       TYPE*, const view_params&);
 
-    namespace inst 
-    {
-      template <typename T, typename Tag>
-      struct iaao
-      {
-	iaao()
-	{
-	  transform<T, 1, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
-	  transform<T, 2, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
-	  transform<T, 3, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
-	  transform<T, 4, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
-	  transform<T, 5, Tag>(0, 0, 0, 0, 0, 0, 0, 0);
-	}
-      };
+    INST(float, boost::proto::tag::plus);
+    INST(float, boost::proto::tag::minus);
+    INST(float, boost::proto::tag::divides);
 
-      template struct iaao<float, boost::proto::tag::plus>;
-      template struct iaao<float, boost::proto::tag::minus>;
-      template struct iaao<float, boost::proto::tag::divides>;
+#undef INST
 
-    }
 
 
 

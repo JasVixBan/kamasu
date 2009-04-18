@@ -28,11 +28,11 @@ namespace resophonic
     {
       typedef rk::array_impl<float> result_type;
 
-      template <typename Op>
+      template <typename T, typename Tag>
       result_type 
-      operator()(Op, 
-		 const rk::array_impl<float>&, 
-		 const rk::array_impl<float>&,
+      operator()(Tag, 
+		 const rk::array_impl<T>&, 
+		 const rk::array_impl<T>&,
 		 const state_t&,
 		 data_t&);
     };

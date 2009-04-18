@@ -7,11 +7,11 @@ namespace resophonic
   namespace kamasu 
   {
 
-    template <typename Op>
+    template <typename T, typename Tag>
     typename ArrayArrayOp::result_type
-    ArrayArrayOp::operator()(Op,
-			     const rk::array_impl<float>& lhs, 
-			     const rk::array_impl<float>& rhs,
+    ArrayArrayOp::operator()(Tag,
+			     const rk::array_impl<T>& lhs, 
+			     const rk::array_impl<T>& rhs,
 			     const state_t& state,
 			     data_t& data)
     {
@@ -29,33 +29,37 @@ namespace resophonic
       
       log_trace("a.nd==%u", rv.nd);
 
-      switch (rv.nd()) {
-#define DISPATCH_CASE(Z, N, DATA)					\
-	case N:								\
-	transform<float, N, Op> \
-	  (rv.linear_size(),						\
-	   rv.data() + rv.offset(),					\
-	   rhs.data() + rhs.offset(),					\
-	   rv.factors(),						\
-	   rhs.factors(),						\
-	   rv.strides(),						\
-	   rhs.strides(),						\
-	   data.si.value);						\
-	break;
-	
-	BOOST_PP_REPEAT_FROM_TO(1, KAMASU_MAX_ARRAY_DIM, DISPATCH_CASE, ~);
+      transform<float, Tag>(rv.data(), rv.view_p(),
+			    rhs.data(), rhs.view_p());
 
-      default:
-	throw std::runtime_error("kamasu internal error");
-      }
-
-#undef DISPATCH_CASE
-	  
-	  log_trace("%s", "*** DONE DISPATCH TO AA KERNEL ***");
-	  return rv;
-
-
+      return rv;
     }
+
+#define INST(TYPE, TAG)							\
+    template array_impl<TYPE>						\
+    ArrayArrayOp::operator()<TYPE, TAG>					\
+      (TAG,								\
+       array_impl<TYPE> const&, array_impl<TYPE> const&,		\
+       state_t const&, data_t&);
+
+    INST(float, boost::proto::tag::plus);
+    INST(float, boost::proto::tag::minus);
+    INST(float, boost::proto::tag::divides);
+
+    template <typename T, typename Tag>
+    class instantiate
+    {
+      instantiate() {
+	array_impl<T> rv;
+	state_t s;
+	data_t data;
+	ArrayArrayOp()(Tag(), rv, rv, s, data);
+      }
+    };
+    
+    template struct instantiate<float, boost::proto::tag::plus>;
+    template struct instantiate<float, boost::proto::tag::minus>;
+    template struct instantiate<float, boost::proto::tag::divides>;
 
     template <>
     ArrayArrayOp::result_type
@@ -118,20 +122,6 @@ namespace resophonic
 			    lhs, rhs, state, data);
     }
 
-    template <typename T, typename Tag>
-    class instantiate
-    {
-      instantiate() {
-	array_impl<T> rv;
-	state_t s;
-	data_t data;
-	ArrayArrayOp()(Tag(), rv, rv, s, data);
-      }
-    };
-    
-    template struct instantiate<float, boost::proto::tag::plus>;
-    template struct instantiate<float, boost::proto::tag::minus>;
-    template struct instantiate<float, boost::proto::tag::divides>;
 
   }
 }

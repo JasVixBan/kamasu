@@ -1,4 +1,5 @@
 #include "kernel_util.hpp"
+#include <resophonic/kamasu/view_params.hpp>
 
 namespace resophonic {
   namespace kamasu {
@@ -7,8 +8,8 @@ namespace resophonic {
     unary_array_/*OP*/_/*N*/_knl
     (float* data,
      unsigned linear_size,
-     /*', '.join(['const std::size_t factor%d' % x for x in range(N)])*/,
-     /*', '.join(['const int stride%d' % x for x in range(N)])*/)
+     /*', '.join(['const factor_t factor%d' % x for x in range(N)])*/,
+     /*', '.join(['const stride_t stride%d' % x for x in range(N)])*/)
     {
       if (INDEX >= linear_size)
 	return;
@@ -21,8 +22,8 @@ namespace resophonic {
     void 
     unary_array_/*OP*/_/*N*/(float* data, 
 				    std::size_t linear_size,
-				    const std::size_t* factors, 
-				    const int* strides,
+				    const factor_t* factors, 
+				    const stride_t* strides,
 				    cudaStream_t stream)
     {
       bd_t bd = gridsize(linear_size);

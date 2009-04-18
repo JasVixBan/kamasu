@@ -5,8 +5,8 @@ namespace resophonic
     void 
     unary_array_/*OP*/_/*N*/(float* data, 
 			     std::size_t linear_size,
-			     const std::size_t* factors, 
-			     const int* strides,
+			     const factor_t* factors, 
+			     const stride_t* strides,
 			     cudaStream_t stream);
   }
 }

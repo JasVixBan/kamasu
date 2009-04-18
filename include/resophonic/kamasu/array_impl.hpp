@@ -45,12 +45,12 @@ namespace resophonic {
       T get(std::size_t index) const { return data_->get(index); }
       void reshape(const std::vector<std::size_t>& shape, bool realloc = true);
       void reshape(std::size_t shape, bool realloc = true);
-      std::size_t& dim(std::size_t index) 
+      dim_t& dim(std::size_t index) 
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
 	return impl.dims[index]; 
       }
-      std::size_t dim(std::size_t index) const 
+      dim_t dim(std::size_t index) const 
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
 	return impl.dims[index]; 
@@ -68,21 +68,21 @@ namespace resophonic {
 	return impl.strides[index]; 
       }
 
-      std::size_t& factor(std::size_t index)
+      factor_t& factor(std::size_t index)
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
 	return impl.factors[index]; 
       }
-      std::size_t factor(std::size_t index) const 
+      factor_t factor(std::size_t index) const 
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
 	return impl.factors[index]; 
       }
       offset_t offset() const { return impl.offset; }
 
-      const std::size_t* dims() const { return impl.dims; }
-      const std::size_t* factors() const { return impl.factors; }
-      const int* strides() const { return impl.strides; }
+      const dim_t* dims() const { return impl.dims; }
+      const factor_t* factors() const { return impl.factors; }
+      const stride_t* strides() const { return impl.strides; }
       unsigned nd() const { return impl.nd; }
       unsigned linear_size() const { return impl.linear_size; }
 

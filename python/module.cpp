@@ -181,7 +181,7 @@ register_array(const char* name)
 
   class_<array_t>(name)
     .def("n_dims", &array_t::nd)
-    .def("dim", (std::size_t(array_t::*)(std::size_t) const)&array_t::dim)
+    .def("dim", (ks::dim_t(array_t::*)(std::size_t) const)&array_t::dim)
     .def("stride", (int(array_t::*)(std::size_t) const)&array_t::stride)
     .def("linear_size", &array_t::linear_size)
     

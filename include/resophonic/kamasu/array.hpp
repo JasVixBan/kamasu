@@ -75,12 +75,12 @@ namespace resophonic {
 
       std::size_t nd() const { return self().nd(); }
 
-      std::size_t& dim(std::size_t index)
+      dim_t& dim(std::size_t index)
       { 
 	return self().dim(index); 
       }
 
-      std::size_t dim(std::size_t index) const 
+      dim_t dim(std::size_t index) const 
       { 
 	return self().dim(index); 
       }
@@ -97,12 +97,12 @@ namespace resophonic {
       }
 
 
-      std::size_t& factor(std::size_t index)
+      factor_t& factor(std::size_t index)
       { 
 	return self().factor(index); 
       }
 
-      std::size_t factor(std::size_t index) const 
+      factor_t factor(std::size_t index) const 
       { 
 	return self().factor(index); 
       }

@@ -12,6 +12,7 @@
 
 #include <utility>
 #include <iostream>
+#include <resophonic/kamasu/view_params.hpp>
 
 namespace resophonic {
   namespace kamasu {
@@ -63,8 +64,8 @@ namespace resophonic {
     }
 
     __device__ unsigned actual_index(unsigned nd,
-				     const std::size_t* factors,
-				     const int* strides)
+				     const factor_t* factors,
+				     const stride_t* strides)
     {
       unsigned x = INDEX/factors[nd-1] * strides[nd-1];
 							//      for (unsigned i=I-1; i<=0; i++)

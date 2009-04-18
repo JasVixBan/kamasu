@@ -11,16 +11,10 @@ namespace resophonic {
     transform(T* data, const view_params& vp, T scalar);
 
     // array-array
-    template <typename T, int N, typename Tag>
+    template <typename T, typename Tag>
     void 
-    transform(std::size_t linear_size,
-	      T* data_l,
-	      T* data_r,
-	      const std::size_t* factors_l,
-	      const std::size_t* factors_r,
-	      const int* strides_l,
-	      const int* strides_r,
-	      cudaStream_t stream);
+    transform(T* data_l, const view_params& vpl,
+	      T* data_r, const view_params& vpr);
 
   }
 }

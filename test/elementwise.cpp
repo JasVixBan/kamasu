@@ -15,7 +15,7 @@ using namespace resophonic::kamasu;
 
 TEST_GROUP();
 
-const static unsigned n = 100000;
+const static unsigned n = 10000;
 
 std::vector<float> result;
 

@@ -15,7 +15,6 @@ endmacro(generate X)
 
 set(GENERATED_SRC
   unary_array_op.cu
-
   UnaryFunctionDispatch.cpp
 )
 
@@ -48,7 +47,6 @@ add_custom_target(generated_public_headers
 
 add_library(resophonic_kamasu SHARED
 
-  # assign.cu way broken it seems
   linspace.cu
 
   ArrayScalarOp.cpp

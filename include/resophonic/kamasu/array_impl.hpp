@@ -3,9 +3,9 @@
 
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/not.hpp>
-#include <boost/shared_ptr.hpp>
-//#include <resophonic/kamasu/holder.hpp>
+#include <resophonic/kamasu/shared_ptr.hpp>
 #include <resophonic/kamasu/exception.hpp>
+#include <resophonic/kamasu/view_params.hpp>
 
 #include <vector>
 
@@ -16,18 +16,14 @@ namespace resophonic {
     class holder;
 
     template <typename T>
+    class array;
+
+    template <typename T>
     struct array_impl 
     {
-      typedef uint64_t offset_t;
-      std::size_t dims[KAMASU_MAX_ARRAY_DIM];
-      std::size_t factors[KAMASU_MAX_ARRAY_DIM];
-      int strides[KAMASU_MAX_ARRAY_DIM];
+      typedef std::size_t offset_t;
 
-      std::size_t linear_size;
-      offset_t offset;
-      unsigned nd;
-
-      boost::shared_ptr<holder<T> > data_;
+      friend class array<T>;
 
       array_impl(const array_impl& rhs);
       array_impl();
@@ -46,47 +42,63 @@ namespace resophonic {
       void show() const;
       std::size_t size() const;
       T* data() const;
-
+      T get(std::size_t index) const { return data_->get(index); }
       void reshape(const std::vector<std::size_t>& shape, bool realloc = true);
       void reshape(std::size_t shape, bool realloc = true);
-      std::size_t calculate_strides();
-      void calculate_factors();
-
-      void alloc();
-
       std::size_t& dim(std::size_t index) 
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
-	return dims[index]; 
+	return impl.dims[index]; 
       }
       std::size_t dim(std::size_t index) const 
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
-	return dims[index]; 
+	return impl.dims[index]; 
       }
 
       int& stride(std::size_t index)
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
-	return strides[index]; 
+	return impl.strides[index]; 
       }
 
       int stride(std::size_t index) const 
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
-	return strides[index]; 
+	return impl.strides[index]; 
       }
 
       std::size_t& factor(std::size_t index)
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
-	return factors[index]; 
+	return impl.factors[index]; 
       }
       std::size_t factor(std::size_t index) const 
       { 
 	RESOPHONIC_KAMASU_THROW(index >= nd, bad_index());
-	return factors[index]; 
+	return impl.factors[index]; 
       }
+      offset_t offset() const { return impl.offset; }
+
+      const std::size_t* dims() const { return impl.dims; }
+      const std::size_t* factors() const { return impl.factors; }
+      const int* strides() const { return impl.strides; }
+      unsigned nd() const { return impl.nd; }
+      unsigned linear_size() const { return impl.linear_size; }
+
+      const view_params& view_p() const { return impl;}
+
+    private:
+
+      std::size_t calculate_strides();
+      void calculate_factors();
+      
+      void alloc();
+
+      view_params impl;
+
+      boost::shared_ptr<holder<T> > data_;
+
     };
 
   }

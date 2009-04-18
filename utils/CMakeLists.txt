@@ -22,6 +22,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_definitions(-DBOOST_USER_CONFIG="boost_userconfig.hpp")
 add_executable(bleh bleh.cpp bleh.cu)
 target_link_libraries(bleh
+  resophonic_kamasu
   ${CUDA_DRIVER_LIBRARY}
   ${CUDA_RT_LIBRARY}
   )

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <resophonic/kamasu.hpp>
+#include <resophonic/kamasu/name_of.hpp>
 
 namespace rk = resophonic::kamasu;
 using resophonic::name_of;

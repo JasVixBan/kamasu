@@ -21,7 +21,7 @@ namespace resophonic
 	  
       const rk::array_impl<float> rv(lhs);
 
-      for (unsigned i=0; i<lhs.nd; i++)
+      for (unsigned i=0; i<lhs.nd(); i++)
 	RESOPHONIC_KAMASU_THROW(lhs.dim(i) != rhs.dim(i), 
 				dimensions_dont_match());
 
@@ -29,17 +29,17 @@ namespace resophonic
       
       log_trace("a.nd==%u", rv.nd);
 
-      switch (rv.nd) {
+      switch (rv.nd()) {
 #define DISPATCH_CASE(Z, N, DATA)					\
 	case N:								\
 	transform<float, N, Op> \
-	  (rv.linear_size,						\
-	   rv.data() + rv.offset,					\
-	   rhs.data() + rhs.offset,					\
-	   rv.factors,							\
-	   rhs.factors,							\
-	   rv.strides,							\
-	   rhs.strides,							\
+	  (rv.linear_size(),						\
+	   rv.data() + rv.offset(),					\
+	   rhs.data() + rhs.offset(),					\
+	   rv.factors(),						\
+	   rhs.factors(),						\
+	   rv.strides(),						\
+	   rhs.strides(),						\
 	   data.si.value);						\
 	break;
 	

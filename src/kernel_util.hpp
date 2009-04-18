@@ -11,16 +11,15 @@
 #define INDEX (Z * YSIZE * XSIZE + Y * XSIZE + X)
 
 #include <utility>
+#include <iostream>
 
 namespace resophonic {
   namespace kamasu {
-    enum Op { MULTIPLIES, PLUS, MINUS, DIVIDES, POW };
-
-    const static unsigned threads_per_block = 512;
 
     typedef std::pair<unsigned, unsigned> bd_t;
-    static bd_t gridsize(unsigned size)
+    static bd_t gridsize(unsigned size, unsigned threads_per_block = 64)
     {
+      std::cout << "yeh";
       bd_t pr;
       if (size <= threads_per_block)
 	return std::make_pair(1, size);
@@ -48,7 +47,6 @@ namespace resophonic {
 	return data[index];
       }
       void touchme() { }
-
     };
 
     template <int N>
@@ -57,8 +55,20 @@ namespace resophonic {
     {
       unsigned x = INDEX/factors[N-1] * strides[N-1];
 							//      for (unsigned i=I-1; i<=0; i++)
-#pragma unroll 10
       for (int i = N-1; i>0; i--)
+	x += unsigned(INDEX % factors[i]) / factors[i-1] * strides[i-1];
+
+      return x;
+
+    }
+
+    __device__ unsigned actual_index(unsigned nd,
+				     const std::size_t* factors,
+				     const int* strides)
+    {
+      unsigned x = INDEX/factors[nd-1] * strides[nd-1];
+							//      for (unsigned i=I-1; i<=0; i++)
+      for (int i = nd-1; i>0; i--)
 	x += unsigned(INDEX % factors[i]) / factors[i-1] * strides[i-1];
 
       return x;

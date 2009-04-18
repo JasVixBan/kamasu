@@ -52,7 +52,7 @@ array<T>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg)) const
   BOOST_PP_REPEAT(N, DIM_CHECK, Arg);				
   int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		
   log_trace("getting lvalue from offset %d",  (self().offset + index)); 
-  return self().data_->get(index);					
+  return self().get(index);					
 }
 
 template <typename T>				
@@ -63,6 +63,6 @@ array<T>::operator()(BOOST_PP_ENUM_PARAMS(N, std::size_t Arg))
   BOOST_PP_REPEAT(N, DIM_CHECK, Arg);				
   int index = 0 BOOST_PP_REPEAT(N, STRIDE_TERM, Arg);		
   log_trace("getting rvalue offset=%u index=%d",  self().offset % index); 
-  return rval<T>(self().data_, index + self().offset);		
+  return rval<T>(self().data_, index + self().offset());		
 }
 

@@ -16,6 +16,7 @@
 #include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/dot.hpp>
 #include <resophonic/kamasu/linspace.hpp>
+#include <resophonic/kamasu/testing.hpp>
 
 #include "cuda_runtime_api.h"
 
@@ -146,7 +147,8 @@ TEST_STRIDE(2269,11);
 TEST_STRIDE(14947, 7);
 TEST_STRIDE(51487, 11);
 
-TEST(m2_stride)
+
+TEST(m2_slice_to_1d)
 {
   array<float> a = make_4x5(), b, c;
 
@@ -168,6 +170,31 @@ TEST(m2_stride)
   ENSURE_EQUAL(c(0), 23.5f);
   ENSURE_EQUAL(c(1), 31.5f);
   ENSURE_EQUAL(c(2), 39.5f);
+
+}
+
+TEST(m2_slice_to_1d_two)
+{
+  array<float> a = make_4x5(), b, c;
+
+  // slice last row   [ 4 12 20 ]
+  b = a(index_range(3), index_range(0, 5, 2));
+
+  ENSURE_EQUAL(b(0), 4.0f);
+  ENSURE_EQUAL(b(1), 12.0f);
+  ENSURE_EQUAL(b(2), 20.0f);
+
+  c = b * 0.1f;
+
+  check_unchanged_4x5(a);
+
+  ENSURE_EQUAL(b(0), 4.0f);
+  ENSURE_EQUAL(b(1), 12.0f);
+  ENSURE_EQUAL(b(2), 20.0f);
+
+  ENSURE_EQUAL(c(0), 0.4f);
+  ENSURE_EQUAL(c(1), 1.2f);
+  ENSURE_EQUAL(c(2), 2.0f);
 
 }
 
@@ -414,8 +441,97 @@ void checkexpr(Expr const &expr)
   BOOST_MPL_ASSERT((boost::proto::matches<Expr, resophonic::kamasu::UnaryFunctionCalls>));
 }
 
-TEST(shits_and_giggles)
+TEST(mpl_assert_matches)
 {
   array<float> a;
   checkexpr(rk::sin(a));
 }
+
+void m2_plus_rand(unsigned dim1, unsigned dim2)
+{
+
+  bu::matrix<float, bu::column_major> rml = rk::testing::rand_matrix<float>(dim1, dim2);
+  bu::matrix<float, bu::column_major> rmr = rk::testing::rand_matrix<float>(dim1, dim2);
+
+  bu::matrix<float, bu::column_major> result;
+
+  rk::array<float> kml, kmr, rkresult;
+  kml << rml;
+  kmr << rmr;
+
+  rkresult = kml + kmr;
+
+  rkresult >> result;
+
+  for (unsigned i=0; i<dim1; i++)
+    for (unsigned j=0; j<dim2; j++)
+      ENSURE_DISTANCE(result(i,j), rml(i,j) + rmr(i,j), 1.0e-06);
+}
+
+#define M2PLUSRAND(DIM1, DIM2) TEST(m2_plus_rand_ ## DIM1 ## _ ## DIM2) \
+  {									\
+    m2_plus_rand(DIM1,DIM2);						\
+  }
+
+M2PLUSRAND(1,1);
+M2PLUSRAND(13,15);
+M2PLUSRAND(17,51);
+M2PLUSRAND(103,512);
+M2PLUSRAND(1,13113);
+M2PLUSRAND(13113,1);
+
+void m2_plus_strided(unsigned dim1, unsigned stride1, unsigned dim2, unsigned stride2)
+{
+  bu::matrix<float, bu::column_major> bum = rk::testing::rand_matrix<float>(dim1, dim2);
+
+  bu::matrix<float, bu::column_major> result;
+
+  rk::array<float> rka;
+  rka << bum;
+
+  rka >> result;
+  
+  FIXME("retrieval of strided arrays doesn't work");
+  for (unsigned i=0; i<dim1; i+=stride1)
+    for (unsigned j=0; j<dim2; j+=stride2)
+      ENSURE_DISTANCE(result(i,j), bum(i/stride1, j/stride2), 10e-6);
+  
+}
+TEST(retrieve_strided_array_to_matrix)
+{
+  m2_plus_strided(100, 2, 200, 2);
+}
+
+/*
+void test_slice(unsigned dim1, unsigned dim2, int lstride, int rstride)
+{
+  bu::matrix<float, bu::column_major> bum = rk::testing::rand_matrix<float>(dim1, dim2);
+
+  rk::array<float> rkm;
+  rkm << bum;
+
+  for (unsigned i=0; i<dim1; i++)
+    for (unsigned j=0; j<dim2; j++)
+      ENSURE_DISTANCE(result(i,j), rml(i,j) + rmr(i,j), 1.0e-06);
+
+  rk::array<float> sliced = kml(rk::index_range(rk::_,rk::_, lstride),
+				rk::index_range(rk::_,rk::_, rstride));
+
+  bu::matrix<float, bu::column_major> bsliced;
+  sliced >> bsliced;
+
+  for (unsigned i=0; i<dim1; i+=2)
+    for (unsigned j=0; j<dim2; j+=2)
+      {
+	ENSURE_DISTANCE(l_slice(i,j), kml(i/2,j/2), 1.0e-06);
+	ENSURE_DISTANCE(result(i/2,j/2), 
+			rml(i,j) + 2.0F,
+			1.0e-06);
+      }
+  
+  
+
+
+}
+
+*/

@@ -40,12 +40,15 @@ namespace I3Test {
 
   typedef void (*voidfunc)();
 
-  class I3TestException
+  struct I3TestException
   {
     string message;
+    bool fixme, fixed;
 
-  public:
-    explicit I3TestException(const string& s) : message(s) { }
+    explicit I3TestException(const string& s) 
+      : message(s), fixme(false), fixed(false) 
+    { }
+    
     virtual ~I3TestException() throw() { };
     virtual const char* what() const throw() { return message.c_str(); }
   };
@@ -66,7 +69,7 @@ namespace I3Test {
   {
     map<string, voidfunc> units;
     map<string, boost::shared_ptr<test_failure> > failures;
-    set<string> successes;
+    set<string> successes, fixmes;
 
     void runtests(bool xml=false);
     void run(const string &unit, bool xml = false);
@@ -88,12 +91,12 @@ namespace I3Test {
 
   };
 
-#define ENSURE(PRED,...) \
-  I3Test::ensure(__FILE__,__LINE__,PRED,BOOST_PP_STRINGIZE(PRED),##__VA_ARGS__)
-
-#define FAIL(...) \
-  I3Test::ensure(__FILE__,__LINE__,false,"FAIL",##__VA_ARGS__)
-
+#define ENSURE(PRED,...)						\
+    I3Test::ensure(__FILE__,__LINE__,PRED,BOOST_PP_STRINGIZE(PRED),##__VA_ARGS__)
+    
+#define FAIL(...)						\
+    I3Test::ensure(__FILE__,__LINE__,false,"FAIL",##__VA_ARGS__)
+    
   inline 
   void ensure (const string& file, unsigned line, bool cond, const string& cond_txt,
 	       const string& msg = "unspecified")
@@ -101,6 +104,22 @@ namespace I3Test {
     if (!cond)
       throw test_failure(file, line, cond_txt, msg);
   }
+
+
+#define FIXME(PRED,...)						\
+    I3Test::fixme(__FILE__,__LINE__,PRED, BOOST_PP_STRINGIZE(PRED),##__VA_ARGS__)
+
+  inline 
+  void fixme (const string& file, unsigned line, bool cond, const string& cond_txt,
+	      const string& msg = "unspecified")
+  {
+    test_failure ex(file, line, cond_txt, msg);
+    ex.fixme = true;
+    ex.fixed = cond;
+    throw ex;
+  }
+    
+
 
 #define ENSURE_THROWS(EXTYPE, ...)					\
   try {									\

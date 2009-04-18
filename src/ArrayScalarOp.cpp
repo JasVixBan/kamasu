@@ -14,50 +14,37 @@ namespace resophonic {
   namespace kamasu {
 
 
-    template <typename Tag>
+    template <typename Tag, typename T>
     ArrayScalarOp::result_type
     ArrayScalarOp::operator()(Tag,
-			      const rk::array_impl<float>& rv, 
-			      const float& scalar,
+			      const rk::array_impl<T>& rv, 
+			      T scalar,
 			      const state_t&,
 			      data_t& data)
     {
-      switch (rv.nd) {
-      case 1:  transform<float, 1, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-      case 2:  transform<float, 2, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-      case 3:  transform<float, 3, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-      case 4:  transform<float, 4, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-      case 5:  transform<float, 5, Tag>(rv.data() + rv.offset, rv.linear_size, rv.factors, rv.strides, scalar); break;
-
-      default:
-	throw std::runtime_error("kamasu internal error");
-      }
-
+      transform<float, Tag>(rv.data(), rv.view_p(), scalar);
       cuda_check();
 
       return rv;
     }
 
-    //    namespace {
-      template <typename T, typename Tag>
-      struct instantiate
-      {
-	instantiate() {
-	  array_impl<T> rv;
-	  float scalar;
-	  state_t s;
-	  data_t data;
-	  ArrayScalarOp()(Tag(), rv, scalar, s, data);
-	}
-      };
-    
-      template struct instantiate<float, boost::proto::tag::plus>;
-      template struct instantiate<float, boost::proto::tag::minus>;
-      template struct instantiate<float, boost::proto::tag::multiplies>;
-      template struct instantiate<float, boost::proto::tag::divides>;
-      template struct instantiate<float, boost::proto::tag::assign>;
-      template struct instantiate<float, resophonic::kamasu::tag::pow>;
-    //    }
+#define INSTANTIATE(TYPE, TAG)						\
+    template array_impl<TYPE>						\
+    ArrayScalarOp::operator()<TAG,					\
+      TYPE>(TAG,							\
+	    resophonic::kamasu::array_impl<TYPE> const&,		\
+	    TYPE,							\
+	    resophonic::kamasu::state_t const&,				\
+	    resophonic::kamasu::data_t&);
+
+    INSTANTIATE(float, boost::proto::tag::multiplies);
+    INSTANTIATE(float, boost::proto::tag::assign);
+    INSTANTIATE(float, boost::proto::tag::plus);
+    INSTANTIATE(float, boost::proto::tag::minus);
+    INSTANTIATE(float, boost::proto::tag::divides);
+    INSTANTIATE(float, resophonic::kamasu::tag::pow);
+
+
   }
 }
 

@@ -22,7 +22,7 @@
  *  
  */
 
-#include <boost/shared_ptr.hpp>
+#include <resophonic/kamasu/shared_ptr.hpp>
 #include <vector>
 
 namespace resophonic {

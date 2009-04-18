@@ -69,7 +69,7 @@ TEST_GROUP();
 
 NDIM_SHAPE_CONSTRUCTOR_TEST(~, 1, 100);
 NDIM_SHAPE_CONSTRUCTOR_TEST(~, 4, 10);
-//NDIM_SHAPE_CONSTRUCTOR_TEST(~, 7, 3);
+NDIM_SHAPE_CONSTRUCTOR_TEST(~, 5, 6);
 
 #define PUSHBACK(Z, N, DATA) shape.push_back(DATA);
 
@@ -112,7 +112,6 @@ NDIM_SHAPE_CONSTRUCTOR_TEST(~, 4, 10);
 NDIM_STDVECTOR_CONSTRUCTOR_TEST(~, 1, 10);
 NDIM_STDVECTOR_CONSTRUCTOR_TEST(~, 1, 100);
 NDIM_STDVECTOR_CONSTRUCTOR_TEST(~, 4, 10);
-//NDIM_STDVECTOR_CONSTRUCTOR_TEST(~, 7, 3);
 
 TEST(make_4x5)
 {
@@ -169,19 +168,23 @@ TEST(slice_2d_reduce)
   array<float> a = make_4x5();
   // slice to
 
-  // 2 6 10 14 18
-  array<float> sliced = a(index_range(1), index_range(0, 5));
+  for (unsigned i=0; i<4; i++)
+    {
+      // 2 6 10 14 18
+      array<float> sliced = a(index_range(i), index_range(0, 5));
 
-  ENSURE_EQUAL(sliced.nd(), 1u);
-  ENSURE_EQUAL(sliced.dim(0), 5u);
+      ENSURE_EQUAL(sliced.nd(), 1u);
+      ENSURE_EQUAL(sliced.dim(0), 5u);
 
-  for (unsigned i=0; i<5; i++)
-    log_trace("[%u] == %f",  i % sliced(i));
-  ENSURE_EQUAL(sliced(0), 2.0);
-  ENSURE_EQUAL(sliced(1), 6.0);
-  ENSURE_EQUAL(sliced(2), 10.0);
-  ENSURE_EQUAL(sliced(3), 14.0);
-  ENSURE_EQUAL(sliced(4), 18.0);
+      for (unsigned j=0; j<5; j++)
+	log_trace("[%u] == %f",  j % sliced(j));
+
+      ENSURE_EQUAL(sliced(0), a(i,0));
+      ENSURE_EQUAL(sliced(1), a(i,1));
+      ENSURE_EQUAL(sliced(2), a(i,2));
+      ENSURE_EQUAL(sliced(3), a(i,3));
+      ENSURE_EQUAL(sliced(4), a(i,4));
+    }
 }
 
 TEST(slice_2d)

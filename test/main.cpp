@@ -211,13 +211,28 @@ namespace I3Test
 	      untrap_signals();
 	      cout.rdbuf(cout_buf);
 	      cerr.rdbuf(cerr_buf);
-	      failures[i->first] = boost::shared_ptr<test_failure>(new test_failure(failure));
-	      if (xml)
-		rout << "\n\t<status>fail</status>\n\t<file>" << failure.file << "</file>"
-		     << "\n\t<line>" << failure.line << "</line>\n\t<predicate>" << encode_entities(failure.predicate) << "</predicate>"
-		     << "\n\t<message>" << encode_entities(failure.message) << "</message>\n\t<output>" << encode_entities(oss.str()) << "\n\t</output>\n</unit>" << endl;
+	      if (failure.fixme)
+		fixmes.insert(unit);
 	      else
-		cout << " FAIL\n" << failure.to_string(unit) << endl;
+		failures[i->first] = boost::shared_ptr<test_failure>(new test_failure(failure));
+
+	      if (xml)
+		{
+		  //
+		  // this doesn't handle fixmes... this is old.
+		  //
+		  rout << "\n\t<status>fail</status>\n\t<file>" << failure.file << "</file>"
+		       << "\n\t<line>" << failure.line << "</line>\n\t<predicate>" << encode_entities(failure.predicate) << "</predicate>"
+		       << "\n\t<message>" << encode_entities(failure.message) << "</message>\n\t<output>" << encode_entities(oss.str()) << "\n\t</output>\n</unit>" << endl;
+		}
+	      else if (!failure.fixme)
+		{
+		  cout << " FAIL\n" << failure.to_string(unit) << endl;
+		}
+	      else 
+		{
+		  cout << "  FIX\n";
+		}
 	    } catch (const exception& e) {
 	      untrap_signals();
 	      cout.rdbuf(cout_buf);
@@ -290,6 +305,7 @@ namespace I3Test
   {
     unsigned successes = 0;
     unsigned failures = 0;
+    unsigned fixmes = 0;
 
     for (map<string, test_group*>::iterator i = groups.begin();
 	 i != groups.end();
@@ -297,11 +313,15 @@ namespace I3Test
       {
 	successes += i->second->successes.size();
 	failures += i->second->failures.size();
-	//	  i->second->report(i->first);
+	fixmes += i->second->fixmes.size();
       }
 
     cout << boost::format("%-67s") % boost::io::group(std::setfill('='), "");
-    cout << "\nPass: " << successes << "\nFail: " << failures << "\n";
+    cout << "\nPass: " << successes 
+	 << "\nFail: " << failures 
+	 << "\n Fix: " << fixmes
+	 << "\n";
+
     if (failures)
       cout << " ***** SOME TESTS FAIL *****\n\n";
 

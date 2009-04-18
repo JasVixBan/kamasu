@@ -186,7 +186,7 @@ namespace resophonic {
       array<T> new_array;
       new_array.self().reshape(newshape, false);
       new_array.self().data_ = self_.data_;
-      new_array.self().offset = index_of(starts);
+      new_array.self().impl.offset = index_of(starts);
 
       for (unsigned i=0, j=0; i<ranges.size(); i++)
 	{
@@ -251,7 +251,7 @@ namespace resophonic {
       else 
 	newstart = (ir.start() == ir.to_end()) ? dim(0)-1 : ir.start();
 
-      new_array.self().offset = index_of(newstart);
+      new_array.self().impl.offset = index_of(newstart);
       log_trace("offset is %d",  new_array.self().offset);
 
       new_array.stride(0) = stride(0) * ir.stride();

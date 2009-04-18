@@ -1,24 +1,27 @@
 #ifndef RESOPHONIC_KAMASU_ARRAY_HPP_INCLUDED
 #define RESOPHONIC_KAMASU_ARRAY_HPP_INCLUDED
 
+#ifndef __CUDACC__
+
 #include <stdio.h>
 #include <vector>
+
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/utility/enable_if.hpp>
+#include <boost/preprocessor.hpp>
+
 #include <resophonic/kamasu.hpp>
 #include <resophonic/kamasu/config.hpp>
 #include <resophonic/kamasu/exception.hpp>
 #include <resophonic/kamasu/logging.hpp>
 #include <resophonic/kamasu/rval.hpp>
-#include <resophonic/kamasu/grammar.hpp>
 #include <resophonic/kamasu/index_range.hpp>
-#include <resophonic/kamasu/dumper_context.hpp>
+
+
+#include <resophonic/kamasu/grammar.hpp>
 #include <resophonic/kamasu/stream_impl.hpp>
-#include <boost/proto/proto.hpp>
-#include <boost/multi_array.hpp>
 #include <boost/type_traits/is_pod.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/preprocessor.hpp>
-#include <cuda_runtime.h>
+#include <boost/proto/proto.hpp>
 
 
 namespace resophonic {
@@ -70,7 +73,7 @@ namespace resophonic {
 
       array clone() const;
 
-      std::size_t nd() const { return self().nd; }
+      std::size_t nd() const { return self().nd(); }
 
       std::size_t& dim(std::size_t index)
       { 
@@ -106,11 +109,11 @@ namespace resophonic {
 
       std::size_t linear_size() const
       {
-	return self().linear_size;
+	return self().linear_size();
       };
       std::size_t offset() const
       {
-	return self().offset;
+	return self().offset();
       };
 
       void show() const;
@@ -185,5 +188,6 @@ namespace resophonic {
 
   }  
 }
+#endif
 
 #endif

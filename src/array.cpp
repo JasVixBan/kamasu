@@ -267,6 +267,36 @@ namespace resophonic {
 #include BOOST_PP_ITERATE()
 
     template class array<float>;
+
+
+    template <typename T>
+    std::ostream& operator<<(std::ostream& os, const array<T>& a)
+    {
+      os << std::setprecision(8);
+      if (a.nd() == 1)
+	{
+	  for (int i=0; i<a.dim(0); i++)
+	    {
+	      os << a(i) << "\t";
+	    }
+	  return os << "\n";
+	}
+
+      if (a.nd() == 2)
+	{
+	  for (int i=0; i<a.dim(0); i++)
+	    {
+	      for (int j=0; j<a.dim(1); j++)
+		{
+		  os << a(i,j) << "\t";
+		}
+	      os << "\n";
+	    }
+	  return os;
+	}
+    }
+
+    template std::ostream& operator<<(std::ostream&, const array<float>&);
   }
 }
 

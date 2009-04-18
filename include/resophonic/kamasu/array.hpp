@@ -186,6 +186,9 @@ namespace resophonic {
       }
     };
 
+    template <typename T>
+    std::ostream& operator<<(std::ostream&,  const array<T>&);
+
   }  
 }
 #endif

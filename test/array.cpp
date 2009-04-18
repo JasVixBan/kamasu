@@ -791,3 +791,13 @@ TEST(ensure_distance)
   ED_FAIL(9, 10, 0.1 - 1.0e-16);
 
 }
+
+TEST(output_streaming)
+{
+  array<float> a = make_4x5();
+
+  std::cout << a << "\n";
+
+  array<float> b = rk::linspace(1.0f,10.0f,13.0f);
+  std::cout << "\n" << b << "\n";
+}

@@ -44,25 +44,17 @@ namespace resophonic {
       cuda_check();
     }
 
-    namespace inst {
-      template <typename T, typename Tag>
-      struct eas 
-      {
-	eas()
-	{
-	  view_params vp;
-	  transform<T, Tag>(0, vp, 0.0f);
-	}
-      };
+#define INST(TYPE, TAG)							\
+    template void transform<TYPE, TAG>(TYPE*, const view_params&, TYPE);
 
-      template struct eas<float, boost::proto::tag::plus>;
-      template struct eas<float, boost::proto::tag::minus>;
-      template struct eas<float, boost::proto::tag::multiplies>;
-      template struct eas<float, boost::proto::tag::divides>;
-      template struct eas<float, boost::proto::tag::assign>;
-      template struct eas<float, resophonic::kamasu::tag::pow>;
-    }
+    INST(float, boost::proto::tag::plus);
+    INST(float, boost::proto::tag::minus);
+    INST(float, boost::proto::tag::multiplies);
+    INST(float, boost::proto::tag::divides);
+    INST(float, boost::proto::tag::assign);
+    INST(float, resophonic::kamasu::tag::pow);
 
+#undef INST
 
     //
     // array-array
@@ -92,6 +84,7 @@ namespace resophonic {
 						     data_r + vp_r.offset, vp_r); 
       cuda_check();
     }
+
 #define INST(TYPE, TAG)							\
     template void transform<TYPE, TAG>(TYPE*, const view_params&,	\
 				       TYPE*, const view_params&);

@@ -138,13 +138,12 @@
     for filtering and whatnot.
 
     video card GTX 280 in my machine has 30 of these multiprocessors,
-    8 cores on each for a total of 240 cores, clock is 1.35GHz
-
-    Each multiprocessor is composed of eight processors, so that a multiprocessor is
-    able to process the 32 threads of a warp in four clock cycles.
+    each with 8 cores, 8k registers and 16k of shared memory, clock is
+    1.35GHz.
 
     There is an organizational scheme that they use involving warps,
-    blocks and grids, not very important for the sake of this talk.  }
+    blocks and grids, which I'll wave my hands at in a moment.
+    }
 
 \end{frame}
 
@@ -152,13 +151,38 @@
 
 \begin{frame}{Building software to run on the gpu}
 
-nvcc and the like
-functions that run on the host only, on the device only,
-and callable from the host that run on the device
+  \begin{itemize}
+  \item<+-> ``C for CUDA'' is (soon C++) with extensions
+  \item<+-> Mix device and host code (and both code)
+  \item<+-> Run the file through NVCC 
+  \item<+-> compile the result with gcc, compiled CUDA code is linked
+    into the binary
+  \end{itemize}
+
+  \note<1>{Soon C++... I've recently got hold of the developer's beta of the 
+    SDK and they're doing a remarkably good job with templates,
+    unfortunately Not much of this has been incorporated into kamasu
+    itself yet and it isn't clear what this means for architecture.  The
+    C++ beta currently can *not* parse proto headers, bug report is in}
+
+  \note<2>{There are just a couple of special things that you decorate your functions with
+    to specify where they're going to run. 
+  }
+
+  \note<3>{NVCC
+  }
+
+  \note<4>{
+    typically nvcc calls gcc for you.  it is pretty easy to use
+    and from a unixy perspective it is pretty natural.
+  }
+
 \end{frame}
 
 \begin{frame}[fragile]{Serially adding a scalar to an array}
-  \begin{semiverbatim}void add(float* data, unsigned size, float scalar)
+  \begin{semiverbatim}
+void add(float* data, unsigned size, 
+         float scalar)
 \{
   for(unsigned i=0; i<size; i++) 
     data[i] += scalar;
@@ -174,46 +198,81 @@ and callable from the host that run on the device
 
 \begin{frame}[fragile]{Adding a scalar to an array in cuda-parallel}
   \begin{semiverbatim}\alert<2>{__global__} void
-add(float *data, float scalar)
+\alert<8>{add}\alert<11>{(float *data, float scalar)}
 \{
   data[\alert<3>{threadIdx.x}] += scalar;
 \}
-\visible<4>{
+\visible<4->{
 int main() \{
-  int N = 1024;
-  float *arr = make_vector_on_gpu(N);
+\alert<5>{  int N = 1024;}
+\alert<6>{  float *arr = make_vector_on_gpu(N);}
   
-  add<\hskip0pt<\hskip0pt<1, N>\hskip0pt>\hskip0pt>(arr, 3.14159);
+\alert<7>{  \alert<8>{add}\hskip0pt<\hskip0pt<\hskip0pt<\alert<9>{1}, \alert<10>{N}>\hskip0pt>\hskip0pt>\alert<11>{(arr, 3.14159)};}
 \}
 }
 
 
 \end{semiverbatim}
 
-  \note{ This is a 'kernel' or a function that executes on the device,
-    but is called by the host.
-
+  \note<1>{ This is a 'kernel' or a function that executes on the device,
+            but is called by the host.  This thing is compiled by
+            nvidia's special 'nvcc' compiler and makes gpu-runnable code.
+            }          
+\note<2>{          
     the \_\_global\_\_ specifier makes it so.  this function is compiled
     by nvcc into code that runs on the gpu.
-
+    }   
+\note<3>{    
     this threadidx is a built in variable that the nvcc compiler puts
     into every kernel function.  it is actually has 3 dimensional
     structure, a 2 dimensional 'grid' of 'blocks', and a thread index
     within the block.
+}
+\note<4>{
+    Here's how we launch it. 
+}
+\note<5>{We're going to deal with a vector of 1k elements}
+\note<6>{First we somehow make an array of N
+    elements out on the GPU, we'll get to that, }
 
-    Here's how we launch it.  First we somehow make an array of N
-    elements out on the GPU, we'll get to that, then we use this magic
-    anglebracket syntax that NVCC preprocesses into a bunch of
-    function calls to an nvidia written library that fetches the
-    compiled code for the kernel from wherever its been stored, ships
-    it out to the video card, and executes it however many times is
-    specified with this grid/block stuff.  From our perspective they
-    run simultaneously, though they might be on different
-    multiprocessors and whatever.  When threads have to communicate
-    with each other or synchronize access to shared memory things get
-    more complicated but that's all outside the scope of this talk.
+\note<7>{then we use this magic anglebracket syntax to launch a
+  kernel.  NVCC preprocesses this into a bunch of function calls to
+  the cuda driver that fetches the compiled code for the kernel from a
+  withwherever its been stored (typically that is compiled right in to
+  the binary itself), ships it out to the video card, and executes it
+  however many times is specified with this grid/block stuff.
 
-  }
+  What this says is that we want to launch the kernel
+}
+
+\note<8>{add}
+\note<9>{in 1 ``grid''}
+\note<10>{of N thread blocks}%
+\note<11>{and we pass it the following arguments.  Note that since the pointer
+  to float that we're passing it is a pointer to *device* memory, not
+  host memory.  if you screw this up, things typically run without
+  crashing and just silently give you garbage results
+}%
+
+\note<12>{ For this simple kernel of course we don't care what order
+  things are run in, no worries about synchronization or sharing
+  memory between threads.  The grid/block abstractions and the
+  hardware itself come in to play when you need to do this kind of
+  thing, (this is where the hand waving comes in to play).
+
+  okay.  So we have a general sense that we can write kernels that
+  operate on data that is out on the device, and we can probably reuse
+  kernels that others have written provided we can figure out how that
+  kernel expects memory to be laid out, what it's parameters need to
+  be, and so on.  There is a quickly growing ecosystem of kernels to
+  do random number generation, BLAS, monte carlos, and as far as I can
+  tell they're mostly custom-written for scenarios that make for the
+  best looking benchmarks in academic publications.  I understand
+  adobe has some that do video encoding and photoshop effects with
+  tremendous speedup, etc.  But we're more interested in a C++
+  architecture that exploits this, so we'll move back to the host side
+  of things.
+}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -235,6 +294,9 @@ cudaMemcpyDeviceToDevice
 cudaError_t cudaMemset(void* devPtr, int value, 
                        size_t count);
   \end{semiverbatim}
+
+
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

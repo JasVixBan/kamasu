@@ -215,7 +215,8 @@
       {\pgftransformshift{\pgfpoint{\beamer@origlmargin}{\footheight}}\pgftext[left,bottom]{\copy\beamer@frameboxcopy}}
     \end{pgflowlevelscope}
   \end{pgfpicture}%
-  }}
+  }
+}
 
 
 %-------------------------------------------------------------------------------
@@ -226,28 +227,30 @@
   \setbeamertemplate{footline}{\bluesheetfootline}
   \setbluesheetcolors
   \normalcolorhack
-  \gdef\debug{[bluesheets set]]}
+  \gdef\debug{[bluesheets set]}
 
-\setbeamertemplate{note page}{
-  \setbluesheetcolors 
-  \myinsertslideintonotes{0.5}
-
-  \insertnote
-}
-
+  \setbeamertemplate{note page}{
+    \setbluesheetcolors 
+    \Large
+    % \myinsertslideintonotes{0.05}
+    \insertnote
+  }
 }
 
 \def\whitesheets{
-%\setbeamertemplate{background}{\whitesheetbackground}
-\setbeamertemplate{footline}{\whitesheetfootline}
-\setwhitesheetcolors
-\normalcolorhack
+  \setbeamertemplate{background}{\whitesheetbackground}
+  \setbeamertemplate{footline}{\whitesheetfootline}
+  \setwhitesheetcolors
+  \normalcolorhack
+  \setbeamertemplate{note page}{
+    \setwhitesheetcolors 
+    \myinsertslideintonotes{0.5}
+    \insertnote
+  }
 }
 
 %-------------------------------------------------------------------------------
 %                                                                          setup
-
-\bluesheets
 
 % Disable the navigation buttons
 \setbeamertemplate{navigation symbols}{}

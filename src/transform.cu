@@ -24,7 +24,7 @@ namespace resophonic {
       if (INDEX >= vp.linear_size)
 	return;
 
-      unsigned thisthread_offset = actual_index(vp.nd, vp.factors, vp.strides);
+      unsigned thisthread_offset = actual_index(INDEX, vp.nd, vp.factors, vp.strides);
 
       op_impl_<T, Tag>::impl(data + thisthread_offset, scalar); 
     }
@@ -67,8 +67,8 @@ namespace resophonic {
       if (INDEX >= vp_l.linear_size)
 	return;
 
-      unsigned lhs_off = actual_index(vp_l.nd, vp_l.factors, vp_l.strides);
-      unsigned rhs_off = actual_index(vp_r.nd, vp_r.factors, vp_r.strides);
+      unsigned lhs_off = actual_index(INDEX, vp_l.nd, vp_l.factors, vp_l.strides);
+      unsigned rhs_off = actual_index(INDEX, vp_r.nd, vp_r.factors, vp_r.strides);
 
       op_impl_<T, Tag>::impl(data_l + lhs_off, data_r + rhs_off); 
     }

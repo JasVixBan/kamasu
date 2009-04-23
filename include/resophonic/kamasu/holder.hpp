@@ -23,17 +23,20 @@
  */
 
 #include <resophonic/kamasu/shared_ptr.hpp>
+#include <boost/noncopyable.hpp>
 #include <vector>
 
 namespace resophonic {
   namespace kamasu {
 
     template <typename T>
-    class holder
+    class holder : boost::noncopyable
     {
       T* data_;
       std::size_t size_;
       
+      holder(const holder& rhs); // not implemented
+
     public:
 
       ~holder();

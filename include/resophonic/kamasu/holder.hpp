@@ -35,8 +35,6 @@ namespace resophonic {
       T* data_;
       std::size_t size_;
       
-      holder(const holder& rhs); // not implemented
-
     public:
 
       ~holder();

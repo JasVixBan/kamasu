@@ -1,6 +1,5 @@
 #include <resophonic/kamasu/linspace.hpp>
 #include <resophonic/kamasu/array.hpp>
-#include <cudpp.h>
 
 
 namespace resophonic {

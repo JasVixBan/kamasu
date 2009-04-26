@@ -19,22 +19,30 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Boost:  set these if you need 
 #
-# set(BOOST_INCLUDEDIR ${CMAKE_SOURCE_DIR}/../boost/src)
-# set(BOOST_LIBRARYDIR ${CMAKE_SOURCE_DIR}/../boost/lib)
+set(BOOST_INCLUDEDIR "/home/troy/Projects/boost/1.39.0/src")
+set(BOOST_LIBRARYDIR "/home/troy/Projects/boost/1.39.0/build/lib")
 #
 find_package(Boost 1.38.0 REQUIRED COMPONENTS python system filesystem program_options)
+if (NOT Boost_FOUND)
+  message(FATAL_ERROR "Boost not found")
+endif(NOT Boost_FOUND)
 
 message(STATUS "Found boost version ${Boost_VERSION}")
 
 add_definitions(-DBOOST_SP_USE_QUICK_ALLOCATOR)
 add_definitions(-DRESOPHONIC_WHITEBOX_TESTING)
+include_directories(${Boost_INCLUDE_DIR})
+
+find_package(PythonLibs)
+if (NOT PYTHONLIBS_FOUND)
+  message(FATAL_ERROR "Python libs not found")
+endif(NOT PYTHONLIBS_FOUND)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DRESOPHONIC_KAMASU_DEBUG)
 endif ()
 
 include_directories(include)
-include_directories(${Boost_INCLUDE_DIR})
 include_directories(${FOUND_CUDA_NVCC_INCLUDE})
 
 set(BOOST_LIBRARIES ${Boost_LIBRARIES})

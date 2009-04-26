@@ -1,5 +1,4 @@
-
-include_directories(/usr/include/python2.5)
+include_directories(${PYTHON_INCLUDE_PATH})
 
 add_library(kamasu SHARED
   module.cpp
@@ -7,7 +6,7 @@ add_library(kamasu SHARED
 
 target_link_libraries(kamasu
   resophonic_kamasu
-  ${BOOST_PYTHON}
+  ${Boost_PYTHON}
   ${CUBLAS_TARGET_LINK})
   
 set_target_properties(kamasu

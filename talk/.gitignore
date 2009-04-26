@@ -6,4 +6,4 @@
 *.out
 *.snm
 *.nav
-build/
+.\#*

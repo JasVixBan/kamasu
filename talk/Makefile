@@ -5,7 +5,7 @@ all:	overhead.pdf notes.pdf
 force : 
 
 %.pdf : force
-	-d build || mkdir build/
+	test [ -d build ] || mkdir build/
 	pdflatex -file-line-error -halt-on-error --output-directory=build ${@:%.pdf=%.tex} 
 
 

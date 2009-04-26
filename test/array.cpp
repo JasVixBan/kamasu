@@ -792,12 +792,28 @@ TEST(ensure_distance)
 
 }
 
+TEST(assign)
+{
+  for (unsigned i = 1; i<11; i++) 
+    {
+      array<float> a(i,i);
+      a = 6.0f;
+      std::cout << a << "\n";
+    }
+}
+
 TEST(output_streaming)
 {
-  array<float> a = make_4x5();
+  array<float> a(22,22);
 
+  a = 999.0f;
   std::cout << a << "\n";
 
-  array<float> b = rk::linspace(1.0f,10.0f,13.0f);
-  std::cout << "\n" << b << "\n";
+  array<float> b = a(index_range(ks::_, ks::_, 2), index_range(ks::_, ks::_, 2));
+  b = 0.0f;
+
+  std::cout << a << "\n";
+  std::cout << b << "\n";
+
 }
+

@@ -126,7 +126,7 @@ namespace resophonic {
     array<T>							
     array<T>::slice(const std::vector<index_range>& ranges) const
     {									
-      BOOST_ASSERT(ranges.size() == self_.nd);				
+      BOOST_ASSERT(ranges.size() == self_.nd());				
 
       std::vector<std::size_t> newshape, starts;				
 

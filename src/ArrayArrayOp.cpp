@@ -69,8 +69,8 @@ namespace resophonic
 			     const state_t&,
 			     data_t& data)
     {
-      BOOST_ASSERT(lhs.nd == 2);
-      BOOST_ASSERT(rhs.nd == 2);
+      BOOST_ASSERT(lhs.nd() == 2);
+      BOOST_ASSERT(rhs.nd() == 2);
       std::size_t lhs_rows = lhs.dim(0);
       std::size_t lhs_cols = lhs.dim(1);
       std::size_t rhs_rows = rhs.dim(0);

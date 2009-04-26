@@ -17,8 +17,14 @@ set(CMAKE_CUDA_COMPILE_FLAGS "-arch=sm_13")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(BOOST_ROOT 
-  "${CMAKE_SOURCE_DIR}/../boost" CACHE PATH "where is boost")
+# Boost:  set these if you need 
+#
+# set(BOOST_INCLUDEDIR ${CMAKE_SOURCE_DIR}/../boost/src)
+# set(BOOST_LIBRARYDIR ${CMAKE_SOURCE_DIR}/../boost/lib)
+#
+find_package(Boost 1.38.0 REQUIRED COMPONENTS python system filesystem program_options)
+
+message(STATUS "Found boost version ${Boost_VERSION}")
 
 add_definitions(-DBOOST_SP_USE_QUICK_ALLOCATOR)
 add_definitions(-DRESOPHONIC_WHITEBOX_TESTING)
@@ -28,41 +34,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif ()
 
 include_directories(include)
-include_directories(${BOOST_ROOT}/src)
+include_directories(${Boost_INCLUDE_DIR})
 include_directories(${FOUND_CUDA_NVCC_INCLUDE})
 
-#
-#  Used by test driver
-#
-find_library(BOOST_SYSTEM 
-  boost_system-mt-d
-  PATHS ${BOOST_ROOT}/lib
-  NO_DEFAULT_PATH
-  )
-
-find_library(BOOST_PYTHON 
-  boost_python-mt-d
-  PATHS ${BOOST_ROOT}/lib
-  NO_DEFAULT_PATH
-  )
-
-find_library(BOOST_PROGRAM_OPTIONS
-  boost_program_options-mt-d
-  PATHS ${BOOST_ROOT}/lib
-  NO_DEFAULT_PATH
-  )
-
-find_library(BOOST_FILESYSTEM
-  boost_filesystem-mt-d
-  PATHS ${BOOST_ROOT}/lib
-  NO_DEFAULT_PATH
-  )
-
-set(BOOST_LIBRARIES
-  ${BOOST_SYSTEM}
-  ${BOOST_PROGRAM_OPTIONS}
-  ${BOOST_FILESYSTEM}
-  )  
+set(BOOST_LIBRARIES ${Boost_LIBRARIES})
 
 find_file(CUDPP_INCLUDE_FILE
   cudpp.h
@@ -77,7 +52,6 @@ get_filename_component(CUDPP_INCLUDE_DIR
 
 include_directories(${CUDPP_INCLUDE_DIR})
 
-#include_directories(${NVIDIA_CUDA_SDK_DIR}/common/inc)
 include_directories(${CUDA_INCLUDE_DIRECTORY})
 
 add_subdirectory(src)

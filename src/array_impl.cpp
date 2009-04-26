@@ -116,7 +116,7 @@ namespace resophonic
     void 
     array_impl<T>::calculate_factors()
     {
-      BOOST_ASSERT(nd > 0);
+      BOOST_ASSERT(nd() > 0);
 
       impl.linear_size = 1;
       factor(0) = 1;

@@ -163,7 +163,13 @@
     SDK and they're doing a remarkably good job with templates,
     unfortunately Not much of this has been incorporated into kamasu
     itself yet and it isn't clear what this means for architecture.  The
-    C++ beta currently can *not* parse proto headers, bug report is in}
+    C++ beta currently can *not* parse proto headers, bug report is in.
+
+    At first: no exceptions, no stdio in anything that NVCC sees, very
+    restrictive, only thing that it could handle was
+    boost.preprocessor, so there were tons of compiler firewalls and C
+    interfaces that are now disappearing.
+  }
 
   \note<2>{There are just a couple of special things that you decorate your functions with
     to specify where they're going to run. 
@@ -246,8 +252,8 @@ int main() \{
 }
 
 \note<8>{add}
-\note<9>{in 1 ``grid''}
-\note<10>{of N thread blocks}%
+\note<9>{one block (this is the size of the ``grid'')}
+\note<10>{where each block contains N threads}%
 \note<11>{and we pass it the following arguments.  Note that since the pointer
   to float that we're passing it is a pointer to *device* memory, not
   host memory.  if you screw this up, things typically run without
@@ -260,7 +266,7 @@ int main() \{
   hardware itself come in to play when you need to do this kind of
   thing, (this is where the hand waving comes in to play).
 
-  okay.  So we have a general sense that we can write kernels that
+  Okay.  So we have a general sense that we can write kernels that
   operate on data that is out on the device, and we can probably reuse
   kernels that others have written provided we can figure out how that
   kernel expects memory to be laid out, what it's parameters need to
@@ -279,23 +285,21 @@ int main() \{
 
 \begin{frame}[fragile]{CUDA Memory management}
   \begin{semiverbatim}
-cudaError_t cudaMalloc(void** devPtr, size_t count );
-cudaError_t cudaFree(void* devPtr);
+cudaError_t \alert<2>{cudaMalloc}(void** devPtr, size_t count );
+cudaError_t \alert<3>{cudaFree}(void* devPtr);
 
-cudaError_t cudaMemcpy(void* dst, const void* src, 
+cudaError_t \alert<4>{cudaMemcpy}(void* dst, const void* src, 
                        size_t count, 
-                       enum cudaMemcpyKind kind);
+                       enum \alert<5>{cudaMemcpyKind} kind);
 
-cudaMemcpyHostToHost
-cudaMemcpyHostToDevice
-cudaMemcpyDeviceToHost
-cudaMemcpyDeviceToDevice
+\alert<6>{cudaMemcpyHostToHost}
+\alert<7>{cudaMemcpyHostToDevice}
+\alert<8>{cudaMemcpyDeviceToHost}
+\alert<9>{cudaMemcpyDeviceToDevice}
 
-cudaError_t cudaMemset(void* devPtr, int value, 
+cudaError_t \alert<10>{cudaMemset}(void* devPtr, int value, 
                        size_t count);
   \end{semiverbatim}
-
-
 
 \end{frame}
 
@@ -303,7 +307,7 @@ cudaError_t cudaMemset(void* devPtr, int value,
 
 \begin{frame}[fragile]{A holder class}
   \begin{semiverbatim}template <typename T>
-class holder
+class holder : boost::noncopyable
 \{
     T* devmem;
     std::size_T size_;
@@ -1133,16 +1137,22 @@ struct Grammar
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{a / 7.0f:  Transform declaration}
+\begin{frame}[fragile]{a / 7.0f:  Array-Scalar Transform}
 \begin{semiverbatim}
 
 struct ArrayScalarOp : bp::callable
 \{
   typedef rk::array_impl<float> result_type;
 
-  template <typename Op>
+  template <typename Tag>
   result_type 
-  operator()(Op, const rk::array_impl<float>& v, const float& f);
+  operator()(Tag, const rk::array_impl<float>& v, 
+             const float& f)
+  \{
+    // hop across the compiler firewall
+    transform<float, Tag>(v.data(), v.view_p(), scalar);
+    return v;
+  \}
 \};
 
 
@@ -1154,82 +1164,93 @@ This is also a compliation firewall
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{a / 7.0f; Transform implementation}
-\begin{semiverbatim}template <>
-ArrayScalarOp::result_type
-ArrayScalarOp::operator()(boost::proto::tag::minus, 
-                          const rk::array_impl<float>& rv, 
-                          const float& scalar)
+\begin{frame}[fragile]{a / 7.0f: calculate gridsize, call kernel}
+\begin{semiverbatim}
+template <typename T, typename Tag>
+void 
+transform(T* data, const view_params& vp, T scalar)
 \{
-  switch (rv.nd) \{
-    case 1:  k_easd1(rv.data() + rv.offset, rv.linear_size, 
-                    rv.factors, rv.strides, 
-                    scalar); break;
-    case 2:  k_easd2(rv.data() + rv.offset, rv.linear_size, 
-                    rv.factors, rv.strides, 
-                    scalar); break;
-    //...
-        default:
-    throw dimensions_out_of_range(rv.nd);
+   bd_t bd = gridsize(vp.linear_size, 64);
+   transform_knl<T, Tag><\hskip0pt<\hskip0pt<bd.first, 
+                           bd.second>\hskip0pt>\hskip0pt>(data + vp.offset, 
+                                        vp, scalar);
+\}
+\end{semiverbatim}
+\note{ 
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{a / 7.0f: calculate gridsize, call kernel}
+\begin{semiverbatim}template <typename T, typename Tag>
+__global__ void 
+transform_knl(T* data, view_params vp, T scalar)
+\{
+  unsigned li = linear_index(threadIdx, /* ... etc */);
+  if (li >= vp.linear_size) return;
+
+  unsigned off = actual_index(li, vp.nd, vp.factors, vp.strides);
+
+  op_impl_<T, Tag>::impl(data + off, scalar); 
+\}
+
+template <typename T>
+struct op_impl_<T, boost::proto::tag::plus>
+\{
+  static void impl(T* t, const T& scalar)
+  \{
+    *t += scalar;
   \}
-  return rv;
+\};
+\end{semiverbatim}
+\note{ 
+  probably cleaner ways to implement the op\_impl but nvcc complains about 
+  temporaries and whatnot at the moment.  Since c++ support is new, I'll stay
+  away from anything it warns about.
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Historical curiosity}
+\begin{semiverbatim}
+__global__ void
+kamasu_elementwise_array_scalar_/*N*/_knl
+(float* data,
+ unsigned linear_size,
+ /*', '.join(['const std::size_t factor\%d' \% x for x in range(N)])*/,
+ /*', '.join(['const int stride\%d' \% x for x in range(N)])*/,
+ float scalar)
+\{
+  if (INDEX >= linear_size)
+    return;
+
+  unsigned actual_index = 
+    /* ' + '.join(['INDEX/factor\%d*stride\%d' \% (N-1, N-1)]
+                  + [' unsigned(INDEX \%\% factor\%d)/factor\%d*stride\%d' 
+                     \% (n+1,n,n) for n in range(N-1)]) */;
+  ...
 \}
 \end{semiverbatim}
 \note{
-we're on the other side of the compliation firewall
+  things were generated like this walls and walls of functions.
+
+  I decided to do it this way because there seemed to be no other way
+  and the way I justified it to myself was that I had see doug
+  gregor's perl scripts in boost::function.  Then this was part of a
+  natural progression.
 }
 \end{frame}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{a / 7.0f: calculate gridsize, call kernel}
 \begin{semiverbatim}
-void k_easd2(float* data, 
-             std::size_t linear_size,
-             const std::size_t* factors, 
-             const int* strides,
-             float scalar)
-\{
-  bd_t bd = gridsize(linear_size);
-
-  k_easd2_knl<\hskip0pt<\hskip0pt<bd.first, bd.second, 0>\hskip0pt>\hskip0pt>
-    (data,
-     linear_size,
-     factors[0],factors[1],
-     strides[0],strides[1],
-     scalar);
-\}
 \end{semiverbatim}
 \note{ 
-  things get unrolled for passing to a cuda kernel.  We can't
-  pass pointers, note that the factors and strides are in host memory,
-  and these kernel functions expect pods
-}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]{a / 7.0f: kernel function}
-\begin{semiverbatim}__global__ void
-k_easd2_knl(float* data,
-            std::size_t linear_size,
-            const std::size_t factor0, const std::size_t factor1,
-            const int stride0, const int stride1,
-            float scalar)
-\{
-  if (INDEX() >= linear_size)
-    return;
-
-  unsigned actual_index = 
-    INDEX()/factor1*stride1 
-    +  unsigned(INDEX() % factor1)/factor0*stride0;
-
-  data[actual_index] /= scalar;
-\}
-\end{semiverbatim}
-\note{ 
-  things get unrolled for passing to a cuda kernel.  We can't
-  pass pointers, note that the factors and strides are in host memory,
-  and these kernel functions expect pods
+  this thing is handled by nvcc and the 
 }
 \end{frame}
 

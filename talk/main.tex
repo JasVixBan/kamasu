@@ -1078,34 +1078,6 @@ std::cout << Grammar()(a + 777);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{Avoiding temporaries 1: emulating rvalues}
-\begin{semiverbatim}
-struct \alert<2>{CopyLValue} : bp::callable
-\{
-  typedef array_impl<float> result_type;
-
-  result_type
-  operator()(const array_impl<float>& a)
-  \{
-    return a.clone();
-  \}
-\};
-
-
-struct RkArrayTerminal 
-  : bp::when<bp::terminal<rk::array_impl<float> >, 
-             CopyLValue(bp::_value)>
-\{ \};
-
-
-\end{semiverbatim}
-\note{
-
-}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{frame}[fragile]{Kamasu hello world}
 \begin{semiverbatim}
 
@@ -1221,20 +1193,20 @@ struct op_impl_<T, boost::proto::tag::plus>
 \begin{frame}[fragile]{Historical curiosity}
 \begin{semiverbatim}
 __global__ void
-kamasu_elementwise_array_scalar_/*OP*/_/*N*/_knl
+kamasu_elementwise_array_scalar_\alert<2>{/*OP*/}_\alert<2>{/*N*/}_knl
 (float* data,
  unsigned linear_size,
- /*', '.join(['const std::size_t factor\%d' \% x for x in range(N)])*/,
- /*', '.join(['const int stride\%d' \% x for x in range(N)])*/,
+ \alert<2>{/*', '.join(['const std::size_t factor\%d' \% x for x in range(N)])*/},
+ \alert<2>{/*', '.join(['const int stride\%d' \% x for x in range(N)])*/},
  float scalar)
 \{
   if (INDEX >= linear_size)
     return;
 
   unsigned actual_index = 
-    /* ' + '.join(['INDEX/factor\%d*stride\%d' \% (N-1, N-1)]
+    \alert<2>{/* ' + '.join(['INDEX/factor\%d*stride\%d' \% (N-1, N-1)]
                   + [' unsigned(INDEX \%\% factor\%d)/factor\%d*stride\%d' 
-                     \% (n+1,n,n) for n in range(N-1)]) */;
+                     \% (n+1,n,n) for n in range(N-1)]) */};
   ...
 \}
 \end{semiverbatim}
@@ -1287,29 +1259,74 @@ kamasu_elementwise_array_scalar_/*OP*/_/*N*/_knl
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{Avoiding temporaries 2: reuse the LHS}
+\begin{frame}[fragile]{Avoiding temporaries 1: emulating rvalues}
 \begin{semiverbatim}
-struct CopyLValue : bp::callable
+// \alert<2>{a = \alert<4>{\alert<3>{b} * 3.0f} / \alert<4>{\alert<3>{c} * 4.0f;}}
+
+struct \alert<5>{CopyLValue} : bp::callable
 \{
   typedef array_impl<float> result_type;
-
+  
   result_type
-  operator()(const array_impl<float>& a, data_t& data)
+  operator()(const array_impl<float>& a)
   \{
-    if (data.tmp == &a) \{ data.tmp = 0; return a; \} 
-    else                \{ return a.clone();       \}
+\alert<6>{    return a.clone();}
   \}
 \};
 
 struct RkArrayTerminal 
   : bp::when<bp::terminal<rk::array_impl<float> >, 
-             CopyLValue(bp::_value, bp::_data)>
+             \alert<5>{CopyLValue(bp::_value)}>
 \{ \};
 
+struct Grammar : bp::or_<RkArrayTerminal, Scalar, ...
+\end{semiverbatim}
+\note{ }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Avoiding temporaries 2: reuse the LHS}
+\begin{semiverbatim}
+// \alert<2>{a = sin(a);}
+
+template <typename Expr>
+array<T>::operator=(Expr const& expr)
+\{
+  array_impl<T> result = Grammar()(expr);
+  self_.copy_from(result);
+\}
 
 \end{semiverbatim}
 \note{
   in practice the LHS 
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Avoiding temporaries 2: reuse the LHS}
+\begin{semiverbatim}
+// \alert<2>{a = sin(a);}
+
+struct data_t \{ array_impl<float>* tmp; \};
+
+template <typename Expr>
+array<float>::operator=(Expr const& expr)
+\{
+  data_t data; data.tmp = this->base_ptr();
+  array_impl<float> tmp = Grammar()(expr, bool(), data);
+  self_.copy_from(result);
+\}
+
+CopyLValue::result_type
+CopyLValue::operator()(const array_impl<float>& a, data_t& data)
+\{
+  if (data.tmp == &a) \{ data.tmp = 0; return a; \} 
+  else                \{ return a.clone();       \}
+\}
+\end{semiverbatim}
+\note{
 }
 \end{frame}
 

@@ -1216,7 +1216,7 @@ struct op_impl_<T, boost::proto::tag::plus>
 \begin{frame}[fragile]{Historical curiosity}
 \begin{semiverbatim}
 __global__ void
-kamasu_elementwise_array_scalar_/*N*/_knl
+kamasu_elementwise_array_scalar_/*OP*/_/*N*/_knl
 (float* data,
  unsigned linear_size,
  /*', '.join(['const std::size_t factor\%d' \% x for x in range(N)])*/,
@@ -1240,17 +1240,6 @@ kamasu_elementwise_array_scalar_/*N*/_knl
   and the way I justified it to myself was that I had see doug
   gregor's perl scripts in boost::function.  Then this was part of a
   natural progression.
-}
-\end{frame}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]{a / 7.0f: calculate gridsize, call kernel}
-\begin{semiverbatim}
-\end{semiverbatim}
-\note{ 
-  this thing is handled by nvcc and the 
 }
 \end{frame}
 
@@ -1321,14 +1310,67 @@ struct RkArrayTerminal
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}[fragile]{sin $\theta$ / cos $\theta$ == tan $\theta$ }
+\begin{semiverbatim}
+
+\end{semiverbatim}
+\note{
+
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Making a lazy function call}
+\begin{semiverbatim}
+binary_expr
+\end{semiverbatim}
+\note{
+
+}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Related efforts}
 
 \begin{frame}{CuPP}
   
 \end{frame}
 
-\begin{frame}{komrade}
-  
+\begin{frame}[fragile]{komrade}
+  \begin{semiverbatim}
+// square<T> computes the square of a number f(x) -> x*x
+template <typename T>
+struct square
+{
+    __host__ __device__
+        T operator()(const T& x) const { 
+            return x * x;
+        }
+};
+
+int main(void)
+{
+    // initialize host array
+    float x[4] = {1.0, 2.0, 3.0, 4.0};
+
+    // transfer to device
+    komrade::device_vector<float> d_x(x, x + 4);
+
+    // setup arguments
+    square<float>        unary_op;
+    komrade::plus<float> binary_op;
+    float init = 0;
+
+    // compute norm
+    float norm = std::sqrt( komrade::transform_reduce(d_x.begin(), d_x.end(), unary_op, init, binary_op) );
+
+    std::cout << norm << std::endl;
+
+    return 0;
+}
+  \end{semiverbatim}
 \end{frame}
 
 

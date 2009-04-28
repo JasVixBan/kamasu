@@ -437,10 +437,7 @@ float f = b(0,0); // a(9,9)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{Kamasu array metadata}
-\begin{semiverbatim}
-template <typename T>
-struct array_impl
-\{
+\begin{semiverbatim}struct view_params \{
   std::size_t \alert<2>{dims}[KAMASU_MAX_ARRAY_DIM];
   std::size_t \alert<3>{factors}[KAMASU_MAX_ARRAY_DIM];
   int strides[KAMASU_MAX_ARRAY_DIM];
@@ -448,14 +445,18 @@ struct array_impl
   offset_t offset;
   std::size_t linear_size;
   unsigned nd;
+\};
 
+template <typename T>
+struct array_impl
+\{
+  view_params vp;
   shared_ptr<holder<T> > gpu_data;
 \};
 
 array a(10,10), b;
 b = a.slice(index_range(_,_,-1), index_range(2));
-b(4) // which index is that?
-
+b(4);
 \end{semiverbatim}
 \note{arrays can be views of the same data,
 
@@ -472,6 +473,8 @@ and we have to know which entry we're working on.
 
 linear size could be recomputed, it is just the product of the dimensions, 
 we precompute to save time, as numpy does
+
+might be good to have underscore be a general purpose object.
 
 }
 \end{frame}
@@ -574,7 +577,7 @@ you can evaluate later}
 }
 \end{frame}
 
-  % FIXME can't explain this
+% FIXME can't explain this
 %  So we have two elementwise additions and a multiplication (which
 %  isn't elementwise).  Still haven't thought about things like
 %  elementwise multiplication vs matrix multiplication, or how useful
@@ -977,6 +980,8 @@ std::cout << FloatTerminal()(f);
 
 \begin{frame}[fragile]{proto::when}
 \begin{semiverbatim}
+// \alert<1>{a + 777.0f}
+
 struct \alert<3>{ArrayTerminal}
   : bp::when<\alert<2,8>{bp::terminal<\alert<9>{array_impl}>}, \alert<11>{ToString(bp::_value)}>
 \{ \};
@@ -989,7 +994,7 @@ struct Grammar :
   bp::or_<ArrayTerminal,
           FloatTerminal,
           bp::when<\alert<6>{bp::plus<\only<1-2>{\alert<2>{bp::terminal<array_impl>}}\only<3->{\alert<3>{ArrayTerminal}}, 
-                            \only<1-4>{\alert<4>{bp::terminal<float> >}}\only<5->{\alert<5>{FloatTerminal}}>},
+                            \only<1-4>{\alert<4>{bp::terminal<float> }}\only<5->{\alert<5>{FloatTerminal}}>},
                    \alert<7>{ToString(\alert<14>{bp::tag::plus()},
                             \only<-11>{\alert<11>{\alert<10>{ToString}(\alert<9>{bp::_value(\alert<8>{bp::_left})})}}\only<12->{\alert<12>{ArrayTerminal(bp::_left)}},
                             \only<-12>{ToString(bp::_value(bp::_right)))}}\only<13->{\alert<13>{FloatTerminal(bp::_right))}}>
@@ -1340,37 +1345,26 @@ binary_expr
 
 \begin{frame}[fragile]{komrade}
   \begin{semiverbatim}
-// square<T> computes the square of a number f(x) -> x*x
 template <typename T>
-struct square
-{
+struct square \{
     __host__ __device__
-        T operator()(const T& x) const { 
+        T operator()(const T& x) const \{ 
             return x * x;
-        }
-};
+        \}
+\};
 
-int main(void)
-{
-    // initialize host array
-    float x[4] = {1.0, 2.0, 3.0, 4.0};
-
-    // transfer to device
-    komrade::device_vector<float> d_x(x, x + 4);
-
-    // setup arguments
-    square<float>        unary_op;
-    komrade::plus<float> binary_op;
-    float init = 0;
-
-    // compute norm
-    float norm = std::sqrt( komrade::transform_reduce(d_x.begin(), d_x.end(), unary_op, init, binary_op) );
-
-    std::cout << norm << std::endl;
-
-    return 0;
-}
+float x[4] = \{ 1.0, 2.0, 3.0, 4.0 \};
+komrade::device_vector<float> d_x(x, x + 4);
+square<float>        unary_op;
+komrade::plus<float> binary_op;
+float init = 0;
+sqrt( komrade::transform_reduce(d_x.begin(), d_x.end(), 
+                                unary_op, init, binary_op) );
   \end{semiverbatim}
+\note{ 
+  transform, reduce, transform\_reduce, etc.  You can't do a matrx
+  multiplication or n-body simulation with this either.
+}
 \end{frame}
 
 

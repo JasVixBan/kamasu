@@ -888,30 +888,6 @@ transforms, or function objects that are nice.
 }
 \end{frame}
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% \begin{frame}[fragile]{proto::when}
-%% \begin{semiverbatim}
-%% bp::terminal<float>::type f;
-%% f.child0 = 3.14;
-
-%% std::cout << bp::value(f);    // prints 3.14
-%% std::cout << bp::_value()(f); // also prints 3.14
-
-%% struct FloatTerminal
-%% : bp::when<bp::terminal<float>, bp::_value>
-%% \{ \};
-
-%% FloatTerminal transform;
-%% std::cout << transform(f);  // prints 3.14
-
-
-
-
-%% \end{semiverbatim}
-%% \note{ now we'll talk about grammars.  the proto::when }
-%% \end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{Matching expressions}
@@ -1046,35 +1022,73 @@ argument, something of type bp::\_value.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{proto::when}
-\begin{semiverbatim}
-// \alert<1>{a + 777.0f}
+\begin{semiverbatim}// \alert<1>{a + 777.0f}
 
-struct \alert<3>{ArrayTerminal}
-  : bp::when<\alert<2,8>{bp::terminal<\alert<9>{array_impl}>}, \alert<11>{ToString(bp::_value)}>
+\alert<2>{struct \alert<6>{ArrayTerminal}
+  : bp::when<\alert<5,12>{bp::terminal<\alert<13>{array_impl}>}, \alert<15>{ToString(bp::_value)}>
 \{ \};
-
-struct \alert<5>{FloatTerminal}
-  : bp::when<\alert<4>{bp::terminal<float>}, ToString(bp::_value)>
+}
+\alert<3>{struct \alert<8>{FloatTerminal}
+  : bp::when<\alert<7>{bp::terminal<float>}, ToString(bp::_value)>
 \{ \};
-
-struct Grammar : 
+}
+\alert<4>{struct Grammar : 
   bp::or_<ArrayTerminal,
           FloatTerminal,
-          bp::when<\alert<6>{bp::plus<\only<1-2>{\alert<2>{bp::terminal<array_impl>}}\only<3->{\alert<3>{ArrayTerminal}}, 
-                            \only<1-4>{\alert<4>{bp::terminal<float> }}\only<5->{\alert<5>{FloatTerminal}}>},
-                   \alert<7>{ToString(\alert<14>{bp::tag::plus()},
-                            \only<-11>{\alert<11>{\alert<10>{ToString}(\alert<9>{bp::_value(\alert<8>{bp::_left})})}}\only<12->{\alert<12>{ArrayTerminal(bp::_left)}},
-                            \only<-12>{ToString(bp::_value(bp::_right)))}}\only<13->{\alert<13>{FloatTerminal(bp::_right))}}>
+          bp::when<\alert<9>{bp::plus<\only<-5>{\alert<5>{bp::terminal<array_impl>}}\only<6->{\alert<6>{ArrayTerminal}}, 
+                            \only<-7>{\alert<7>{bp::terminal<float> }}\only<8->{\alert<8>{FloatTerminal}}>},
+                   \alert<10>{ToString(\alert<11>{bp::tag::plus()},
+                            \only<-15>{\alert<15>{\alert<14>{ToString}(\alert<13>{bp::_value(\alert<12>{bp::_left})})}}\only<16->{\alert<16>{ArrayTerminal(bp::_left)}},
+                            \only<-16>{ToString(bp::_value(bp::_right)))}}\only<17->{\alert<17>{FloatTerminal(bp::_right))}}>
 	    >
-\{ \};      \only<14>{\alert<14>{// struct plus \{ \};}}
+\{ \}; }     \only<11>{\alert<11>{// struct plus \{ \};}}
 \end{semiverbatim}
-\note{ }
+\note<1>{now to activate the simple math grammar we were looking at a minute ago}
+\note<2>{we have a grammar that matches an array terminal and transforms it to a string}
+\note<3>{and the same for float terminals}
+
+\note<4>{and a grammar that matches either array or float or array plus float.
+now we can compact all this significantly make things nicely recursive}
+
+\note<5>{the struct ArrayTerminal up top already matches array terminals}
+
+\note<6>{ we can just use it}
+
+\note<7>{and the float terminal struct}
+
+\note<8>{as well}
+
+\note<9>{so when we match the plus of these two things,}
+
+\note<10>{we should do this, this involves adding another overload to
+  the ToString transform, its easy we'll see it in a minute }
+
+\note<11>{the first argument is going to be a temporary of type plus
+  which we'll use to choose a particular overload}
+
+\note<12>{and the transformed result of
+the lefthand and right hand sides,  so the lhs is going to be a terminal
+of array impl}
+
+\note<13>{the value of that is going to be an array impl}
+
+\note<14>{and we will construct a ToString and pass it that array\_impl.  
+}
+
+\note<15>{But note that these two things are the same...  already have
+  something that transforms array impls into strings, so we just use
+  it }
+
+\note<16>{
+and the same for the float terminal
+}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{They recurse!}
-\begin{semiverbatim}
+\begin{semiverbatim}\alert<1>{// (a + 777.0f) + (61.0f + a)}
+
 struct \alert<2>{ArrayTerminal}
   : bp::when<bp::terminal<array_impl>, ToString(bp::_value)>
 \{ \};
@@ -1094,61 +1108,49 @@ struct \alert<4>{Grammar} :
      >
 \{ \};
 \end{semiverbatim}
-\note{since plus is commutative, it doesnt matter what order the operands are in}
+
+\note<1>{but what that won't handle is nested plusses and floats arrays in different orders.}
+
+\note<2>{so this handles a plus of an array on the left and then a float, 
+}
+\note<3>{and these are already matched and transformed by our grammar, so we just
+}
+\note<4>{use our grammar
+}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{Tune up the transform}
 \begin{semiverbatim}
-ToString(bp::tag::plus(), 
-         Grammar(bp::_left), Grammar(bp::_right))
-
 struct ToString : bp::callable
 \{
   typedef std::string result_type;
-
-  template <typename T>
-  result_type operator()(const T& t)
-  \{
-    return str(boost::format("%s @ %p") % t % &t);
-  \}
-
-  result_type operator()(bp::tag::plus, 
+  // ...
+\alert<2>{  result_type operator()(bp::tag::plus, 
                          const std::string& lhs, 
                          const std::string& rhs)
   \{
     return str(boost::format("%s PLUS %s") % lhs % rhs );
-  \}
+  \}}
 \};
-\end{semiverbatim}
-\note{since plus is commutative, it doesnt matter what order the operands are in}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]{Tune up the transform}
-\begin{semiverbatim}
-struct Grammar : bp::or_< ...
-struct ToString : bp::callable \{ ...
-struct array : bp::terminal<array_impl>::type ...
 
 array a;
 
-std::cout << Grammar()(a + 777);
-
-``array_impl @ 0x7fffe0f3f11f PLUS 777 @ 0x7fffe0f3f10c''
-
+std::cout << \alert<3>{Grammar()(a + 777)};
+``\alert<4>{array_impl @ 0x7fffe0f3f11f PLUS 777 @ 0x7fffe0f3f10c}''
 \end{semiverbatim}
-\note{since plus is commutative, it doesnt matter what order the operands are in}
+\note<1>{now to tune up the transform}
+\note<2>{we just add an overload to this ToString thing}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{Kamasu hello world}
-\begin{semiverbatim}
+\begin{semiverbatim}namespace \alert<1>{bp = boost::proto};
+namespace \alert<1>{rk = resophonic::kamasu};
 
-array<float> a, b, c;
+rk::array<float> a(10,10), b(10,10), c;
 
 \alert<2>{c = (a / 3.0f) * (b / 7.0f);}
 \only<-3>{\alert<3>{
@@ -1175,10 +1177,12 @@ struct Grammar
 }}
 
 \end{semiverbatim}
-\note{
 
-}
+\note<1>{ turning now to how to use these mechansms to dispatch }
+
 \end{frame}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{a / 7.0f:  Array-Scalar Transform}

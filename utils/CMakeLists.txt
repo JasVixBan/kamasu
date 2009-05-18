@@ -1,3 +1,10 @@
+add_executable(device_query
+  device_query.cpp
+  )
+target_link_libraries(device_query
+  ${CUDA_RT_LIBRARY}
+  )
+
 add_executable(gpumeminfo
   gpumeminfo.c
   )
